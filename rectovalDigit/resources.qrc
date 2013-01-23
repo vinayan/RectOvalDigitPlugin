@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix='/plugins/rectovalDigit'>
+        <file>icons/icon.png</file>    
+        <file>icons/rectbyextent.png</file>
+        <file>icons/rectfromcenter.png</file>
+        <file>icons/squarefromcenter.png</file>
+        <file>icons/circlefromcenter.png</file>
+        <file>icons/ovalbyextent.png</file>  
+        <file>icons/ovalfromcenter.png</file>  
+        <file>icons/rotate.png</file> 
+    </qresource>
+</RCC>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
