@@ -21,3 +21,7 @@ QgsGeometry
 in version 0.1.4:
 
 - fixed rubberband and invalid geometry issues with the 1.9.0 dev version
+
+in version 1.9.0
+
+- updated to work with the changes made in the vector api
