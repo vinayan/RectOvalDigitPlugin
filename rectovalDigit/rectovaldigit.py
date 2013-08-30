@@ -94,10 +94,10 @@ class RectOvalDigit:
         self.spinBox = QSpinBox(self.iface.mainWindow())        
         self.spinBox.setMinimum(3)
         self.spinBox.setMaximum(72)
-        segvalue = settings.value("/RectOvalDigit/segments").toInt()
-        if not segvalue[1]:
+        segvalue = settings.value("/RectOvalDigit/segments",36,type=int)
+        if not segvalue:
             settings.setValue("/RectOvalDigit/segments", 36)
-        self.spinBox.setValue(segvalue[0])
+        self.spinBox.setValue(segvalue)
         self.spinBox.setSingleStep(1)
         self.spinBoxAction = self.toolBar.addWidget(self.spinBox)
         self.spinBox.setToolTip("Number of segments for ovals")
@@ -247,14 +247,12 @@ class RectOvalDigit:
         fields = layer.pendingFields()
 
         # vector api change update
-        if QGis.QGIS_VERSION_INT >= 10900:
-            f.initAttributes(fields.count())			
-            for i in range(fields.count()):
-                f.setAttribute(i,provider.defaultValue(i))
-        else:
-            for i in fields:
-                f.addAttribute(i,  provider.defaultValue(i))
-        if not (settings.value("/qgis/digitizing/disable_enter_attribute_values_dialog").toBool()):
+
+        f.initAttributes(fields.count())
+        for i in range(fields.count()):
+            f.setAttribute(i,provider.defaultValue(i))
+
+        if not (settings.value("/qgis/digitizing/disable_enter_attribute_values_dialog")):
             self.iface.openFeatureForm( layer, f, False)
         
         layer.beginEditCommand("Feature added")       

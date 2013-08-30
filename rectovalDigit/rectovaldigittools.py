@@ -87,7 +87,7 @@ class OvalFromCenterTool(QgsMapTool):
         xOffset = abs( currx - self.xc)
         yOffset = abs( curry - self.yc)
         self.rb.reset(True)
-        segments = settings.value("/RectOvalDigit/segments").toInt()[0]
+        segments = settings.value("/RectOvalDigit/segments",36,type=int)
         points = []
         for t in [(2*math.pi)/segments*i for i in range(segments)]:
             points.append((xOffset*math.cos(t), yOffset*math.sin(t)))
@@ -181,7 +181,7 @@ class OvalByExtentTool(QgsMapTool):
         xOffset = (abs( currx - self.x0))/2
         yOffset = (abs( curry - self.y0))/2
         self.rb.reset(True)
-        segments = settings.value("/RectOvalDigit/segments").toInt()[0]
+        segments = settings.value("/RectOvalDigit/segments",36,type=int)
         points = []
         for t in [(2*math.pi)/segments*i for i in range(segments)]:
             points.append((xOffset*math.cos(t), yOffset*math.sin(t)))
@@ -295,7 +295,7 @@ class CircleFromCenterTool(QgsMapTool):
         curry = currpoint.y()
         r = math.sqrt(pow(abs( currx - self.xc),2) + pow(abs( curry - self.yc),2))
         self.rb.reset(True)
-        segments = settings.value("/RectOvalDigit/segments").toInt()[0]
+        segments = settings.value("/RectOvalDigit/segments",36,type=int)
         points = []
         for t in [(2*math.pi)/segments*i for i in range(segments)]:
             points.append((r*math.cos(t), r*math.sin(t)))
@@ -689,7 +689,9 @@ class RotateTool(QgsMapTool):
         else:
             self.cf = QgsFeature()
             self.fid = self.layer.selectedFeaturesIds()[0]
-            self.layer.featureAtId( self.fid, self.cf, True,  True )
+	    request = QgsFeatureRequest(self.fid)
+	    fit = self.layer.getFeatures(request)
+	    fit.nextFeature(self.cf)
             self.rb.setToGeometry( self.cf.geometry(), self.layer)    
         if self.rb:return                    
 
