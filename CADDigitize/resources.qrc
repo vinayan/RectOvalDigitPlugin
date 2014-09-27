@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/plugins/CADDigitize" >
+        <file>icon.png</file>
+        <file>icons/circleBy2Points.png</file>
+        <file>icons/circleBy3Points.png</file>
+        <file>icons/circleByCenterPoint.png</file>
+        <file>icons/circleByCenterRadius.png</file>
+        <file>icons/rectBy3Points.png</file>
+        <file>icons/rectByExtent.png</file>
+        <file>icons/rectFromCenter.png</file>
+        <file>icons/squareFromCenter.png</file>
+        <file>icons/ellipseByCenter2Points.png</file>
+        <file>icons/ellipseByCenter3Points.png</file>
+        <file>icons/ellipseBy4Points.png</file>
+        <file>icons/ellipseByFociPoint.png</file>
+     </qresource>
+</RCC>
