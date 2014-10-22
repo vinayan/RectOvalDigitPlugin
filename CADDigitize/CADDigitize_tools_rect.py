@@ -11,7 +11,7 @@ from math import *
 from tools.calc import *
 from CADDigitize_dialog import Ui_CADDigitizeDialog
 
-class rectBy3PointsTool(QgsMapTool):
+class RectBy3PointsTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
         self.canvas = canvas
@@ -147,7 +147,7 @@ class rectBy3PointsTool(QgsMapTool):
         return True
 
 
-class rectByExtentTool(QgsMapTool):
+class RectByExtentTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
         self.canvas=canvas
@@ -279,7 +279,7 @@ class rectByExtentTool(QgsMapTool):
         return True
 
 # Tool class
-class rectFromCenterTool(QgsMapTool):
+class RectFromCenterTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
         self.canvas=canvas
@@ -414,7 +414,7 @@ class rectFromCenterTool(QgsMapTool):
         return True
 
 # Tool class
-class squareFromCenterTool(QgsMapTool):
+class SquareFromCenterTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
         self.canvas=canvas

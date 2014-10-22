@@ -12,7 +12,7 @@ from tools.calc import *
 from tools.circle import *
 from CADDigitize_dialog import Ui_CADDigitizeDialog
 
-class circleBy2PointsTool(QgsMapTool):
+class CircleBy2PointsTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
         self.canvas=canvas
@@ -134,7 +134,7 @@ class circleBy2PointsTool(QgsMapTool):
 
 
 
-class circleBy3PointsTool(QgsMapTool):
+class CircleBy3PointsTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
         self.canvas = canvas
@@ -265,7 +265,7 @@ class circleBy3PointsTool(QgsMapTool):
 
 
 
-class circleByCenterPointTool(QgsMapTool):
+class CircleByCenterPointTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
         self.canvas=canvas
@@ -386,7 +386,7 @@ class circleByCenterPointTool(QgsMapTool):
         return True
 
 
-class circleByCenterRadiusTool(QgsMapTool):
+class CircleByCenterRadiusTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
         self.canvas=canvas

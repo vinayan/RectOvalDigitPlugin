@@ -45,6 +45,7 @@ class CADDigitize:
             application at run time.
         :type iface: QgsInterface
         """
+        
         # Save reference to the QGIS interface
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
@@ -65,12 +66,30 @@ class CADDigitize:
                 QCoreApplication.installTranslator(self.translator)
 
     def initGui(self):
+        
+        settings = QSettings()
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
+        
 
         # Add button
         self.toolBar = self.iface.addToolBar("Advanced draw")
         self.toolBar.setObjectName("CADDigitize")
+        
+        # Add spinbox
+        self.spinBox = QSpinBox(self.iface.mainWindow())
+        self.spinBox.setMinimum(3)
+        self.spinBox.setMaximum(72)
+        segvalue = settings.value("/CADDigitize/segments",36,type=int)
+        if not segvalue:
+            settings.setValue("/CADDigitize/segments", 36)
+        self.spinBox.setValue(segvalue)
+        self.spinBox.setSingleStep(1)
+        self.spinBoxAction = self.toolBar.addWidget(self.spinBox)
+        self.spinBox.setToolTip("Number of segments for circles and ellipses")
+        self.spinBoxAction.setEnabled(False)
 
+        self.toolBar.addSeparator()
+        
         self.circleToolButton = QToolButton(self.toolBar)
         self.rectToolButton = QToolButton(self.toolBar)
         self.ellipseToolButton = QToolButton(self.toolBar)
@@ -137,8 +156,10 @@ class CADDigitize:
         self.ellipseByCenter3Points = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseByCenter3Points.png"),  "Ellipse by center and 3 points",  self.iface.mainWindow())
         self.ellipseBy4Points= QAction(QIcon(":/plugins/CADDigitize/icons/ellipseBy4Points.png"),  "Ellipse by 4 points",  self.iface.mainWindow())
         self.ellipseByFociPoint = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseByFociPoint.png"),  "Ellipse by foci and a point",  self.iface.mainWindow())
+        self.ellipseFromCenter = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseFromCenter.png"),  "Ellipse from center",  self.iface.mainWindow())
+        self.ellipseByExtent = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseByExtent.png"),  "Ellipse by extent",  self.iface.mainWindow())
 
-        self.ellipseToolButton.addActions( [ self.ellipseByCenter2Points, self.ellipseByCenter3Points, self.ellipseBy4Points, self.ellipseByFociPoint ] )
+        self.ellipseToolButton.addActions( [ self.ellipseByCenter2Points, self.ellipseByFociPoint, self.ellipseFromCenter, self.ellipseByExtent ] )
         self.ellipseToolButton.setDefaultAction(self.ellipseByCenter2Points)
         self.toolBar.addWidget( self.ellipseToolButton )
 
@@ -151,10 +172,15 @@ class CADDigitize:
         self.ellipseBy4Points.setEnabled(False)
         self.ellipseByFociPoint.setCheckable(True)
         self.ellipseByFociPoint.setEnabled(False)
+        self.ellipseFromCenter.setCheckable(True)
+        self.ellipseFromCenter.setEnabled(False)
+        self.ellipseByExtent.setCheckable(True)
+        self.ellipseByExtent.setEnabled(False)
 
 
         ### Conect
 
+        QObject.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.segmentsettings)
         QObject.connect(self.circleBy2Points,  SIGNAL("activated()"), self.circleBy2PointsDigit)
         QObject.connect(self.circleBy3Points,  SIGNAL("activated()"), self.circleBy3PointsDigit)
         QObject.connect(self.circleByCenterRadius,  SIGNAL("activated()"),  self.circleByCenterRadiusDigit)
@@ -167,24 +193,32 @@ class CADDigitize:
         QObject.connect(self.ellipseByCenter3Points,  SIGNAL("activated()"), self.ellipseByCenter3PointsDigit)
         QObject.connect(self.ellipseBy4Points,  SIGNAL("activated()"),  self.ellipseBy4PointsDigit)
         QObject.connect(self.ellipseByFociPoint,  SIGNAL("activated()"),  self.ellipseByFociPointDigit)
+        QObject.connect(self.ellipseFromCenter,  SIGNAL("activated()"),  self.ellipseFromCenterDigit)
+        QObject.connect(self.ellipseByExtent,  SIGNAL("activated()"),  self.ellipseByExtentDigit)
 
         QObject.connect(self.iface, SIGNAL("currentLayerChanged(QgsMapLayer*)"), self.toggle)
         QObject.connect(self.canvas, SIGNAL("mapToolSet(QgsMapTool*)"), self.deactivate)
 
 
         # Get the tools
-        self.circleBy2Points_tool = circleBy2PointsTool( self.canvas )
-        self.circleBy3Points_tool = circleBy3PointsTool( self.canvas )
-        self.circleByCenterRadius_tool = circleByCenterRadiusTool( self.canvas )
-        self.circleByCenterPoint_tool = circleByCenterPointTool( self.canvas )
-        self.rectBy3Points_tool = rectBy3PointsTool( self.canvas )
-        self.rectByExtent_tool = rectByExtentTool( self.canvas )
-        self.rectFromCenter_tool = rectFromCenterTool( self.canvas )
-        self.squareFromCenter_tool = squareFromCenterTool( self.canvas )
-        self.ellipseByCenter2Points_tool = ellipseByCenter2PointsTool( self.canvas )
-        self.ellipseByCenter3Points_tool = ellipseByCenter3PointsTool( self.canvas )
-        self.ellipseBy4Points_tool= ellipseBy4PointsTool( self.canvas )
-        self.ellipseByFociPoint_tool = ellipseByFociPointTool( self.canvas )
+        self.circleBy2Points_tool = CircleBy2PointsTool( self.canvas )
+        self.circleBy3Points_tool = CircleBy3PointsTool( self.canvas )
+        self.circleByCenterRadius_tool = CircleByCenterRadiusTool( self.canvas )
+        self.circleByCenterPoint_tool = CircleByCenterPointTool( self.canvas )
+        self.rectBy3Points_tool = RectBy3PointsTool( self.canvas )
+        self.rectByExtent_tool = RectByExtentTool( self.canvas )
+        self.rectFromCenter_tool = RectFromCenterTool( self.canvas )
+        self.squareFromCenter_tool = SquareFromCenterTool( self.canvas )
+        self.ellipseByCenter2Points_tool = EllipseByCenter2PointsTool( self.canvas )
+        self.ellipseByCenter3Points_tool = EllipseByCenter3PointsTool( self.canvas )
+        self.ellipseBy4Points_tool= EllipseBy4PointsTool( self.canvas )
+        self.ellipseByFociPoint_tool = EllipseByFociPointTool( self.canvas )
+        self.ellipseByExtent_tool = EllipseByExtentTool( self.canvas )
+        self.ellipseFromCenter_tool = EllipseFromCenterTool( self.canvas )
+
+    def segmentsettings(self):
+        settings = QSettings()
+        settings.setValue("/CADDigitize/segments", self.spinBox.value())
 
     def circleBy2PointsDigit(self):
         self.circleToolButton.setDefaultAction(self.circleBy2Points)
@@ -258,6 +292,19 @@ class CADDigitize:
         self.ellipseByFociPoint.setChecked(True)
         QObject.connect(self.ellipseByFociPoint_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
+    def ellipseFromCenterDigit(self):
+        self.ellipseToolButton.setDefaultAction(self.ellipseFromCenter)
+        self.canvas.setMapTool(self.ellipseFromCenter_tool)
+        self.ellipseFromCenter.setChecked(True)
+        QObject.connect(self.ellipseFromCenter_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
+    def ellipseByExtentDigit(self):
+        self.ellipseToolButton.setDefaultAction(self.ellipseByExtent)
+        self.canvas.setMapTool(self.ellipseByExtent_tool)
+        self.ellipseByExtent.setChecked(True)
+        QObject.connect(self.ellipseByExtent_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
+
 
     def toggle(self):
         mc = self.canvas
@@ -277,6 +324,9 @@ class CADDigitize:
                 self.ellipseByCenter3Points.setEnabled(True)
                 self.ellipseBy4Points.setEnabled(True)
                 self.ellipseByFociPoint.setEnabled(True)
+                self.ellipseFromCenter.setEnabled(True)
+                self.ellipseByExtent.setEnabled(True)
+                self.spinBoxAction.setEnabled(True)
 
                 QObject.connect(layer,SIGNAL("editingStopped()"),self.toggle)
                 QObject.disconnect(layer,SIGNAL("editingStarted()"),self.toggle)
@@ -293,6 +343,10 @@ class CADDigitize:
                 self.ellipseByCenter3Points.setEnabled(False)
                 self.ellipseBy4Points.setEnabled(False)
                 self.ellipseByFociPoint.setEnabled(False)
+                self.ellipseFromCenter.setEnabled(False)
+                self.ellipseByExtent.setEnabled(False)
+                self.spinBoxAction.setEnabled(False)
+
                 QObject.connect(layer,SIGNAL("editingStarted()"),self.toggle)
                 QObject.disconnect(layer,SIGNAL("editingStopped()"),self.toggle)
 
@@ -311,6 +365,8 @@ class CADDigitize:
         self.ellipseByCenter3Points.setChecked(False)
         self.ellipseBy4Points.setChecked(False)
         self.ellipseByFociPoint.setChecked(False)
+        self.ellipseFromCenter.setChecked(False)
+        self.ellipseByExtent.setChecked(False)
         QObject.disconnect(self.circleBy2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.circleBy2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.circleByCenterRadius_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
@@ -323,6 +379,8 @@ class CADDigitize:
         QObject.disconnect(self.ellipseByCenter3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.ellipseBy4Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.ellipseByFociPoint_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.disconnect(self.ellipseFromCenter_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.disconnect(self.ellipseByExtent_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
 
     def createFeature(self, geom):
@@ -390,6 +448,8 @@ class CADDigitize:
         self.ellipseToolButton.removeAction(self.ellipseByCenter3Points)
         self.ellipseToolButton.removeAction(self.ellipseBy4Points)
         self.ellipseToolButton.removeAction(self.ellipseByFociPoint)
+        self.ellipseToolButton.removeAction(self.ellipseFromCenter)
+        self.ellipseToolButton.removeAction(self.ellipseByExtent)
         del self.circleToolButton
         del self.rectToolButton
         del self.ellipseToolButton
