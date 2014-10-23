@@ -37,8 +37,7 @@ SOURCES = \
 	CADDigitize_dialog.py \
 	tools/__init__.py \
 	tools/math.py \
-	tools/circle.py \
-	tools/ellipse.py
+	tools/circle.py
 
 PLUGINNAME = CADDigitize
 
@@ -53,8 +52,7 @@ PY_FILES = \
 PY_FILES_TOOLS = \
 	tools/__init__.py \
 	tools/calc.py \
-	tools/circle.py \
-	tools/ellipse.py \
+	tools/circle.py
 
 
 EXTRAS = icon.png metadata.txt
