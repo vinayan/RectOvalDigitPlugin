@@ -1,6 +1,0 @@
-#!/bin/sh
-
-for i in (ls *.csv); do
-    ./diag.R $i;
-done
-

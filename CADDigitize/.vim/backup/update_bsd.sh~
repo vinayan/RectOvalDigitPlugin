@@ -1,6 +1,0 @@
-#!/bin/sh
-[ "`id -u`" = "0" ] || { echo "Sorry, this must be done as root." ; exit 1 ; }
-freebsd-update fetch install
-portsnap fetch update
-portsclean -C
-portmaster -d -a -G -m "BATCH=yes" -x libreoffice --no-confirm

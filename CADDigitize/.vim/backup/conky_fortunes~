@@ -1,2 +1,0 @@
-TEXT
-${color 1AA0DA}Humour : ${execi 300 fortune humour | iconv -c --silent -f ISO_8859-1 -t UTF-8 | fold -s -w 80}

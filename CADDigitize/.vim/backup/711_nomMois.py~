@@ -1,9 +1,0 @@
-#!/usr/bin/env python
-#-*- coding:utf-8 -*-
-
-def nomMois(n):
-    "Retourne le nom du n-ième mois."
-    mois = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
-    return mois[n]
-
-print nomMois(4)

@@ -1,8 +1,0 @@
-# -*- coding:utf-8 -*-
-
-from enum import Enum
-
-class Side(Enum):
-    Right = 0
-    Left = 1
-    Both = 2

@@ -1,6 +1,0 @@
-x11-drivers/xorg-drivers x11/xinit x11/xauth x11-fonts/xorg-fonts x11-fonts/webfonts \
-    www/chromium www/links editors/vim x11-fm/xfe x11-fm/pcmanfm multimedia/vlc multimedia/audacious multimedia/audacious-plugins graphics/mupdf mail/claws-mail mail/bogofilter devel/ccache net-im/pidgin irc/xchat lang/clang \
-    deskutils/planner graphics/dia math/R math/scilab databases/grass databases/spatialite databases/postgis databases/py-sqlite3 graphics/qgis emulators/virtualbox-ose \
-    x11/numlockx x11-wm/openbox x11/tint deskutils/pypanel x11-wm/xcompmgr x11/wbar graphics/feh x11/rxvt-unicode sysutils/automount sysutils/fusefs-ntfs \
-    x11/nvidia-driver x11/nvidia-settings x11/nvidia-xconfig
-

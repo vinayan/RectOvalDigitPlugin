@@ -1,7 +1,0 @@
-#!/bin/tcsh
-
-foreach i (*.osm)
-    set newname = `echo $i|tr \* \ `
-    echo "$i"
-    java -jar osm2shp.jar $i
-end

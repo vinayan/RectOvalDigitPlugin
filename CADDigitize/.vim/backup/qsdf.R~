@@ -1,3 +1,0 @@
-#!/usr/bin/env Rscript
-argv <- commandArgs(TRUE)
-cat(ncol(argv))

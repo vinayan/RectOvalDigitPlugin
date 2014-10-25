@@ -1,7 +1,0 @@
-#-*- coding:utf-8 -*-
-
-from math import *
-
-class Util:
-    def test():
-        print "racine de 2 ", sqrt(2)

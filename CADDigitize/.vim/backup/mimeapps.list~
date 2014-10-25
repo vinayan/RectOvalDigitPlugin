@@ -1,9 +1,0 @@
-
-[Added Associations]
-image/vnd.djvu=userapp-djview-L39YSW.desktop;
-application/pdf=mupdf.desktop;
-
-[Default Applications]
-image/vnd.djvu=userapp-djview-L39YSW.desktop
-x-scheme-handler/feed=liferea-add-feed.desktop
-application/pdf=mupdf.desktop

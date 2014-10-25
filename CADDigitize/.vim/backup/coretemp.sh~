@@ -1,8 +1,0 @@
-#!/bin/sh
-cores=0
-
-until [ $cores -eq 4 ]
-do
-echo Core \#$cores: `sysctl -n dev.cpu.$cores.temperature` 
-cores=`expr $cores + 1`
-done

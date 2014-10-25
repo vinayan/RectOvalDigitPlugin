@@ -1,9 +1,0 @@
-#!/usr/bin/env python
-#-*- coding:utf-8 -*-
-
-liste = ['Jean-Michel', 'Marc', 'Vanessa', 'Anne', 'Maximilien', 'Alexandre-Benoît', 'Louise']
-
-a = 0
-while a < len(liste):
-    print liste[a], len(liste[a])
-

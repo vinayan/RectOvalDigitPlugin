@@ -1,8 +1,0 @@
-\documentclass[a4paper]{article}
-\usepackage[frenchb]{babel}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-
-\begin{document}
-Bonjour Mme X, le lis actuellement un cours traitant de LaTeX !
-\end{document}
