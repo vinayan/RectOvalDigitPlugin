@@ -1,0 +1,76 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  sinus.c
+ *
+ *    Description:  Implémentation de l'algorithme Taylor-Mac-Laurin pour le calcul des
+ *                  sinus
+ *
+ *        Version:  1.0
+ *        Created:  16.12.2012 15:10:39
+ *       Revision:  none
+ *       Compiler:  clang
+ *
+ *         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+ *   Organization:  
+ *
+ * =====================================================================================
+ */
+
+
+#include	<stdio.h>
+#include    <math.h>
+#include    <stdlib.h>
+
+long fact(long n);
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  main
+ *  Description:  
+ * =====================================================================================
+ */
+int main ( int argc, char *argv[] )
+{
+    float y, x, res, facteur, precision;
+    int n;
+    int ret = 1;
+
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage : %s <nombre>\n", argv[0]);
+        ret = -1;
+    }
+    if  (ret == 1)
+    {
+        y = strtof(argv[1], NULL);
+        x = y;
+        precision = 0.000000000000001;
+        printf("\nsin(%4.2f) = %+15.12f (librairie C)\n", x, sin(x));
+        printf ( "--- calcul par séries entières ---\n" );
+        res = 0.0;
+        n = 0;
+        facteur = 9999.0;
+        while(facteur > precision)
+        {
+            facteur = (pow(x, (2*n)+1)/fact((2*n)+1));
+            res += (pow(-1,n)*facteur);
+            printf ( "%2d : sinus = %+15.12f\tfacteur = %15.17f\n", n, res, facteur );
+            n += 1;
+        }
+    }
+    return EXIT_SUCCESS;
+}				/* ----------  end of function main  ---------- */
+
+
+long fact(long n)
+{
+    long i;
+    long resultat=1;
+    for(i=1;i<=n;i++)
+    {
+        resultat *= i;
+    }
+    return resultat;
+}
+

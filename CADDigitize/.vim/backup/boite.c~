@@ -1,0 +1,127 @@
+// =====================================================================================
+// 
+//       Filename:  boite.c
+// 
+//    Description:  Permet la réalisation de boîte englobant un titre selon différentes options
+// 
+//        Version:  1.0
+//        Created:  03.09.2012 13:53:26
+//       Revision:  none
+//       Compiler:  clang
+// 
+//         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+//        Company:  
+// 
+// =====================================================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void affiche_boite_selon_texte(int espace_texte_char_horiz, int espace_texte_char_vert, char char_boite, int nb_char_ext_boite, const char *texte);
+
+int main(int argc, char *argv[])
+{
+printf("%d\n", argc);
+    if (argc != 6)
+    {
+        fprintf(stderr, "Usage : %s <nb espace entre le texte et le charactère à l'horiz> <nb espace entre le texte et le charactère à la verticale> <le charactère de la boîte> <le nombre de charactère de la boîte> <texte à mettre en boîte>\n", argv[0]);
+        return 0;
+    }
+    else
+    {
+        affiche_boite_selon_texte((int)strtol(argv[1], NULL,10), (int)strtol(argv[2], NULL, 10), argv[3][0], (int)strtol(argv[4], NULL, 10), argv[5]);
+    }
+    return 0;
+}
+
+
+void affiche_boite_selon_texte(int espace_texte_char_horiz, int espace_texte_char_vert, char char_boite, int nb_char_ext_boite, const char *texte)
+{
+    int nb_char_boite_horiz = strlen(texte) + (espace_texte_char_horiz + nb_char_ext_boite)*2;
+    int nb_char_boite_vert = 2*(espace_texte_char_vert + nb_char_ext_boite) + 1;
+if( ((nb_char_ext_boite - strlen(texte))%2)!=0)
+{
+    printf("%d - %d %% 2 = %d\n", nb_char_ext_boite, strlen(texte), (nb_char_ext_boite - strlen(texte))%2);
+    exit(0);
+}
+    int i = 0, j = 0;
+
+    /* sommet de la boîte */
+    for (i=0; i< nb_char_ext_boite; i++)
+    {
+        for(j=0; j < nb_char_boite_horiz;j++)
+        {
+            printf("%c", char_boite);
+        }
+        puts("");
+    }
+    /* vide */
+    for (i=0; i< espace_texte_char_vert; i++)
+    {
+        for(j=0;j< nb_char_ext_boite; j++)
+        {
+            printf("%c", char_boite);
+        }
+        int vide = nb_char_boite_horiz - nb_char_ext_boite*2;
+        for(j=0;j < vide; j++)
+        {
+            printf(" ");
+        }
+        for(j=0;j< nb_char_ext_boite; j++)
+        {
+            printf("%c", char_boite);
+        }
+        puts("");
+    }
+    /* texte */
+    for(j=0;j< nb_char_ext_boite; j++)
+        {
+            printf("%c", char_boite);
+        }
+int espace = (nb_char_boite_horiz - strlen(texte))/2;
+    for(j=0;j< nb_char_ext_boite; j++)
+        {
+            printf(" ");
+        }
+    printf("%s", texte);
+for(j=0;j< nb_char_ext_boite; j++)
+        {
+            printf(" ");
+        }
+
+    for(j=0;j< nb_char_ext_boite; j++)
+        {
+            printf("%c", char_boite);
+        }
+ puts("");
+    /* vide */
+    for (i=0; i< espace_texte_char_vert; i++)
+    {
+        for(j=0;j< nb_char_ext_boite; j++)
+        {
+            printf("%c", char_boite);
+        }
+        int vide = nb_char_boite_horiz - nb_char_ext_boite*2;
+        for(j=0;j < vide; j++)
+        {
+            printf(" ");
+        }
+        for(j=0;j< nb_char_ext_boite; j++)
+        {
+            printf("%c", char_boite);
+        }
+        puts("");
+    }
+
+    /* bas de la boîte */
+    for (i=0; i< nb_char_ext_boite; i++)
+    {
+        for(j=0; j < nb_char_boite_horiz;j++)
+        {
+            printf("%c", char_boite);
+        }
+        puts("");
+    }
+     
+}

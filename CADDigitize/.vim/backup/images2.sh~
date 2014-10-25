@@ -1,0 +1,133 @@
+#!/usr/local/bin/bash
+cd ~/conky/images
+
+miseajour=$(find -maxdepth 1 -mmin -15 -type f)
+
+if [[ -n $miseajour ]]
+    then
+        # le dernier cliché à moins de 15 minutes pas de mise a jour.
+        exit 0
+        #----------------------------------
+    else
+
+    # Obtention des informations horaire
+    
+    Heuret=$(date -u +%H)
+    Minutet=$(date +%M)
+    Jourt=$(date -u +%d)
+    Moit=$(date -u +%m)
+    Aneet=$(date -u +%Y)
+
+    #----------------------------------
+
+    #Traitement des infos horaire
+
+    case $Minutet in
+        01|02|03|04|05|06|07|08|09|10|11|12|13|14)
+            Minute=30
+            Heure=$(date "$Aneet-$Moit-$Jourt $Heuret:00 1 hour ago" +%H)
+            Jour=$(date "$Aneet-$Moit-$Jourt $Heuret:00 1 hour ago" +%d)
+            Moi=$(date "$Aneet-$Moit-$Jourt $Heuret:00 1 hour ago" +%m)
+            Anee=$(date "$Aneet-$Moit-$Jourt $Heuret:00 1 hour ago" +%Y)
+        ;;
+        15|16|17|18|19|20|21|22|23|24|25|26|27|28|29)
+            Minute=45
+            Heure=$(date "$Aneet-$Moit-$Jourt $Heuret:00 1 hour ago" +%H)
+            Jour=$(date "$Aneet-$Moit-$Jourt $Heuret:00 1 hour ago" +%d)
+            Moi=$(date "$Aneet-$Moit-$Jourt $Heuret:00 1 hour ago" +%m)
+            Anee=$(date "$Aneet-$Moit-$Jourt $Heuret:00 1 hour ago" +%Y)
+        ;;
+        30|31|32|33|34|35|36|37|38|39|40|41|42|43|44)
+            Minute=00
+            Heure=$Heuret
+            Jour=$Jourt
+            Moi=$Moit
+            Anee=$Aneet
+        ;;
+        45|46|47|48|49|50|51|52|53|54|55|56|57|58|59)
+            Heure=$Heuret
+            Jour=$Jourt
+            Moi=$Moit
+            Anee=$Aneet
+            Minute=15
+        ;;    
+    esac
+    
+    
+    #----------------------------------
+    
+    # Récupération des images sur les 24 dernières Heures
+    
+    compteur=0
+    Minute1=$Minute
+    Heuret=$Heure
+    Jourt=$Jour
+    Moit=$Moi
+    Aneet=$Anee
+    temp=0
+    
+    while (( $compteur < 96 ))
+        do
+        fichier=`expr 96 - $compteur`
+    
+        if [ -f $Anee$Moi$Jour$Heure$Minute1.jpg ]
+        then
+            if (( $(ls -s $Anee$Moi$Jour$Heure$Minute1.jpg |awk '{ print $1 }') != 4 ))
+                then
+                if (( $fichier < 10 ))
+                    then
+                        convert $Anee$Moi$Jour$Heure$Minute1.jpg -resize 320x320 Traitee/0$fichier.jpg
+                    else
+                        convert $Anee$Moi$Jour$Heure$Minute1.jpg -resize 320x320 Traitee/$fichier.jpg
+                fi
+                else
+                    rm Traitee/$fichier.jpg
+            fi
+            compteur=`expr $compteur + 1`
+            temp=`expr $temp + 15`
+            Heure=$(date"$Aneet-$Moit-$Jourt $Heuret:$Minute $temp minutes ago" +%H)
+            Jour=$(date"$Aneet-$Moit-$Jourt $Heuret:$Minute $temp minutes ago" +%d)
+            Moi=$(date"$Aneet-$Moit-$Jourt $Heuret:$Minute $temp minutes ago" +%m)
+            Anee=$(date"$Aneet-$Moit-$Jourt $Heuret:$Minute $temp minutes ago" +%Y)
+            Minute1=$(date"$Aneet-$Moit-$Jourt $Heuret:$Minute $temp minutes ago" +%M)
+        else
+            wget 'http://wofrance.fr/cgi-bin/getpicture?/daten/sat/im02/'$Anee'/'$Moi'/'$Jour'/'$Heure$Minute1'.jpg' --output-document=$Anee$Moi$Jour$Heure$Minute1.jpg
+            if (( $(ls -s $Anee$Moi$Jour$Heure$Minute1.jpg |awk '{ print $1 }') != 4 ))
+                then
+                if (( $fichier < 10 ))
+                    then
+                        convert $Anee$Moi$Jour$Heure$Minute1.jpg -resize 320x320 Traitee/0$fichier.jpg
+                    else
+                        convert $Anee$Moi$Jour$Heure$Minute1.jpg -resize 320x320 Traitee/$fichier.jpg
+                fi
+                else
+                    rm Traitee/$fichier.jpg
+            fi
+            compteur=`expr $compteur + 1`
+            temp=`expr $temp + 15`
+            Heure=$(date"$Aneet-$Moit-$Jourt $Heuret:$Minute $temp minutes ago" +%H)
+            Jour=$(date"$Aneet-$Moit-$Jourt $Heuret:$Minute $temp minutes ago" +%d)
+            Moi=$(date"$Aneet-$Moit-$Jourt $Heuret:$Minute $temp minutes ago" +%m)
+            Anee=$(date"$Aneet-$Moit-$Jourt $Heuret:$Minute $temp minutes ago" +%Y)
+            Minute1=$(date"$Aneet-$Moit-$Jourt $Heuret:$Minute $temp minutes ago" +%M)
+        fi
+
+    done
+
+    #----------------------------------
+
+    # Purge des fichiers ayant plus de 24 heures
+
+    rm `find . -type f -mtime 1 -name "*.jpg"`
+    rm `find . -type f -mtime +1 -name "*.jpg"`
+
+    #----------------------------------
+    
+    # mise à jour de la vidéo
+
+#    convert ~/conky/images/Traitee/*.jpg ~/conky/images/Traitee/satelite.gif
+    killall animate
+    exit 0
+    #-----------------------------
+fi
+fi

@@ -1,0 +1,25 @@
+// =====================================================================================
+// 
+//       Filename:  boite.h
+// 
+//    Description:  Permet la réalisation de boîte englobant un titre selon différentes options
+// 
+//        Version:  1.0
+//        Created:  03.09.2012 21:33:23
+//       Revision:  none
+//       Compiler:  clang
+// 
+//         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+//        Company:  
+// 
+// =====================================================================================
+
+#ifndef __BOITE_H__
+#define __BOITE_H__
+extern void affiche_boite_selon_nb_char(int espace_texte_char_horiz, int nb_char_ext_boite, int nb_char_total, char char_boite, const char *texte);
+extern void affiche_boite_selon_texte(int espace_texte_char_horiz, int espace_texte_char_vert, int nb_char_ext_boite, char char_boite, const char *texte);
+void print_contour_boite(char char_boite, int nb_char_total, int nb_lignes);
+void print_vide(char char_boite, int nb_char_total, int nb_char_boite, int nb_lignes);
+void print_texte(char char_boite, int nb_char_total, int nb_char_boite, const char *texte);
+
+#endif

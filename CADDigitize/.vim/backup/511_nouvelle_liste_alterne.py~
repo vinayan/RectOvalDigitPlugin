@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
+t1 = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+t2 = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin','Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre','Décembre']
+
+t3 = []         # liste vide pour l'instant
+
+i = 0           # bouclage
+len_liste = len(t1) # normalement on doit regarder les tailles des deux listes
+
+while i < len_liste:
+    t3.append(t2[i]),t3.append(t1[i])
+    i += 1
+
+print (t3)
+

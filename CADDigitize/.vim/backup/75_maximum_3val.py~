@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
+def maximum(n1, n2, n3):
+    "Retourne le maximum des trois nombres 'n1', 'n2', 'n3'"
+    if n1 >= n2 and n1 >= n3:
+        return n1
+    elif n2 >= n1 and n2 >= n3:
+        return n2
+    else:
+        return n3
+
+
+

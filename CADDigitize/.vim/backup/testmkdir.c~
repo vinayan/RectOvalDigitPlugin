@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <glib.h>
+#include <libgen.h>
+
+#define NOM_UNIX_LOGICIEL "Assistant_ADS"
+#define NOM_DOSSIER_LOGICIEL ".Assistant_ADS"
+#define NOM_LOGICIEL "Assistant ADS"
+
+int main(void)
+{
+
+    char *HomePath = getenv("HOME");
+    char *BasePath = g_strdup_printf("%s/%s/", HomePath, NOM_DOSSIER_LOGICIEL);
+char *test = NULL;
+    printf("%s | %s\n", HomePath, BasePath);
+    test = basename(BasePath);
+    printf("%s\n",test);
+    if(test!=NULL)
+    {
+        mkdir(BasePath, S_IRWXU | S_IRWXG | S_IRWXO);
+    }
+    else
+    {
+        printf("%s existe\n", BasePath);
+    }
+    return 0;
+}
+

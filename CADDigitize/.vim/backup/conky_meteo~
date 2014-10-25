@@ -1,0 +1,133 @@
+	# -- Conky settings -- #
+	background yes
+	update_interval 1
+
+	cpu_avg_samples 2
+	net_avg_samples 2
+
+	override_utf8_locale yes
+
+	double_buffer yes
+	no_buffers yes
+
+	text_buffer_size 2048
+	# -- Window specifications -- #
+
+	own_window yes
+	own_window_type desktop
+	own_window_transparent yes
+#	own_window_hints undecorate,sticky,skip_taskbar,skip_pager,below
+
+	border_inner_margin 0
+	border_outer_margin 0
+
+	minimum_size 280 100
+	maximum_width 310
+	
+
+	alignment tm
+	gap_x 0
+	gap_y 20
+
+	# -- Graphics settings -- #
+	draw_shades no
+	draw_outline no
+	draw_borders no
+	draw_graph_borders yes
+
+	# -- Text settings -- #
+	use_xft yes
+	xftfont MaiandraGD:size=24
+	xftalpha 0.4
+
+	uppercase no
+
+	default_color 8b8b8b
+	# -- Déclaration template -- #
+	template0 ${image ~/conky/script/images/\1 -p \2 -s \3} # -- images fond -- #
+	template1 ${lua Meteo_\1 \2 \3 \4 \5 \6} # -- gestion météo --#
+	template2 ${lua_parse Meteo_\1 \2 \3 \4 60 \5} # -- icônes météo -- \2=répertoire icônes \3=position \4=taille \5=jour (pour les prévisions) #
+	template3 ${lua Lune_\1} 
+	template4 ${lua_parse Images_\1 \2 \3 60 \4} # -- Appelle image -- \2=position \3=taille \4=jour (pour les prévisions) #
+	
+	lua_load ~/conky/script/meteo.lua
+
+	lua_startup_hook init ~/conky/script/meteo.cfg
+	
+	
+	TEXT
+#### Lancement du script récupérant les données météo ####
+${template1 Maj}
+#### Premier cadre ####
+##### Heure #####
+${voffset -16}${font LED_mono :style=Medium:size=60}${color 434343}${goto 30}${time %H}${goto 140}${time %M}${font LED_mono :size=25:style=Medium}${color 808080}${goto 235}${time %S}
+##### Date #####
+${voffset 8}${color yellow}${font URW Chancery L:style=Bold:size=12}${alignc}${exec date "+%A %d %B %Y"|sed 's/^.\| [a-z]/\U&/g'}
+##### ville #####
+${voffset -10}${goto 5}${color db1702}${alignc}${template1 Ville}
+
+##### température actuelle #####
+${voffset -10}${goto 15}${font URW Chancery L:style=Bold:size=25}${if_match ${template1 TempAct}<5}${color lightblue}${blink ${template1 TempAct}°}${else}${color white}${template1 TempAct}°${endif}
+##### Affichage conditions météo #####
+${voffset -25}${font URW Chancery L:style=Bold:size=12}${color lightblue}${alignc}${template1  CondMeteo}
+##### Affichage infos vent ######
+${voffset -60}${color ffe595}${font Helvetica LT Std:style=Bold:size=10}${alignr}${template1 VentDirP}          
+${color ffe595}${font Helvetica LT Std:style=Bold:size=10}${goto 200}${template1 VentForce} km/h
+#### Second cadre ####
+##### Affichage Probabilité de précipitations Jour/Nuit #####
+${voffset 47}${color lightwhite}${font Helvetica LT Std:style=Bold:size=10}${goto 40}${template1 Jour_ProbOrage 1}${goto 220}${template1 Nuit_ProbOrage 1}
+##### Affichage temperature #####
+${voffset 7}${goto 75}${template1 Jour_Temp 1}°${goto 250}${template1 Nuit_Temp 1}°
+##### Affichage conditions météo #####
+${voffset -8}${font Bitstream Vera Sans Mono:style=condensed:size=6}${color grey} ${template1  AM_CondMeteo1 1}${goto 170} ${template1  Noct_CondMeteo1 1}
+ ${template1  AM_CondMeteo2 1}${goto 170} ${template1  Noct_CondMeteo2 1}
+##### Affichage lunaison #####
+${voffset -65}${font URW Chancery L:style=Bold:size=10}${color FEEFEF}${alignc}${template3 ephemerides1}
+${voffset -5}${alignc}${template3 ephemerides2}
+#### troisieme cadre ####
+${voffset 52}${font Ubuntu :size=10:style=bold}${color lightwhite}${goto 35}${template1 Jour_ProbOrage 2}${goto 105}${template1 Jour_ProbOrage 3}${goto 170}${template1 Jour_ProbOrage 4}${goto 235}${template1 Jour_ProbOrage 5}
+##### Affichage temperature #####
+${voffset 14}${goto 27}${font Ubuntu :size=10:style=bold}${color red}${template1 Jour_Temp 2}°${color white}/${color lightblue}${template1 Nuit_Temp 2}°${goto 97}${color red}${template1 Jour_Temp 3}°${color white}/${color lightblue}${template1 Nuit_Temp 3}°${goto 167}${color red}${template1 Jour_Temp 4}°${color white}/${color lightblue}${template1 Nuit_Temp 4}°${goto 237}${color red}${template1 Jour_Temp 5}°${color white}/${color lightblue}${template1 Nuit_Temp 5}°
+##### Affichage vitesse du vent #####
+${voffset 8}${font Ubuntu :size=9:style=bold}${color ffe595}${goto 27}${template1 Jour_VentForce 2}${font Ubuntu :size=6:style=bold} km/h${goto 97}${voffset -4}${font Ubuntu :size=9:style=bold}${template1 Jour_VentForce 3}${font Ubuntu :size=6:style=bold} km/h${goto 167}${voffset -4}${font Ubuntu :size=9:style=bold}${template1 Jour_VentForce 4}${font Ubuntu :size=6:style=bold} km/h${goto 237}${voffset -4}${font Ubuntu :size=9:style=bold}${template1 Jour_VentForce 5}${font Ubuntu :size=6:style=bold} km/h
+##### Affichage Date #####
+${voffset 9}${font Ubuntu :size=10:style=bold}${color 522BAF}${goto 20}${template1 Jour %a_%d 2}${goto 90}${template1 Jour %a_%d 3}${goto 155}${template1 Jour %a_%d 4}${goto 220}${template1 Jour %a_%d 5}
+#### quatrième cadre ####
+##### Heure mise à jour #####
+${voffset 15}${color ffe595}${font URW Chancery L:style=Bold:size=16}${alignc}Dernière mise à jour : ${template1 Heure}h${template1 Minute}
+
+#### Affichage des cadres utilisés dans le conky ####
+${voffset -935}
+#### premier cadre ####
+${template0 base.png 0,40 280x170}
+${template0 flip_bg.png 24,10 100x100}
+${template0 flip_bg.png 134,10 100x100}
+#### Second cadre ####
+${template0 base.png 0,245 280x50}
+#### troisième cadre ####
+${template0 base.png 0,320 280x40}
+${template0 base180.png 0,358 280x40}
+#### quatrieme cadre ####
+${template0 base1.png 0,420 280x30}
+#### icônes premier cadre ####
+${template2 IconeM ~/conky/meteo/icones 74,120 132x79}
+${template2 IconeV ~/conky/meteo/icones/vent 235,130 44x44}
+#### icônes Second cadre ####
+${template2 AM_IconeM ~/conky/meteo/icones -15,205 132x79 1}
+${template2 Noct_IconeM ~/conky/meteo/icones 160,205 132x79 1}
+${image /tmp/lune.png -p 111,210 -s 63x63 -f 60}
+#### icônes troisième cadre ####
+${template2 AM_IconeM ~/conky/meteo/icones 0,295 86x52 2}
+${template2 AM_IconeM ~/conky/meteo/icones 68,295 86x52 3}
+${template2 AM_IconeM ~/conky/meteo/icones 133,295 86x52 4}
+${template2 AM_IconeM ~/conky/meteo/icones 200,295 86x52 5}
+${template2 Jour_IconeR ~/conky/meteo/icones/vent 0,344 30x30 2}
+${template2 Jour_IconeR ~/conky/meteo/icones/vent 70,344 30x30 3}
+${template2 Jour_IconeR ~/conky/meteo/icones/vent 140,344 30x30 4}
+${template2 Jour_IconeR ~/conky/meteo/icones/vent 210,344 30x30 5}
+${template2 Noct_IconeM ~/conky/meteo/icones 0,375 86x52 2}
+${template2 Noct_IconeM ~/conky/meteo/icones 68,375 86x52 3}
+${template2 Noct_IconeM ~/conky/meteo/icones 133,375 86x52 4}
+${template2 Noct_IconeM ~/conky/meteo/icones 200,375 86x52 5}
+
+

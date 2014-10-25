@@ -1,0 +1,2286 @@
+-- Créé par Didier-T (forum.ubuntu-fr.org)
+-- Nécessite imagemagick http://apt.ubuntu.com/p/imagemagick
+
+
+
+require "io"
+require "os"
+local Version = "v3.6"
+local conditionJour = {}
+local conditionNuit = {}
+local conditionMatin = {}
+local conditionAM = {}
+local conditionSoiree = {}
+local conditionNoct = {}
+local InfoJour = {}
+local conditioncourante = {}
+local Rep, cmd, jours, matin, apresmidi, soiree, nuit, delais, r, repsauv, l, fichier_init, MAJ, tc, dermodif
+
+
+
+--Traduction date
+function trad_date(d)
+	local date = d
+	date = string.gsub(date, "Monday", "Lundi")
+	date = string.gsub(date, "Tuesday", "Mardi")
+	date = string.gsub(date, "Wednesday", "Mercredi")
+	date = string.gsub(date, "Thursday", "Jeudi")
+	date = string.gsub(date, "Friday", "Vendredi")
+	date = string.gsub(date, "Saturday", "Samedi")
+	date = string.gsub(date, "Sunday", "Dimanche")
+
+	date = string.gsub(date, "lun", "Lun")
+	date = string.gsub(date, "mar", "Mar")
+	date = string.gsub(date, "mer", "Mer")
+	date = string.gsub(date, "jeu", "Jeu")
+	date = string.gsub(date, "ven", "Ven")
+	date = string.gsub(date, "sam", "Sam")
+	date = string.gsub(date, "dim", "Dim")
+
+	date = string.gsub(date, "Mon", "Lun")
+	date = string.gsub(date, "Tue", "Mar")
+	date = string.gsub(date, "Wed", "Mer")
+	date = string.gsub(date, "Thu", "Jeu")
+	date = string.gsub(date, "Fri", "Ven")
+	date = string.gsub(date, "Sat", "Sam")
+	date = string.gsub(date, "Sun", "Dim")
+	
+	date = string.gsub(date, "January", "Janvier")
+	date = string.gsub(date, "February", "Février")
+	date = string.gsub(date, "March", "Mars")
+	date = string.gsub(date, "April", "Avril")
+	date = string.gsub(date, "May", "Mai")
+	date = string.gsub(date, "June", "Juin")
+	date = string.gsub(date, "July", "Juillet")
+	date = string.gsub(date, "August", "Août")
+	date = string.gsub(date, "September", "Septembre")
+	date = string.gsub(date, "October", "Octobre")
+	date = string.gsub(date, "November", "Novembre")
+	date = string.gsub(date, "December", "Décembre")
+
+	date = string.gsub(date, "jan", "Jan")
+	date = string.gsub(date, "fev", "Fév")
+	date = string.gsub(date, "mar", "Mar")
+	date = string.gsub(date, "avr", "Avr")
+	date = string.gsub(date, "mai", "Mai")
+	date = string.gsub(date, "jui", "Jui")
+	date = string.gsub(date, "aou", "Aoû")
+	date = string.gsub(date, "sep", "Sep")
+	date = string.gsub(date, "oct", "Oct")
+	date = string.gsub(date, "nov", "Nov")
+	date = string.gsub(date, "dec", "Déc")
+	
+	date = string.gsub(date, "Feb", "Fév")
+	date = string.gsub(date, "Apr", "Avr")
+	date = string.gsub(date, "May", "Mai")
+	date = string.gsub(date, "Jun", "Juin")
+	date = string.gsub(date, "Jul", "Juil")
+	date = string.gsub(date, "Aug", "Aoû")
+	date = string.gsub(date, "Dec", "Déc")
+		
+	return date
+end
+
+--Vérifier l'existence d'un fichier
+function existe(file) 
+  local a = io.open(file, "r")
+  local present
+  if a then
+    present = true
+    io.close(a)
+  else
+    present = false
+  end
+  return present
+end
+
+--Formatage des accents
+function accent(ligne)
+
+	ligne = string.gsub(ligne, "&#244;", "ô")
+	ligne = string.gsub(ligne, "&#226;", "â")
+	ligne = string.gsub(ligne, "&#233;", "é")
+	ligne = string.gsub(ligne, "&#232;", "è")
+	ligne = string.gsub(ligne, "&#224;", "à")
+	ligne = string.gsub(ligne, "&#231;", "ç")
+	ligne = string.gsub(ligne, "&#234;", "ê")
+	ligne = string.gsub(ligne, "&#246;", "ö")
+	ligne = string.gsub(ligne, "&#238;", "î")
+	ligne = string.gsub(ligne, "&#239;", "ï")
+	ligne = string.gsub(ligne, "&#251;", "û")
+	ligne = string.gsub(ligne, "&#252;", "ü")
+	ligne = string.gsub(ligne, "&#39;", "'")
+	ligne = string.gsub(ligne, "Poudreries", "Bourrasques de neige")
+
+	return ligne
+end
+
+
+--Traitement information Quart de journée
+function Prevision_Quart_T(fichier)
+	local pos1, pos2, icone, Descriptif, TempMax, TempMin, TempMaxR, TempMinR, Vdir, Vforce, Prec, Pluie, Neige, Humidite, Couverture, Rosee, Visibilite, parse
+	local file = assert(io.open(fichier, "rb") )
+	local line = file:read()
+
+	parse = 0
+	
+	for line in file:lines() do
+		if string.find(line, '"details"') ~= nil then
+			parse = 1
+		end
+		if parse == 1 then
+			if string.find(line, 'class="icon i-') ~= nil then
+				pos1 = string.find(line, '-')+1
+				pos2 = string.find(line, '"', pos1)-1
+				icone = string.sub(line, pos1, pos2)
+			elseif string.find(line, '"cond"') ~= nil then
+				pos1 = string.find(line, 'd">')+3
+				pos2 = string.find(line, '<', pos1)-1
+				Descriptif = string.sub(line, pos1, pos2)
+				Descriptif = accent(Descriptif)
+			elseif string.find(line, '"temp"') ~= nil then
+				pos1 = string.find(line, '>')+1
+				pos2 = string.find(line, '<', pos1)-1
+				TempMax = string.sub(line, pos1, pos2)
+			elseif string.find(line, '"lo"') ~= nil then
+				pos1 = string.find(line, 'Mn ')+3
+				pos2 = string.find(line, '<', pos1)-1
+				TempMin = string.sub(line, pos1, pos2)
+			elseif string.find(line, '"realfeel"') ~= nil then
+				pos1 = string.find(line, '4; ')+3
+				pos2 = string.find(line, '&', pos1)-1
+				TempMaxR = string.sub(line, pos1, pos2)
+				pos1 = string.find(line, '/ ')+2
+				pos2 = string.find(line, '&', pos1)-1
+				TempMinR = string.sub(line, pos1, pos2)
+			elseif string.find(line, 'var d') ~= nil then
+				pos1 = string.find(line, "'")+1
+				pos2 = string.find(line, "'", pos1)-1
+				Vdir = string.gsub(string.sub(line, pos1, pos2), "W", "O")
+			elseif string.find(line, 'var s') ~= nil then
+				pos1 = string.find(line, "'")+1
+				pos2 = string.find(line, "'", pos1)-1
+				Vforce = string.sub(line, pos1, pos2)
+				Vforce = Vforce:match("(%d+)")
+			elseif string.find(line, 'cipitations') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, "<", pos1)-1
+				Prec = string.sub(line, pos1, pos2)
+				Prec = Prec:match("(%d+)")
+			elseif string.find(line, 'Pluie') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, " ", pos1)-1
+				Pluie = string.sub(line, pos1, pos2)
+			elseif string.find(line, 'Neige') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, " ", pos1)-1
+				Neige = string.sub(line, pos1, pos2)
+			elseif string.find(line, 'Humidit') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, "<", pos1)-1
+				Humidite = string.sub(line, pos1, pos2)
+				Humidite = Humidite:match("(%d+)")
+			elseif string.find(line, 'Couverture') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, "<", pos1)-1
+				Couverture = string.sub(line, pos1, pos2)
+				Couverture = Couverture:match("(%d+)")
+			elseif string.find(line, 'Point') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, "&", pos1)-1
+				Rosee = string.sub(line, pos1, pos2)
+			elseif string.find(line, 'Visibilit') ~= nil then
+				pos1 = string.find(line, 'g>')+2
+				pos2 = string.find(line, " ", pos1)-1
+				Visibilite = string.sub(line, pos1, pos2)
+			end
+		end
+	end
+	io.close(file)
+
+--Retour info quart de journée
+	return {Icone=icone, CondMeteo=Descriptif, TempMax=TempMax, TempMin=TempMin, TempMaxR=TempMaxR, TempMinR=TempMinR, VentDir=Vdir, VentForce=Vforce, Humidite=Humidite, CouvNuage=Couverture, PointRosee=Rosee, ProbPrec=Prec, Visibilite=Visibilite, QNeige=Neige, QPluie=Pluie}
+end
+
+
+--Prévision
+function prevision(fichier)
+	local iconej, iconen, Tmax, Tmin, Tmaxr, Tminr, ProbPrecj, ProbPrecn, Vdirj, Vdirn, Vforcej, Vforcen, Vrafalesj, Vrafalesn, Descriptifj, Descriptifn, UV, ProbOragesj, ProbOragesn, Precj, Precn, Pluiej, Pluien, Neigej, Neigen, Verglasj, Verglasn, Datej, LeverSoleil, CoucherSoleil, parse, pos1, pos2, LeverSoleilH, LeverSoleilM, CoucherSoleilH, CoucherSoleilM, histo, histo1, Histo_Max, Histo_Min
+	local file = assert(io.open(fichier, "rb") )
+	local line = file:read()
+	for line in file:lines() do
+		if string.find(line, '"details"') ~= nil then
+			parse = 1
+		end
+		if parse == 1 then
+			if string.find(line, 'class="icon i-') ~= nil then
+				pos1 = string.find(line, '-')+1
+				pos2 = string.find(line, '"', pos1)-1
+				if iconej == nil then
+					iconej = string.sub(line, pos1, pos2)
+				else
+					iconen = string.sub(line, pos1, pos2)
+				end
+			elseif string.find(line, '"temp"') ~= nil then
+				pos1 = string.find(line, '"temp"')+7
+				pos2 = string.find(line, '<', pos1)-1
+				if Tmax == nil then
+					Tmax = string.sub(line, pos1, pos2)
+				else
+					Tmin = string.sub(line, pos1, pos2)
+				end
+			elseif string.find(line, 'RealFeel&#174;') ~= nil then
+				pos1 = string.find(line, ';')+2
+				pos2 = string.find(line, '&', pos1)-1
+				if Tmaxr == nil then
+					Tmaxr = string.sub(line, pos1, pos2)
+				else
+					Tminr = string.sub(line, pos1, pos2)
+				end
+			elseif string.find(line, 'cipitations ') ~= nil then
+				pos1 = string.find(line, 's ')+2
+				pos2 = string.find(line, '<', pos1)-1
+				if ProbPrecj == nil then
+					ProbPrecj = string.sub(line, pos1, pos2)
+					ProbPrecj = ProbPrecj:match("(%d+)")
+				else
+					ProbPrecn = string.sub(line, pos1, pos2)
+					ProbPrecn = ProbPrecn:match("(%d+)")
+				end
+			elseif string.find(line, 'var d') ~= nil then
+				pos1 = string.find(line, "'")+1
+				pos2 = string.find(line, "'", pos1)-1
+				if Vdirj == nil then
+					Vdirj = string.gsub(string.sub(line, pos1, pos2), "W", "O")
+				else
+					Vdirn = string.gsub(string.sub(line, pos1, pos2), "W", "O")
+				end
+			elseif string.find(line, 'var s') ~= nil then
+				pos1 = string.find(line, "'")+1
+				pos2 = string.find(line, "'", pos1)-1
+				if Vforcej == nil then
+					Vforcej = string.sub(line, pos1, pos2)
+					Vforcej = Vforcej:match("(%d+)")
+				else
+					Vforcen = string.sub(line, pos1, pos2)
+					Vforcen = Vforcen:match("(%d+)")
+				end
+			elseif string.find(line, 'Rafales') ~= nil then
+				pos1 = string.find(line, ">")+2
+				pos2 = string.find(line, " ", pos1)-1
+				if Vrafalesj == nil then
+					Vrafalesj = string.sub(line, pos1, pos2)
+					Vrafalesj = Vrafalesj:match("(%d+)")
+					if Vrafalesj == nil then Vrafalesj = Vforcen end
+				else
+					Vrafalesn = string.sub(line, pos1, pos2)
+					Vrafalesn = Vrafalesn:match("(%d+)")
+					if Vrafalesn == nil then Vrafalesn = Vforcej end
+				end
+			elseif Descriptifn == nil and string.find(line, '<p>') ~= nil then
+				pos1 = string.find(line, ">")+1
+				pos2 = string.find(line, "<", pos1)-1
+				if Descriptifj == nil then
+					Descriptifj = string.sub(line, pos1, pos2)
+					Descriptifj = accent(Descriptifj)
+					local troplong = string.find(Descriptifj, ";")
+					if troplong ~= nil then
+						Descriptifj = string.sub(Descriptifj, "1", troplong-1)
+					end
+				else
+					Descriptifn = string.sub(line, pos1, pos2)
+					Descriptifn = accent(Descriptifn)
+					local troplong = string.find(Descriptifn, ";")
+					if troplong ~= nil then
+						Descriptifn = string.sub(Descriptifn, "1", troplong-1)
+					end
+				end
+			elseif string.find(line, 'UV') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, "<", pos1)-1
+				if UV == nil then
+					UV = string.sub(line, pos1, pos2)
+				end
+			elseif string.find(line, 'Orages') ~= nil then
+				pos1 = string.find(line, '">')+2
+				pos2 = string.find(line, "<", pos1)-1
+				if ProbOragesj == nil then
+					ProbOragesj = string.sub(line, pos1, pos2)
+					ProbOragesj = ProbOragesj:match("(%d+)")
+				else
+					ProbOragesn = string.sub(line, pos1, pos2)
+					ProbOragesn = ProbOragesn:match("(%d+)")
+				end
+			elseif string.find(line, 'cipitations:') ~= nil then
+				pos1 = string.find(line, 'g>')+2
+				pos2 = string.find(line, " ", pos1)-1
+				if Precj == nil then
+					Precj = string.sub(line, pos1, pos2)
+				else
+					Precn = string.sub(line, pos1, pos2)
+				end
+			elseif string.find(line, 'Pluie:') ~= nil then
+				pos1 = string.find(line, '">')+2
+				pos2 = string.find(line, " ", pos1)-1
+				if Pluiej == nil then
+					Pluiej = string.sub(line, pos1, pos2)
+				else
+					Pluien = string.sub(line, pos1, pos2)
+				end
+			elseif string.find(line, 'Neige:') ~= nil then
+				pos1 = string.find(line, '">')+2
+				pos2 = string.find(line, " ", pos1)-1
+				if Neigej == nil then
+					Neigej = string.sub(line, pos1, pos2)
+				else
+					Neigen = string.sub(line, pos1, pos2)
+				end
+			elseif string.find(line, 'Verglas:') ~= nil then
+				pos1 = string.find(line, '">')+2
+				pos2 = string.find(line, " ", pos1)-1
+				if Verglasj == nil then
+					Verglasj = string.sub(line, pos1, pos2)
+				else
+					Verglasn = string.sub(line, pos1, pos2)
+				end
+			elseif string.find(line, 'Historique ') ~= nil then
+				pos1 = string.find(line, '- ')+2
+				pos2 = string.find(line, "<", pos1)-1
+				Datej = string.sub(line, pos1, pos2)
+				local j, m, a = Datej:match("(%d+)/(%d+)/(%d+)")
+				Datej = os.time{year=a, month=m, day=j, hour=0}
+			elseif string.find(line, 'start"') ~= nil then
+				pos1 = string.find(line, '>')+1
+				pos2 = string.find(line, "<", pos1)-1
+				if LeverSoleil == nil then
+					LeverSoleil = string.sub(line, pos1, pos2)
+					LeverSoleilH, LeverSoleilM = LeverSoleil:match("(%d+):(%d+)")
+				end
+			elseif string.find(line, 'finish"') ~= nil then
+				pos1 = string.find(line, '>')+1
+				pos2 = string.find(line, "<", pos1)-1
+				if CoucherSoleil == nil then
+					CoucherSoleil = string.sub(line, pos1, pos2)
+					CoucherSoleilH, CoucherSoleilM = CoucherSoleil:match("(%d+):(%d+)")
+				end
+			elseif string.find(line, '<td class="high">') ~= nil then
+				histo = 1
+			elseif string.find(line, '<td>') ~= nil and histo ~= nil then
+				if histo1 == nil then
+					histo1 = 1
+				else
+					if Histo_Max == nil then
+						histo1 = nil
+						histo = nil
+						pos1 = string.find(line, '>')+1
+						pos2 = string.find(line, "&", pos1)-1
+						Histo_Max = string.sub(line, pos1, pos2)
+					elseif Histo_Min == nil then
+						pos1 = string.find(line, '>')+1
+						pos2 = string.find(line, "&", pos1)-1
+						Histo_Min = string.sub(line, pos1, pos2)
+					end
+				end
+				
+			end
+		end
+	end
+	io.close(file)
+
+-- Retour condition jour, condition nuit, infos journée
+	return { Icone=iconej, CondMeteo=Descriptifj, Temp=Tmax, TempRes=Tmaxr, ProbPrec=ProbPrecj, VentDir=Vdirj, VentForce=Vforcej, VentRafales=Vrafalesj, Uv=UV, ProbOrage=ProbOragesj, NivPrec=Precj, QPluie=Pluiej, QNeige=Neigej, EVerglas=Verglasj }, { Icone=iconen, CondMeteo=Descriptifn, Temp=Tmin, TempRes=Tminr, ProbPrec=ProbPrecn, VentDir=Vdirn, VentForce=Vforcen, VentRafales=Vrafalesn, ProbOrage=ProbOragesn, NivPrec=Precn, QPluie=Pluien, QNeige=Neigen, EVerglas=Verglasn }, { Jour=Datej, LeverSoleil=LeverSoleil, LeverSoleilH=LeverSoleilH, LeverSoleilM=LeverSoleilM, CoucherSoleil=CoucherSoleil, CoucherSoleilH=CoucherSoleilH, CoucherSoleilM=CoucherSoleilM, Histo_Max=Histo_Max, Histo_Min=Histo_Min }
+
+end
+
+
+--Infos condition courante
+function current(fichier)
+	local pos1, pos2, icone, Descriptif, Temp, Tempr, Vdir, Vforce, Humidite, Pression, Couverture, UV, Rosee, Prec, Visibilite, Date, Ville, latitude, longitude, geo, parse
+	local file = assert(io.open(fichier, "rb") )
+	local line = file:read()
+	geo = nil
+	parse = nil
+
+	for line in file:lines() do
+		if string.find(line, '"details"') ~= nil then
+			parse = 1
+		end
+		if parse == 1 then
+			if string.find(line, 'class="icon i-') ~= nil then
+				pos1 = string.find(line, '-')+1
+				pos2 = string.find(line, '"', pos1)-1
+				icone = string.sub(line, pos1, pos2)
+			elseif string.find(line, '"cond"') ~= nil then
+				pos1 = string.find(line, '"cond"')+7
+				pos2 = string.find(line, '<', pos1)-1
+				Descriptif = string.sub(line, pos1, pos2)
+				Descriptif = accent(Descriptif)
+				pos1 = string.find(line, '"temp"')+7
+				pos2 = string.find(line, '<', pos1)-1
+				Temp = string.sub(line, pos1, pos2)
+				pos1 = string.find(line, '; ')+2
+				pos2 = string.find(line, '<', pos1)-1
+				Tempr = string.sub(line, pos1, pos2)
+			elseif string.find(line, 'var d') ~= nil then
+				pos1 = string.find(line, "'")+1
+				pos2 = string.find(line, "'", pos1)-1
+				Vdir = string.gsub(string.sub(line, pos1, pos2), "W", "O")
+			elseif string.find(line, 'var s') ~= nil then
+				pos1 = string.find(line, "'")+1
+				pos2 = string.find(line, "'", pos1)-1
+				Vforce = string.sub(line, pos1, pos2)
+				Vforce = Vforce:match("(%d+)")
+			elseif string.find(line, 'Humidit') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, "<", pos1)-1
+				Humidite = string.sub(line, pos1, pos2)
+				Humidite = Humidite:match("(%d+)")
+			elseif string.find(line, 'Pression') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, "k", pos1)-1
+				Pression = string.sub(line, pos1, pos2)*10
+			elseif string.find(line, 'Couverture') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, "<", pos1)-1
+				Couverture = string.sub(line, pos1, pos2)
+				Couverture = Couverture:match("(%d+)")
+			elseif string.find(line, 'UV') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, "<", pos1)-1
+				UV = string.sub(line, pos1, pos2)
+			elseif string.find(line, 'Point') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, "&", pos1)-1
+				Rosee = string.sub(line, pos1, pos2)
+			elseif string.find(line, 'cipitations') ~= nil then
+				pos1 = string.find(line, "g>")+2
+				pos2 = string.find(line, " ", pos1)-1
+				Prec = string.sub(line, pos1, pos2)
+			elseif string.find(line, 'Visibilit') ~= nil then
+				pos1 = string.find(line, 'g>')+2
+				pos2 = string.find(line, " ", pos1)-1
+				Visibilite = string.sub(line, pos1, pos2)
+			elseif string.find(line, 'Historique ') ~= nil then
+				pos1 = string.find(line, '- ')+2
+				pos2 = string.find(line, "<", pos1)-1
+				Date = string.sub(line, pos1, pos2)
+				local j, m, a = Date:match("(%d+)/(%d+)/(%d+)")
+				Date = os.time{year=a, month=m, day=j, hour=0}
+			elseif string.find(line, 'latitude') ~= nil then
+				geo = 1
+			elseif string.find(line, 'title" ') ~= nil then
+				pos1 = string.find(line, 'e="')+3
+				pos2 = string.find(line, '"', pos1)-1
+				if Ville == nil then
+					Ville = accent(string.sub(line, pos1, pos2))
+				end
+				if geo ~= nil then
+					if latitude ~= nil then
+						longitude = string.sub(line, pos1, pos2)
+					end
+					if latitude == nil then
+						latitude = string.sub(line, pos1, pos2)
+					end
+				end
+			end
+		end
+	end
+	io.close(file)
+
+--Retour condition courante
+	return {Icone=icone, Cond=Descriptif, Temp=Temp, Tempr=Tempr, VentDir=Vdir, VentForce=Vforce, Humidite=Humidite, Pression=Pression, CouvNuage=Couverture, Uv=UV, PointRosee=Rosee, QPrec=Prec, Visibilite=Visibilite, Date=Date, Ville=Ville, latitude=latitude, longitude=longitude}
+end
+
+
+--Infos lunaison
+function lunaison(r)
+
+	s = "${exec wget -q -O "..r.."/cal_lunaire http://www.calendrier-lunaire.net/}"
+	conky_parse( s )
+
+	local file = assert(io.open(r..'/cal_lunaire', "rb") )
+	local line = file:read()
+
+	for line in file:lines() do
+		local pos1 = string.find(line, '">')
+		local pos2 = string.find(line, "</", pos1)
+		if string.find(line, "ephemerides_1") ~= nil then
+			pos1 =	string.find(line, 'src="')
+			pos2 = string.find(line, '" /')
+			--http://www.calendrier-lunaire.net/imgs/decroissante/33.png
+			s = "${exec wget -q -O /var/tmp/lune.png http://www.calendrier-lunaire.net/"..string.sub(line, pos1+5, pos2-1).."}"
+			-- s = "${exec wget -q -O "..r.."/lune.png http://www.calendrier-lunaire.net/"..string.sub(line, pos1+5, pos2-1).."}"
+			conky_parse( s )
+            -- conky_parse( "${exec convert "..r.."/lune.png -transparent '#091a2a' "..r.."/lune.png}" )
+            conky_parse( "${exec convert /var/tmp/lune.png -transparent '#091a2a' /var/tmp/lune.png}" )
+		elseif string.find(line, "<h2>") ~= nil then
+			ephemerides1 = string.sub(line, pos1+2, pos2-1)
+			local pos3 = string.find(line, 'n>', pos2)
+			local pos4 = string.find(line, "</", pos2+3)
+			ephemerides2 = string.sub(line, pos3+3, pos4-1)
+			ephemerides = ephemerides1.." "..ephemerides2
+		elseif string.find(line, "Visibilit") ~= nil then
+			Visibilite = string.sub(line, pos1+2, pos2-3)
+		elseif string.find(line, "Phases") ~= nil then
+			Phases = string.gsub(string.sub(line, pos1+2, pos2-1), "&eacute;", "é")
+			local pos3 = string.find(Phases, ',')
+			Phases1 = string.sub(Phases, 0, pos3-1)
+			Phases2 = string.sub(Phases, pos3+2)
+		elseif string.find(line, "Noeud lunaire") ~= nil then
+			local a = string.gsub(string.sub(line, pos1+2, pos2-1), "Dans ", "")
+			Noeud_lunaire = string.gsub(a, " Jours", "")
+		elseif string.find(line, "Apog") ~= nil then
+			local a = string.gsub(string.sub(line, pos1+2, pos2-1), "Dans ", "")
+			Apogee = string.gsub(a, " Jours", "")
+		elseif string.find(line, "Perig") ~= nil then
+			local a = string.gsub(string.sub(line, pos1+2, pos2-1), "Dans ", "")
+			Perigee = string.gsub(a, " Jours", "")
+		elseif string.find(line, "Distance") ~= nil then
+			Distance = string.sub(line, pos1+2, pos2-4)
+		elseif string.find(line, "Age de la Lune") ~= nil then
+			Age = string.sub(line, pos1+2, pos2-1)
+		elseif string.find(line, "La Lune se") ~= nil then
+			local a = string.sub(line, pos1+2, pos2-1)
+			Lever_LuneHeure, Lever_LuneMinute = a:match("(%d+):(%d+)")
+			if Lever_LuneHeure == nil then Lever_LuneHeure, Lever_LuneMinute = "N/A", "N/A" end
+		local pos3 = string.find(line, '">', pos2)
+			local pos4 = string.find(line, "</", pos3+3)
+			a = string.sub(line, pos3+2, pos4-1)
+			Coucher_LuneHeure, Coucher_LuneMinute = a:match("(%d+):(%d+)")
+			if Coucher_LuneHeure == nil then Coucher_LuneHeure, Coucher_LuneMinute = "N/A", "N/A" end
+		elseif string.find(line, "eclipse_partielle") ~= nil then
+			local pos3 = string.find(line, '">', pos1+3)
+			local a = string.sub(line, pos3+2, pos2-1)
+			Eclipse_partielle = datelune(a)
+		elseif string.find(line, "eclipse_totale") ~= nil then
+			local pos3 = string.find(line, '">', pos1+3)
+			local a = string.sub(line, pos3+2, pos2-1)
+			Eclipse_total = datelune(a)
+		end
+	end
+	io.close(file)
+
+end
+
+function datelune(d)
+
+	d = string.gsub(d, "Janvier", "01")
+	d = string.gsub(d, "Février", "02")
+	d = string.gsub(d, "Mars", "03")
+	d = string.gsub(d, "Avril", "04")
+	d = string.gsub(d, "Mais", "05")
+	d = string.gsub(d, "Juin", "06")
+	d = string.gsub(d, "Juillet", "07")
+	d = string.gsub(d, "Août", "08")
+	d = string.gsub(d, "septembre", "09")
+	d = string.gsub(d, "Octobre", "10")
+	d = string.gsub(d, "Novembre", "11")
+	d = string.gsub(d, "Décembre", "12")
+	local j, m, a, h, min = d:match("(%d+) (%d+) (%d+) <br /> (%d+):(%d+)")
+	d = os.time{year=a, month=m, day=j, hour=h, min=min}
+
+	return d
+	
+end
+
+
+--Détermine icône vent
+function direction_vent(i)
+
+	if i == "Calme" then
+		return 0
+	elseif i == "N" then
+		return 10
+	elseif i == "NNE" then
+		return 11
+	elseif i == "NE" then
+		return 12
+	elseif i == "ENE" then
+		return 13
+	elseif i == "E" then
+		return 14
+	elseif i == "ESE" then
+		return 15
+	elseif i == "SE" then
+		return 16
+	elseif i == "SSE" then
+		return 17
+	elseif i == "S" then
+		return 2
+	elseif i == "SSO" then
+		return 3
+	elseif i == "SO" then
+		return 4
+	elseif i == "OSO" then
+		return 5
+	elseif i == "O" then
+		return 6
+	elseif i == "ONO" then
+		return 7
+	elseif i == "NO" then
+		return 8
+	elseif i == "NNO" then
+		return 9
+	else
+		return 1
+	end
+
+end
+
+
+--Renvoi vent direction pleine en toute lettre
+function vent_plein(d)
+
+	local b
+
+	if string.len(d) == 1 then
+		if string.find(d, "N") ~= nil then 
+			b = string.gsub(d, "N", "Nord") 
+		elseif string.find(d, "S") ~= nil then 
+			b = string.gsub(d, "S", "Sud") 
+		elseif string.find(d, "E") ~= nil then
+			b = string.gsub(d, "E", "Est") 
+		elseif string.find(d, "O") ~= nil then
+			b = string.gsub(d, "O", "Ouest")
+		end
+	else
+		b = d
+	end
+
+	return b
+
+end
+
+
+--Détermine l'icône vent en tenant conte de la force du vent
+function icone_vent(d, fo)
+
+	local f = tonumber(fo)
+	local n
+
+	if f <= Palier then
+		n = d
+	elseif f <= Palier*2 then
+		n = d + 17
+	elseif f <= Palier*3 then
+		n = d + 34
+	elseif f >= (Palier*3)+1 then
+		n = d + 51
+	end
+
+	if n <= 9 then 
+		n = "0"..n
+	end
+
+	return n..".png"
+
+end
+
+
+--Découpage descriptions sur deux lignes
+function decoupage(d)
+
+	local l1, l2, n, p1, p2, n1, n2, l1b, l2b
+	if string.len(d) >= 22 then
+		n = math.ceil(string.len(d)/2)
+		p1 = string.find(d, " ", n)
+		p2 = string.find(d, " ", -n)
+		if p1 >= p2 then
+			l1b = string.sub(d, 1, p2-1)
+			l2b = string.sub(d, p2+1)
+		else
+			l1b = string.sub(d, 1, p1-1)
+			l2b = string.sub(d, p1+1)
+		end
+	else
+		l1b = d
+		l2b = " "
+	end
+	n1 = math.ceil((22 - string.len(l1b))/2)
+	l1 = string.rep(" ", n1)..l1b 
+	n2 = math.ceil((22 - string.len(l2b))/2)
+	l2 = string.rep(" ", n2)..l2b 
+
+--Retour information avec espaces ligne 1 & 2 et sans espaces ligne 1 & 2
+	return l1, l2, l1b, l2b
+
+end
+
+
+--Information Matin
+function Prevision_Matin(a, j, x)
+	local i = j+x
+	local s = '${exec wget -q --load-cookies '..Rep..'/cookie -O '..Rep..'/Matin'..j..' '..a..'?day='..i..'}'
+	conky_parse( s )
+
+
+	conditionMatin[j] = Prevision_Quart_T(Rep..'/Matin'..j)
+	if conditionMatin[j].VentDir == "CLM" then
+		conditionMatin[j].VentDir = "Calme"
+		conditionMatin[j].VentForce = "0"
+	end
+	conditionMatin[j].VentIcone = icone_vent(direction_vent(conditionMatin[j].VentDir), conditionMatin[j].VentForce)
+	conditionMatin[j].VentP = vent_plein(conditionMatin[j].VentDir)
+	conditionMatin[j].CondMeteo1, conditionMatin[j].CondMeteo2, conditionMatin[j].CondMeteo1se, conditionMatin[j].CondMeteo2se = decoupage(conditionMatin[j].CondMeteo)
+
+end
+
+
+--Information Après-midi
+function Prevision_AM(a, j, x)
+	local i = j+x
+	local s = '${exec wget -q --load-cookies '..Rep..'/cookie -O '..Rep..'/ApresMidi'..j..' '..a..'?day='..i..'}'
+	conky_parse( s )
+
+
+	conditionAM[j] = Prevision_Quart_T(Rep..'/ApresMidi'..j)
+	if conditionAM[j].VentDir == "CLM" then
+		conditionAM[j].VentDir = "Calme"
+		conditionAM[j].VentForce = "0"
+	end
+	conditionAM[j].VentIcone = icone_vent(direction_vent(conditionAM[j].VentDir), conditionAM[j].VentForce)
+	conditionAM[j].VentP = vent_plein(conditionAM[j].VentDir)
+	conditionAM[j].CondMeteo1, conditionAM[j].CondMeteo2, conditionAM[j].CondMeteo1se, conditionAM[j].CondMeteo2se = decoupage(conditionAM[j].CondMeteo)
+
+end
+
+
+--Information Soirée
+function Prevision_Soiree(a, j, x)
+	local i = j+x
+	local s = '${exec wget -q --load-cookies '..Rep..'/cookie -O '..Rep..'/Soiree'..j..' '..a..'?day='..i..'}'
+	conky_parse( s )
+
+
+	conditionSoiree[j] = Prevision_Quart_T(Rep..'/Soiree'..j)
+	if conditionSoiree[j].VentDir == "CLM" then
+		conditionSoiree[j].VentDir = "Calme"
+		conditionSoiree[j].VentForce = "0"
+	end
+	conditionSoiree[j].VentIcone = icone_vent(direction_vent(conditionSoiree[j].VentDir), conditionSoiree[j].VentForce)
+	conditionSoiree[j].VentP = vent_plein(conditionSoiree[j].VentDir)
+	conditionSoiree[j].CondMeteo1, conditionSoiree[j].CondMeteo2, conditionSoiree[j].CondMeteo1se, conditionSoiree[j].CondMeteo2se = decoupage(conditionSoiree[j].CondMeteo)
+
+end
+
+
+--Information Nuit
+function Prevision_Nuit(a, j, x)
+	local i = j+x
+	local s = '${exec wget -q --load-cookies '..Rep..'/cookie -O '..Rep..'/Nuit'..j..' '..a..'?day='..i..'}'
+	conky_parse( s )
+
+
+	conditionNoct[j] = Prevision_Quart_T(Rep..'/Nuit'..j)
+	if conditionNoct[j].VentDir == "CLM" then
+		conditionNoct[j].VentDir = "Calme"
+		conditionNoct[j].VentForce = "0"
+	end
+	conditionNoct[j].VentIcone = icone_vent(direction_vent(conditionNoct[j].VentDir), conditionNoct[j].VentForce)
+	conditionNoct[j].VentP = vent_plein(conditionNoct[j].VentDir)
+	conditionNoct[j].CondMeteo1, conditionNoct[j].CondMeteo2, conditionNoct[j].CondMeteo1se, conditionNoct[j].CondMeteo2se = decoupage(conditionNoct[j].CondMeteo)
+
+end
+
+
+--Traitement infos prévisions (15 jours max) jour 1 = aujourd'hui
+function jour_n(a, j, x)
+
+	local i = j+x
+	local s = '${exec wget -q --load-cookies '..Rep..'/cookie -O '..Rep..'/details'..j..' '..a..'?day='..i..'}'
+	conky_parse( s )
+
+
+	conditionJour[j], conditionNuit[j], InfoJour[j] = prevision(Rep..'/details'..j)
+	if conditionJour[j].VentDir == "CLM" then
+		conditionJour[j].VentDir = "Calme"
+		conditionJour[j].VentForce = "0"
+	end
+	conditionJour[j].VentIcone = icone_vent(direction_vent(conditionJour[j].VentDir), conditionJour[j].VentForce)
+	conditionJour[j].RafalesIcone = icone_vent(direction_vent(conditionJour[j].VentDir), conditionJour[j].VentRafales)
+	conditionJour[j].VentP = vent_plein(conditionJour[j].VentDir)
+	conditionJour[j].CondMeteo1, conditionJour[j].CondMeteo2, conditionJour[j].CondMeteo1se, conditionJour[j].CondMeteo2se = decoupage(conditionJour[j].CondMeteo)
+
+	if conditionNuit[j].VentDir == "Calme" then
+		conditionNuit[j].VentForce = "0"
+	end
+	conditionNuit[j].VentIcone = icone_vent(direction_vent(conditionNuit[j].VentDir), conditionNuit[j].VentForce)
+	conditionNuit[j].RafalesIcone = icone_vent(direction_vent(conditionNuit[j].VentDir), conditionNuit[j].VentRafales)
+	conditionNuit[j].VentP = vent_plein(conditionNuit[j].VentDir)
+	conditionNuit[j].CondMeteo1, conditionNuit[j].CondMeteo2, conditionNuit[j].CondMeteo1se, conditionNuit[j].CondMeteo2se = decoupage(conditionNuit[j].CondMeteo)
+
+
+end
+
+--initialisation paramètres
+function conky_init(cfg)
+
+	local cmd1, pos1
+	local home = os.getenv("HOME")
+	cfg = string.gsub(cfg, "~", home)
+	cfg = string.gsub(cfg, "$HOME", home)
+	fichier_init = cfg
+	
+	local file = assert(io.open(cfg, "rb") )
+	local line = file:read()
+	for line in file:lines() do
+		pos1 = string.find(line, '#')
+		if pos1 ~= nil then
+			line = string.sub(line, 1, pos1-1)
+		end
+		pos1 = string.find(line, '=')
+		if string.find(line, 'repsauv=') ~= nil then
+			repsauv = string.sub(line, pos1+1)
+		elseif string.find(line, 'TempShell=') ~= nil then
+			r = string.sub(line, pos1+1)
+		elseif string.find(line, 'web=') ~= nil then
+			cmd1 = string.sub(line, pos1+1)
+		elseif string.find(line, 'periode=') ~= nil then
+			jours = string.sub(line, pos1+1)
+		elseif string.find(line, 'matinée=') ~= nil then
+			matin = string.sub(line, pos1+1)
+		elseif string.find(line, 'am=') ~= nil then
+			apresmidi = string.sub(line, pos1+1)
+		elseif string.find(line, 'soiree=') ~= nil then
+			soiree = string.sub(line, pos1+1)
+		elseif string.find(line, 'nuit=') ~= nil then
+			nuit = string.sub(line, pos1+1)
+		elseif string.find(line, 'Palier=') ~= nil then
+			Palier = tonumber(string.sub(line, pos1+1))
+		elseif string.find(line, 'update=') ~= nil then
+			delais = string.sub(line, pos1+1)
+		end
+	end
+	io.close(file)	
+	r = string.gsub(r, "~", home)
+	r = string.gsub(r, "$HOME", home)
+	repsauv = string.gsub(repsauv, "~", home)
+	repsauv = string.gsub(repsauv, "$HOME", home)
+	repsauv = repsauv.."/"
+
+print("", "version = "..Version.."\n", "web = "..cmd1.."\n", "Pévision Nb jours = "..jours.."\n", "Pévision Matin = "..matin.."\n", "Pévision Après Midi = "..apresmidi.."\n", "Pévision Soirée = "..soiree.."\n", "Pévision Nuit = "..nuit.."\n", "Délais = "..delais.."\n", "Chemin de travail = "..r.."\n","Palier = "..Palier.."\n", "Chemin de sauvegarde = "..repsauv)
+
+--Création répertoire de travail
+	l = cmd1:match("/(%d+)")
+	if string.find(cmd1, 'forecast') ~= nil then
+		pos1 = string.find(cmd1, '/weather')
+		cmd = string.sub(cmd1, 0, pos1-1)
+	else
+		pos1 = string.find(cmd1, '/current')
+		cmd = string.sub(cmd1, 0, pos1-1)
+	end
+
+	local bar, bar1
+	local l1 = string.gsub(cmd, '/'..l, "" )
+	local b = 1
+	while bar1 == nil do
+		b = b+1
+		bar1 = string.find(l1, '/', -b)
+	end
+	l1 = string.sub(l1, bar1+1)
+	Rep = r.."/"..l1.."/"..l
+	if os.execute("cd "..Rep) ~= 0 then
+		os.execute("mkdir "..r.."/"..l1)
+		os.execute("mkdir "..Rep)
+	end
+	
+--initialisation compteurs
+	t = os.time()-delais
+	tc = t
+	start = 1
+	
+--Vérification existence repsauv
+	local repsauv1 = string.sub(repsauv, 1, -2)
+	if os.execute("cd "..repsauv1) ~= 0 then
+--création de repsauv si inexistant
+		local pos1 = 1
+		local chemin = nil
+		local cheminsup = nil
+		while pos1 ~= nil do
+			pos1 = string.find(repsauv1, '/', pos1+1)
+			if pos1 ~= nil then
+				cheminsup = string.sub(repsauv1, pos1)
+				chemin = string.gsub(repsauv1, cheminsup, "")
+			else
+				cheminsup = ""
+				chemin = repsauv1
+			end
+			if os.execute("cd "..chemin) ~= 0 then
+				os.execute("mkdir "..chemin)
+			end
+		end
+	end
+	
+	if not existe(repsauv.."CondCour") then
+		conky_Meteo_enligne()
+	end
+	
+	MAJ ="0"
+	
+end
+
+--Mise à jour météo
+function conky_Meteo_Maj()
+
+	local s = '${lua conky_Meteo_enligne}'
+	conky_parse( s )
+	return " "
+end
+
+--hors ligne récupération de données
+function conky_Meteo_horsligne()
+
+	if dermodif == nil or dermodif ~= conky_parse("${exec date -r "..repsauv.."CondCour '+%s'}") then
+		dermodif=conky_parse("${exec date -r "..repsauv.."CondCour '+%s'}")
+--Récupération dernière condition courante
+		local file = assert(io.open(repsauv.."CondCour", "r") )
+		local line = file:read()
+		local i = 0
+		local donee = {}
+		for line in file:lines() do
+			i = i+1
+			donee[i] = line
+		end
+		conditioncourante.Icone = donee[1]
+		conditioncourante.Tempr = donee[2]
+		conditioncourante.Temp = donee[3]
+		conditioncourante.Cond = donee[4]
+		conditioncourante.CondMeteo1 = donee[5]
+		conditioncourante.CondMeteo2 = donee[6]
+		conditioncourante.CondMeteo1se = donee[7]
+		conditioncourante.CondMeteo2se = donee[8]
+		conditioncourante.VentDir = donee[9]
+		conditioncourante.VentPlein = donee[10]
+		conditioncourante.VentForce = donee[11]
+		conditioncourante.VentIcone = donee[12]
+		conditioncourante.Humidite = donee[13]
+		conditioncourante.PointRosee = donee[14]
+		conditioncourante.Pression = donee[15]
+		conditioncourante.Visibilite = donee[16]
+		conditioncourante.Date = donee[17]
+		conditioncourante.Ville = donee[18]
+		conditioncourante.CouvNuage = donee[19]
+		conditioncourante.Uv = donee[20]
+		conditioncourante.QPrec = donee[21]
+		conditioncourante.latitude = donee[22]
+		conditioncourante.longitude = donee[23]
+		time = donee[24]
+		io.close(file)
+		
+--Récupération prévision
+		for j = 1,jours do
+			local file = assert(io.open(repsauv.."prevision"..j, "r"))
+			local line = file:read()
+			local i = 0
+			local donee = {}
+			for line in file:lines() do
+				i = i+1
+				donee[i] = line
+			end
+			conditionJour[j] = {}
+			conditionJour[j].CondMeteo = donee[1]
+			conditionJour[j].CondMeteo1 = donee[2]
+			conditionJour[j].CondMeteo2 = donee[3]
+			conditionJour[j].CondMeteo1se = donee[4]
+			conditionJour[j].CondMeteo2se = donee[5]
+			conditionJour[j].Temp = donee[6]
+			conditionJour[j].TempRes = donee[7]
+			conditionJour[j].ProbPrec = donee[8]
+			conditionJour[j].VentDir = donee[9]
+			conditionJour[j].VentP = donee[10]
+			conditionJour[j].VentForce = donee[11]
+			conditionJour[j].VentRafales = donee[12]
+			conditionJour[j].Uv = donee[13]
+			conditionJour[j].ProbOrage = donee[14]
+			conditionJour[j].NivPrec = donee[15]
+			conditionJour[j].QPluie = donee[16]
+			conditionJour[j].QNeige = donee[17]
+			conditionJour[j].Icone = donee[18]
+			conditionJour[j].VentIcone = donee[19]
+			conditionJour[j].RafalesIcone = donee[43]
+			conditionJour[j].EVerglas = donee[45]
+			conditionNuit[j] = {}
+			conditionNuit[j].CondMeteo = donee[20]
+			conditionNuit[j].CondMeteo1 = donee[21]
+			conditionNuit[j].CondMeteo2 = donee[22]
+			conditionNuit[j].CondMeteo1se = donee[23]
+			conditionNuit[j].CondMeteo2se = donee[24]
+			conditionNuit[j].Temp = donee[25]
+			conditionNuit[j].TempRes = donee[26]
+			conditionNuit[j].ProbPrec = donee[27]
+			conditionNuit[j].VentDir = donee[28]
+			conditionNuit[j].VentP = donee[29]
+			conditionNuit[j].VentForce = donee[30]
+			conditionNuit[j].VentRafales = donee[31]
+			conditionNuit[j].ProbOrage = donee[32]
+			conditionNuit[j].NivPrec = donee[33]
+			conditionNuit[j].QPluie = donee[34]
+			conditionNuit[j].QNeige = donee[35]
+			conditionNuit[j].Icone = donee[36]
+			conditionNuit[j].VentIcone = donee[37]
+			conditionNuit[j].RafalesIcone = donee[44]
+			conditionNuit[j].EVerglas = donee[46]
+			InfoJour[j] = {}
+			InfoJour[j].Jour = donee[38]
+			InfoJour[j].LeverSoleilH = donee[39]
+			InfoJour[j].LeverSoleilM = donee[40]
+			InfoJour[j].CoucherSoleilH = donee[41]
+			InfoJour[j].CoucherSoleilM = donee[42]
+			InfoJour[j].Histo_Max = donee[47]
+			InfoJour[j].Histo_Min = donee[48]
+			io.close(file)
+			
+			if matin == "oui" then
+				local file = assert(io.open(repsauv.."matin"..j, "r"))
+				local line = file:read()
+				local i = 0
+				local donee = {}
+				for line in file:lines() do
+					i = i+1
+					donee[i] = line
+				end
+				conditionMatin[j] = {}
+				conditionMatin[j].CondMeteo = donee[1]
+				conditionMatin[j].CondMeteo1 = donee[2]
+				conditionMatin[j].CondMeteo2 = donee[3]
+				conditionMatin[j].CondMeteo1se = donee[4]
+				conditionMatin[j].CondMeteo2se = donee[5]
+				conditionMatin[j].TempMax = donee[6]
+				conditionMatin[j].TempMin = donee[7]
+				conditionMatin[j].TempMaxR = donee[8]
+				conditionMatin[j].TempMinR = donee[9]
+				conditionMatin[j].ProbPrec = donee[10]
+				conditionMatin[j].VentDir = donee[11]
+				conditionMatin[j].VentP = donee[12]
+				conditionMatin[j].VentForce = donee[13]
+				conditionMatin[j].QPluie = donee[14]
+				conditionMatin[j].QNeige = donee[15]
+				conditionMatin[j].Humidite = donee[16]
+				conditionMatin[j].CouvNuage = donee[17]
+				conditionMatin[j].PointRosee = donee[18]
+				conditionMatin[j].Visibilite = donee[19]
+				conditionMatin[j].Icone = donee[20]
+				conditionMatin[j].VentIcone = donee[21]
+				io.close(file)
+			end
+
+			if apresmidi == "oui" then
+				local file = assert(io.open(repsauv.."ApresMidi"..j, "r"))
+				local line = file:read()
+				local i = 0
+				local donee = {}
+				for line in file:lines() do
+					i = i+1
+					donee[i] = line
+				end
+				conditionAM[j] = {}
+				conditionAM[j].CondMeteo = donee[1]
+				conditionAM[j].CondMeteo1 = donee[2]
+				conditionAM[j].CondMeteo2 = donee[3]
+				conditionAM[j].CondMeteo1se = donee[4]
+				conditionAM[j].CondMeteo2se = donee[5]
+				conditionAM[j].TempMax = donee[6]
+				conditionAM[j].TempMin = donee[7]
+				conditionAM[j].TempMaxR = donee[8]
+				conditionAM[j].TempMinR = donee[9]
+				conditionAM[j].ProbPrec = donee[10]
+				conditionAM[j].VentDir = donee[11]
+				conditionAM[j].VentP = donee[12]
+				conditionAM[j].VentForce = donee[13]
+				conditionAM[j].QPluie = donee[14]
+				conditionAM[j].QNeige = donee[15]
+				conditionAM[j].Humidite = donee[16]
+				conditionAM[j].CouvNuage = donee[17]
+				conditionAM[j].PointRosee = donee[18]
+				conditionAM[j].Visibilite = donee[19]
+				conditionAM[j].Icone = donee[20]
+				conditionAM[j].VentIcone = donee[21]
+				io.close(file)
+			end
+
+			if soiree == "oui" then
+				local file = assert(io.open(repsauv.."Soiree"..j, "r"))
+				local line = file:read()
+				local i = 0
+				local donee = {}
+				for line in file:lines() do
+					i = i+1
+					donee[i] = line
+				end
+				conditionSoiree[j] = {}
+				conditionSoiree[j].CondMeteo = donee[1]
+				conditionSoiree[j].CondMeteo1 = donee[2]
+				conditionSoiree[j].CondMeteo2 = donee[3]
+				conditionSoiree[j].CondMeteo1se = donee[4]
+				conditionSoiree[j].CondMeteo2se = donee[5]
+				conditionSoiree[j].TempMax = donee[6]
+				conditionSoiree[j].TempMin = donee[7]
+				conditionSoiree[j].TempMaxR = donee[8]
+				conditionSoiree[j].TempMinR = donee[9]
+				conditionSoiree[j].ProbPrec = donee[10]
+				conditionSoiree[j].VentDir = donee[11]
+				conditionSoiree[j].VentP = donee[12]
+				conditionSoiree[j].VentForce = donee[13]
+				conditionSoiree[j].QPluie = donee[14]
+				conditionSoiree[j].QNeige = donee[15]
+				conditionSoiree[j].Humidite = donee[16]
+				conditionSoiree[j].CouvNuage = donee[17]
+				conditionSoiree[j].PointRosee = donee[18]
+				conditionSoiree[j].Visibilite = donee[19]
+				conditionSoiree[j].Icone = donee[20]
+				conditionSoiree[j].VentIcone = donee[21]
+				io.close(file)
+			end
+
+			if nuit == "oui" then
+				local file = assert(io.open(repsauv.."Nuit"..j, "r"))
+				local line = file:read()
+				local i = 0
+				local donee = {}
+				for line in file:lines() do
+					i = i+1
+					donee[i] = line
+				end
+				conditionNoct[j] = {}
+				conditionNoct[j].CondMeteo = donee[1]
+				conditionNoct[j].CondMeteo1 = donee[2]
+				conditionNoct[j].CondMeteo2 = donee[3]
+				conditionNoct[j].CondMeteo1se = donee[4]
+				conditionNoct[j].CondMeteo2se = donee[5]
+				conditionNoct[j].TempMax = donee[6]
+				conditionNoct[j].TempMin = donee[7]
+				conditionNoct[j].TempMaxR = donee[8]
+				conditionNoct[j].TempMinR = donee[9]
+				conditionNoct[j].ProbPrec = donee[10]
+				conditionNoct[j].VentDir = donee[11]
+				conditionNoct[j].VentP = donee[12]
+				conditionNoct[j].VentForce = donee[13]
+				conditionNoct[j].QPluie = donee[14]
+				conditionNoct[j].QNeige = donee[15]
+				conditionNoct[j].Humidite = donee[16]
+				conditionNoct[j].CouvNuage = donee[17]
+				conditionNoct[j].PointRosee = donee[18]
+				conditionNoct[j].Visibilite = donee[19]
+				conditionNoct[j].Icone = donee[20]
+				conditionNoct[j].VentIcone = donee[21]
+				io.close(file)
+			end
+
+		end
+
+--Récupération lunaison
+		local file = assert(io.open(repsauv.."lunaison", "r"))
+		local line = file:read()
+		local i = 0
+		local donee = {}
+		for line in file:lines() do
+			i = i+1
+			donee[i] = line
+		end
+		ephemerides = donee[1]
+		ephemerides1 = donee[2]
+		ephemerides2 = donee[3]
+		Visibilite = donee[4]
+		Phases = donee[5]
+		Phases1 = donee[6]
+		Phases2 = donee[7]
+		Noeud_lunaire = donee[8]
+		Apogee = donee[9]
+		Perigee = donee[10]
+		Distance = donee[11]
+		Age = donee[12]
+		Lever_LuneHeure = donee[13]
+		Lever_LuneMinute = donee[14]
+		Coucher_LuneHeure = donee[15]
+		Coucher_LuneMinute = donee[16]
+		Eclipse_partielle = donee[17]
+		Eclipse_total = donee[18]
+		io.close(file)
+
+		
+		if MAJ == "0" then
+			MAJ = "1"
+		else
+			MAJ = "0"
+		end
+
+		
+		collectgarbage()
+	end
+	return ""
+end
+
+--en ligne mise à jour
+function conky_Meteo_enligne()
+	
+	if tonumber(delais) <= os.difftime(os.time(), t) then
+		t = os.time()
+		time = t
+
+			conditioncourante.Date = nil
+			while conditioncourante.Date == nil do
+
+				local s = '${exec wget -q --save-cookies '..Rep..'/cookie -O '..Rep..'/curr_cond_raw '..cmd..'/current-weather/'..l..'}'
+				conky_parse( s )
+				
+				conditioncourante = current(Rep.."/curr_cond_raw")
+				if conditioncourante.VentDir == "CLM" then
+					conditioncourante.VentDir = "Calme"
+					conditioncourante.VentForce = "0"
+				end
+				conditioncourante.VentIcone = icone_vent(direction_vent(conditioncourante.VentDir), conditioncourante.VentForce)
+				conditioncourante.VentPlein = vent_plein(conditioncourante.VentDir)
+				conditioncourante.CondMeteo1, conditioncourante.CondMeteo2, conditioncourante.CondMeteo1se, conditioncourante.CondMeteo2se = decoupage(conditioncourante.Cond)
+
+
+				if 14400 <= os.difftime(os.time(), tc) or start == 1 then
+					start = 2
+					tc = t
+
+					local addr_week = cmd..'/daily-weather-forecast/'..l
+					jour_n(addr_week, 1, 0)
+
+					if conditioncourante.Date == InfoJour[1].Jour then
+						for i = 2,jours do jour_n(addr_week, i, 0) end
+					else
+						for i = 1,jours do jour_n(addr_week, i, 1) end
+					end
+
+--infos matin si demandée
+					if matin == "oui" then
+						addr_week = cmd..'/morning-weather-forecast/'..l
+
+						if conditioncourante.Date == InfoJour[1].Jour then
+							for i = 1,jours do Prevision_Matin(addr_week, i, 0) end
+						else
+							for i = 1,jours do Prevision_Matin(addr_week, i, 1) end
+						end
+					end
+
+--infos Après Midi si demandée
+					if apresmidi == "oui" then
+						addr_week = cmd..'/afternoon-weather-forecast/'..l
+
+						if conditioncourante.Date == InfoJour[1].Jour then
+							for i = 1,jours do Prevision_AM(addr_week, i, 0) end
+						else
+							for i = 1,jours do Prevision_AM(addr_week, i, 1) end
+						end
+					end
+
+--infos Soirée si demandée
+					if soiree == "oui" then
+						addr_week = cmd..'/evening-weather-forecast/'..l
+
+						if conditioncourante.Date == InfoJour[1].Jour then
+							for i = 1,jours do Prevision_Soiree(addr_week, i, 0) end
+						else
+							for i = 1,jours do Prevision_Soiree(addr_week, i, 1) end
+						end
+					end
+
+--infos Nuit si demandée
+					if nuit == "oui" then
+						addr_week = cmd..'/overnight-weather-forecast/'..l
+
+						if conditioncourante.Date == InfoJour[1].Jour then
+							for i = 1,jours do Prevision_Nuit(addr_week, i, 0) end
+						else
+							for i = 1,jours do Prevision_Nuit(addr_week, i, 1) end
+						end
+					end
+					
+				end -- fin mise à jour compète
+			end
+			
+			lunaison(r)
+--lancement sauvegarde
+		if repsauv ~= nil then
+			sauvegarde()
+		end
+		
+		
+		if MAJ == "0" then
+			MAJ = "1"
+		else
+			MAJ = "0"
+		end
+
+		
+		collectgarbage()
+	end
+	return " "
+end
+
+
+--Retour d'information météo
+
+--Condition courrante
+
+function conky_Meteo_IconeM(r, p, s, f)
+	if os.date("%H%M", os.time()) <= InfoJour[1].CoucherSoleilH..InfoJour[1].CoucherSoleilM and os.date("%H%M", os.time()) >= "0"..InfoJour[1].LeverSoleilH..InfoJour[1].LeverSoleilM then
+		return "${image "..r.."/jour/"..conditioncourante.Icone..".png -p "..p.." -s "..s.." -f "..f.."}"
+	else
+		return "${image "..r.."/nuit/"..conditioncourante.Icone..".png -p "..p.." -s "..s.." -f "..f.."}"
+	end
+end
+
+function conky_Meteo_TempRes()
+	return conditioncourante.Tempr
+end
+
+function conky_Meteo_TempAct()
+	return conditioncourante.Temp
+end
+
+function conky_Meteo_CondMeteo()
+	return conditioncourante.Cond
+end
+
+function conky_Meteo_CondMeteo1()
+	return conditioncourante.CondMeteo1
+end
+
+function conky_Meteo_CondMeteo2()
+	return conditioncourante.CondMeteo2
+end
+
+function conky_Meteo_CondMeteo1se()
+	return conditioncourante.CondMeteo1se
+end
+
+function conky_Meteo_CondMeteo2se()
+	return conditioncourante.CondMeteo2se
+end
+
+function conky_Meteo_VentDir()
+	return conditioncourante.VentDir
+end
+
+function conky_Meteo_VentDirP()
+	return conditioncourante.VentPlein
+end
+
+function conky_Meteo_VentForce()
+	return conditioncourante.VentForce
+end
+
+function conky_Meteo_IconeV(r, p, s, f)
+	return "${image "..r.."/"..conditioncourante.VentIcone.." -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+function conky_Meteo_Humidite()
+	return tonumber(conditioncourante.Humidite)
+end
+
+function conky_Meteo_Rose()
+	return tonumber(conditioncourante.PointRosee)
+end
+
+function conky_Meteo_Pression()
+	return tonumber(conditioncourante.Pression)
+end
+
+function conky_Meteo_Visibilite()
+	return tonumber(conditioncourante.Visibilite)
+end
+
+function conky_Meteo_Date(format)
+	format = string.gsub(format, "_", " ")
+	return trad_date(os.date(format, conditioncourante.Date))
+end
+
+function conky_Meteo_Ville()
+	return conditioncourante.Ville
+end
+
+function conky_Meteo_CouvNuage()
+	return conditioncourante.CouvNuage
+end
+
+function conky_Meteo_Uv()
+	return conditioncourante.Uv
+end
+
+function conky_Meteo_QPrec()
+	return conditioncourante.QPrec
+end
+
+function conky_Meteo_latitude()
+	return conditioncourante.latitude
+end
+
+function conky_Meteo_longitude()
+	return conditioncourante.longitude
+end
+
+function conky_Meteo_Heure()
+	return os.date("%H", time)
+end
+
+function conky_Meteo_Minute()
+	return os.date("%M", time)
+end
+
+
+--Prévision Météo
+
+--Jour
+
+function conky_Meteo_Jour_CondMeteo(j)
+	return conditionJour[tonumber(j)].CondMeteo
+end
+
+function conky_Meteo_Jour_CondMeteo1(j)
+	return conditionJour[tonumber(j)].CondMeteo1
+end
+
+function conky_Meteo_Jour_CondMeteo2(j)
+	return conditionJour[tonumber(j)].CondMeteo2
+end
+
+function conky_Meteo_Jour_CondMeteo1se(j)
+	return conditionJour[tonumber(j)].CondMeteo1se
+end
+
+function conky_Meteo_Jour_CondMeteo2se(j)
+	return conditionJour[tonumber(j)].CondMeteo2se
+end
+
+function conky_Meteo_Jour_Temp(j)
+	return tonumber(conditionJour[tonumber(j)].Temp)
+end
+
+function conky_Meteo_Jour_TempRes(j)
+	return tonumber(conditionJour[tonumber(j)].TempRes)
+end
+
+function conky_Meteo_Jour_ProbPrec(j)
+	return tonumber(conditionJour[tonumber(j)].ProbPrec)
+end
+
+function conky_Meteo_Jour_VentDir(j)
+	return conditionJour[tonumber(j)].VentDir
+end
+
+function conky_Meteo_Jour_VentDirP(j)
+	return conditionJour[tonumber(j)].VentP
+end
+
+function conky_Meteo_Jour_VentForce(j)
+	return tonumber(conditionJour[tonumber(j)].VentForce)
+end
+
+function conky_Meteo_Jour_VentRafales(j)
+	return tonumber(conditionJour[tonumber(j)].VentRafales)
+end
+
+function conky_Meteo_Jour_Uv(j)
+	return tonumber(conditionJour[tonumber(j)].Uv)
+end
+
+function conky_Meteo_Jour_ProbOrage(j)
+	return tonumber(conditionJour[tonumber(j)].ProbOrage)
+end
+
+function conky_Meteo_Jour_NivPrec(j)
+	return tonumber(conditionJour[tonumber(j)].NivPrec)
+end
+
+function conky_Meteo_Jour_QPluie(j)
+	return tonumber(conditionJour[tonumber(j)].QPluie)
+end
+
+function conky_Meteo_Jour_QNeige(j)
+	return tonumber(conditionJour[tonumber(j)].QNeige)
+end
+
+function conky_Meteo_Jour_EVerglas(j)
+	return tonumber(conditionJour[tonumber(j)].EVerglas)
+end
+
+function conky_Meteo_Jour_IconeM(r, p, s, f, j)
+	return "${image "..r.."/jour/"..conditionJour[tonumber(j)].Icone..".png -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+function conky_Meteo_Jour_IconeV(r, p, s, f, j)
+	return "${image "..r.."/"..conditionJour[tonumber(j)].VentIcone.." -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+function conky_Meteo_Jour_IconeR(r, p, s, f, j)
+	return "${image "..r.."/"..conditionJour[tonumber(j)].RafalesIcone.." -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+
+--Nuit
+
+function conky_Meteo_Nuit_CondMeteo(j)
+	return conditionNuit[tonumber(j)].CondMeteo
+end
+
+function conky_Meteo_Nuit_CondMeteo1(j)
+	return conditionNuit[tonumber(j)].CondMeteo1
+end
+
+function conky_Meteo_Nuit_CondMeteo2(j)
+	return conditionNuit[tonumber(j)].CondMeteo2
+end
+
+function conky_Meteo_Nuit_CondMeteo1se(j)
+	return conditionNuit[tonumber(j)].CondMeteo1se
+end
+
+function conky_Meteo_Nuit_CondMeteo2se(j)
+	return conditionNuit[tonumber(j)].CondMeteo2se
+end
+
+function conky_Meteo_Nuit_Temp(j)
+	return tonumber(conditionNuit[tonumber(j)].Temp)
+end
+
+function conky_Meteo_Nuit_TempRes(j)
+	return tonumber(conditionNuit[tonumber(j)].TempRes)
+end
+
+function conky_Meteo_Nuit_ProbPrec(j)
+	return tonumber(conditionNuit[tonumber(j)].ProbPrec)
+end
+
+function conky_Meteo_Nuit_VentDir(j)
+	return conditionNuit[tonumber(j)].VentDir
+end
+
+function conky_Meteo_Nuit_VentDirP(j)
+	return conditionNuit[tonumber(j)].VentP
+end
+
+function conky_Meteo_Nuit_VentForce(j)
+	return tonumber(conditionNuit[tonumber(j)].VentForce)
+end
+
+function conky_Meteo_Nuit_VentRafales(j)
+	return tonumber(conditionNuit[tonumber(j)].VentRafales)
+end
+
+function conky_Meteo_Nuit_ProbOrage(j)
+	return tonumber(conditionNuit[tonumber(j)].ProbOrage)
+end
+
+function conky_Meteo_Nuit_NivPrec(j)
+	return tonumber(conditionNuit[tonumber(j)].NivPrec)
+end
+
+function conky_Meteo_Nuit_QPluie(j)
+	return tonumber(conditionNuit[tonumber(j)].QPluie)
+end
+
+function conky_Meteo_Nuit_QNeige(j)
+	return tonumber(conditionNuit[tonumber(j)].QNeige)
+end
+
+function conky_Meteo_Nuit_EVerglas(j)
+	return tonumber(conditionNuit[tonumber(j)].EVerglas)
+end
+
+function conky_Meteo_Nuit_IconeM(r, p, s, f, j)
+	return "${image "..r.."/nuit/"..conditionNuit[tonumber(j)].Icone..".png -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+function conky_Meteo_Nuit_IconeV(r, p, s, f, j)
+	return "${image "..r.."/"..conditionNuit[tonumber(j)].VentIcone.." -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+function conky_Meteo_Nuit_IconeR(r, p, s, f, j)
+	return "${image "..r.."/"..conditionNuit[tonumber(j)].RafalesIcone.." -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+
+--Infos sur la journée
+
+function conky_Meteo_Jour(format, j)
+	format = string.gsub(format, "_", " ")
+	return trad_date(os.date(format, InfoJour[tonumber(j)].Jour))
+end
+
+function conky_Meteo_HLeverSoleil(j)
+	return InfoJour[tonumber(j)].LeverSoleilH
+end
+
+function conky_Meteo_MLeverSoleil(j)
+	return InfoJour[tonumber(j)].LeverSoleilM
+end
+
+function conky_Meteo_HCoucherSoleil(j)
+	return InfoJour[tonumber(j)].CoucherSoleilH
+end
+
+function conky_Meteo_MCoucherSoleil(j)
+	return InfoJour[tonumber(j)].CoucherSoleilM
+end
+
+function conky_Meteo_HDureeJour(j)
+	return os.date("%H", ((((InfoJour[tonumber(j)].CoucherSoleilH*3600)-3600)+(InfoJour[tonumber(j)].CoucherSoleilM*60))-(((InfoJour[tonumber(j)].LeverSoleilH*3600))+(InfoJour[tonumber(j)].LeverSoleilM*60))))
+end
+
+function conky_Meteo_MDureeJour(j)
+	return os.date("%M", ((((InfoJour[tonumber(j)].CoucherSoleilH*3600)-3600)+(InfoJour[tonumber(j)].CoucherSoleilM*60))-(((InfoJour[tonumber(j)].LeverSoleilH*3600))+(InfoJour[tonumber(j)].LeverSoleilM*60))))
+end
+
+function conky_Meteo_Histo_Min(j)
+	return InfoJour[tonumber(j)].Histo_Min
+end
+
+function conky_Meteo_Histo_Max(j)
+	return InfoJour[tonumber(j)].Histo_Max
+end
+
+
+--Matin
+
+function conky_Meteo_Matin_CondMeteo(j)
+	return conditionMatin[tonumber(j)].CondMeteo
+end
+
+function conky_Meteo_Matin_CondMeteo1(j)
+	return conditionMatin[tonumber(j)].CondMeteo1
+end
+
+function conky_Meteo_Matin_CondMeteo2(j)
+	return conditionMatin[tonumber(j)].CondMeteo2
+end
+
+function conky_Meteo_Matin_CondMeteo1se(j)
+	return conditionMatin[tonumber(j)].CondMeteo1se
+end
+
+function conky_Meteo_Matin_CondMeteo2se(j)
+	return conditionMatin[tonumber(j)].CondMeteo2se
+end
+
+function conky_Meteo_Matin_TempMax(j)
+	return tonumber(conditionMatin[tonumber(j)].TempMax)
+end
+
+function conky_Meteo_Matin_TempMin(j)
+	return tonumber(conditionMatin[tonumber(j)].TempMin)
+end
+
+function conky_Meteo_Matin_TempMaxRes(j)
+	return tonumber(conditionMatin[tonumber(j)].TempMaxR)
+end
+
+function conky_Meteo_Matin_TempMinRes(j)
+	return tonumber(conditionMatin[tonumber(j)].TempMinR)
+end
+
+function conky_Meteo_Matin_ProbPrec(j)
+	return tonumber(conditionMatin[tonumber(j)].ProbPrec)
+end
+
+function conky_Meteo_Matin_VentDir(j)
+	return conditionMatin[tonumber(j)].VentDir
+end
+
+function conky_Meteo_Matin_VentDirP(j)
+	return conditionMatin[tonumber(j)].VentP
+end
+
+function conky_Meteo_Matin_VentForce(j)
+	return tonumber(conditionMatin[tonumber(j)].VentForce)
+end
+
+function conky_Meteo_Matin_QPluie(j)
+	return tonumber(conditionMatin[tonumber(j)].QPluie)
+end
+
+function conky_Meteo_Matin_QNeige(j)
+	return tonumber(conditionMatin[tonumber(j)].QNeige)
+end
+
+function conky_Meteo_Matin_Humidite(j)
+	return tonumber(conditionMatin[tonumber(j)].Humidite)
+end
+
+function conky_Meteo_Matin_CouvNuage(j)
+	return tonumber(conditionMatin[tonumber(j)].CouvNuage)
+end
+
+function conky_Meteo_Matin_Rose(j)
+	return tonumber(conditionMatin[tonumber(j)].PointRosee)
+end
+
+function conky_Meteo_Matin_Visibilite(j)
+	return tonumber(conditionMatin[tonumber(j)].Visibilite)
+end
+
+function conky_Meteo_Matin_IconeM(r, p, s, f, j)
+	return "${image "..r.."/jour/"..conditionMatin[tonumber(j)].Icone..".png -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+function conky_Meteo_Matin_IconeV(r, p, s, f, j)
+	return "${image "..r.."/"..conditionMatin[tonumber(j)].VentIcone.." -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+
+--Après Midi
+
+function conky_Meteo_AM_CondMeteo(j)
+	return conditionAM[tonumber(j)].CondMeteo
+end
+
+function conky_Meteo_AM_CondMeteo1(j)
+	return conditionAM[tonumber(j)].CondMeteo1
+end
+
+function conky_Meteo_AM_CondMeteo2(j)
+	return conditionAM[tonumber(j)].CondMeteo2
+end
+
+function conky_Meteo_AM_CondMeteo1se(j)
+	return conditionAM[tonumber(j)].CondMeteo1se
+end
+
+function conky_Meteo_AM_CondMeteo2se(j)
+	return conditionAM[tonumber(j)].CondMeteo2se
+end
+
+function conky_Meteo_AM_TempMax(j)
+	return tonumber(conditionAM[tonumber(j)].TempMax)
+end
+
+function conky_Meteo_AM_TempMin(j)
+	return tonumber(conditionAM[tonumber(j)].TempMin)
+end
+
+function conky_Meteo_AM_TempMaxRes(j)
+	return tonumber(conditionAM[tonumber(j)].TempMaxR)
+end
+
+function conky_Meteo_AM_TempMinRes(j)
+	return tonumber(conditionAM[tonumber(j)].TempMinR)
+end
+
+function conky_Meteo_AM_ProbPrec(j)
+	return tonumber(conditionAM[tonumber(j)].ProbPrec)
+end
+
+function conky_Meteo_AM_VentDir(j)
+	return conditionAM[tonumber(j)].VentDir
+end
+
+function conky_Meteo_AM_VentDirP(j)
+	return conditionAM[tonumber(j)].VentP
+end
+
+function conky_Meteo_AM_VentForce(j)
+	return tonumber(conditionAM[tonumber(j)].VentForce)
+end
+
+function conky_Meteo_AM_QPluie(j)
+	return tonumber(conditionAM[tonumber(j)].QPluie)
+end
+
+function conky_Meteo_AM_QNeige(j)
+	return tonumber(conditionAM[tonumber(j)].QNeige)
+end
+
+function conky_Meteo_AM_Humidite(j)
+	return tonumber(conditionAM[tonumber(j)].Humidite)
+end
+
+function conky_Meteo_AM_CouvNuage(j)
+	return tonumber(conditionAM[tonumber(j)].CouvNuage)
+end
+
+function conky_Meteo_AM_Rose(j)
+	return tonumber(conditionAM[tonumber(j)].PointRosee)
+end
+
+function conky_Meteo_AM_Visibilite(j)
+	return tonumber(conditionAM[tonumber(j)].Visibilite)
+end
+
+function conky_Meteo_AM_IconeM(r, p, s, f, j)
+	return "${image "..r.."/jour/"..conditionAM[tonumber(j)].Icone..".png -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+function conky_Meteo_AM_IconeV(r, p, s, f, j)
+	return "${image "..r.."/"..conditionAM[tonumber(j)].VentIcone.." -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+
+--Soirée
+
+function conky_Meteo_Soiree_CondMeteo(j)
+	return conditionSoiree[tonumber(j)].CondMeteo
+end
+
+function conky_Meteo_Soiree_CondMeteo1(j)
+	return conditionSoiree[tonumber(j)].CondMeteo1
+end
+
+function conky_Meteo_Soiree_CondMeteo2(j)
+	return conditionSoiree[tonumber(j)].CondMeteo2
+end
+
+function conky_Meteo_Soiree_CondMeteo1se(j)
+	return conditionSoiree[tonumber(j)].CondMeteo1se
+end
+
+function conky_Meteo_Soiree_CondMeteo2se(j)
+	return conditionSoiree[tonumber(j)].CondMeteo2se
+end
+
+function conky_Meteo_Soiree_TempMax(j)
+	return tonumber(conditionSoiree[tonumber(j)].TempMax)
+end
+
+function conky_Meteo_Soiree_TempMin(j)
+	return tonumber(conditionSoiree[tonumber(j)].TempMin)
+end
+
+function conky_Meteo_Soiree_TempMaxRes(j)
+	return tonumber(conditionSoiree[tonumber(j)].TempMaxR)
+end
+
+function conky_Meteo_Soiree_TempMinRes(j)
+	return tonumber(conditionSoiree[tonumber(j)].TempMinR)
+end
+
+function conky_Meteo_Soiree_ProbPrec(j)
+	return tonumber(conditionSoiree[tonumber(j)].ProbPrec)
+end
+
+function conky_Meteo_Soiree_VentDir(j)
+	return conditionSoiree[tonumber(j)].VentDir
+end
+
+function conky_Meteo_Soiree_VentDirP(j)
+	return conditionSoiree[tonumber(j)].VentP
+end
+
+function conky_Meteo_Soiree_VentForce(j)
+	return tonumber(conditionSoiree[tonumber(j)].VentForce)
+end
+
+function conky_Meteo_Soiree_QPluie(j)
+	return tonumber(conditionSoiree[tonumber(j)].QPluie)
+end
+
+function conky_Meteo_Soiree_QNeige(j)
+	return tonumber(conditionSoiree[tonumber(j)].QNeige)
+end
+
+function conky_Meteo_Soiree_Humidite(j)
+	return tonumber(conditionSoiree[tonumber(j)].Humidite)
+end
+
+function conky_Meteo_Soiree_CouvNuage(j)
+	return tonumber(conditionSoiree[tonumber(j)].CouvNuage)
+end
+
+function conky_Meteo_Soiree_Rose(j)
+	return tonumber(conditionSoiree[tonumber(j)].PointRosee)
+end
+
+function conky_Meteo_Soiree_Visibilite(j)
+	return tonumber(conditionSoiree[tonumber(j)].Visibilite)
+end
+
+function conky_Meteo_Soiree_IconeM(r, p, s, f, j)
+	return "${image "..r.."/jour/"..conditionSoiree[tonumber(j)].Icone..".png -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+function conky_Meteo_Soiree_IconeV(r, p, s, f, j)
+	return "${image "..r.."/"..conditionSoiree[tonumber(j)].VentIcone.." -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+
+--Nuit
+
+function conky_Meteo_Noct_CondMeteo(j)
+	return conditionNoct[tonumber(j)].CondMeteo
+end
+
+function conky_Meteo_Noct_CondMeteo1(j)
+	return conditionNoct[tonumber(j)].CondMeteo1
+end
+
+function conky_Meteo_Noct_CondMeteo2(j)
+	return conditionNoct[tonumber(j)].CondMeteo2
+end
+
+function conky_Meteo_Noct_CondMeteo1se(j)
+	return conditionNoct[tonumber(j)].CondMeteo1se
+end
+
+function conky_Meteo_Noct_CondMeteo2se(j)
+	return conditionNoct[tonumber(j)].CondMeteo2se
+end
+
+function conky_Meteo_Noct_TempMax(j)
+	return tonumber(conditionNoct[tonumber(j)].TempMax)
+end
+
+function conky_Meteo_Noct_TempMin(j)
+	return tonumber(conditionNoct[tonumber(j)].TempMin)
+end
+
+function conky_Meteo_Noct_TempMaxRes(j)
+	return tonumber(conditionNoct[tonumber(j)].TempMaxR)
+end
+
+function conky_Meteo_Noct_TempMinRes(j)
+	return tonumber(conditionNoct[tonumber(j)].TempMinR)
+end
+
+function conky_Meteo_Noct_ProbPrec(j)
+	return tonumber(conditionNoct[tonumber(j)].ProbPrec)
+end
+
+function conky_Meteo_Noct_VentDir(j)
+	return conditionNoct[tonumber(j)].VentDir
+end
+
+function conky_Meteo_Noct_VentDirP(j)
+	return conditionNoct[tonumber(j)].VentP
+end
+
+function conky_Meteo_Noct_VentForce(j)
+	return tonumber(conditionNoct[tonumber(j)].VentForce)
+end
+
+function conky_Meteo_Noct_QPluie(j)
+	return tonumber(conditionNoct[tonumber(j)].QPluie)
+end
+
+function conky_Meteo_Noct_QNeige(j)
+	return tonumber(conditionNoct[tonumber(j)].QNeige)
+end
+
+function conky_Meteo_Noct_Humidite(j)
+	return tonumber(conditionNoct[tonumber(j)].Humidite)
+end
+
+function conky_Meteo_Noct_CouvNuage(j)
+	return tonumber(conditionNoct[tonumber(j)].CouvNuage)
+end
+
+function conky_Meteo_Noct_Rose(j)
+	return tonumber(conditionNoct[tonumber(j)].PointRosee)
+end
+
+function conky_Meteo_Noct_Visibilite(j)
+	return tonumber(conditionNoct[tonumber(j)].Visibilite)
+end
+
+function conky_Meteo_Noct_IconeM(r, p, s, f, j)
+	return "${image "..r.."/nuit/"..conditionNoct[tonumber(j)].Icone..".png -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+function conky_Meteo_Noct_IconeV(r, p, s, f, j)
+	return "${image "..r.."/"..conditionNoct[tonumber(j)].VentIcone.." -p "..p.." -s "..s.." -f "..f.."}"
+end
+
+
+--Lunaison
+
+function conky_Lune_ephemerides()
+	return ephemerides
+end
+
+function conky_Lune_ephemerides1()
+	return ephemerides1
+end
+
+function conky_Lune_ephemerides2()
+	return ephemerides2
+end
+
+function conky_Lune_Visibilite()
+	return Visibilite
+end
+
+function conky_Lune_Phases()
+	return Phases
+end
+
+function conky_Lune_Phases1()
+	return Phases1
+end
+
+function conky_Lune_Phases2()
+	return Phases2
+end
+
+function conky_Lune_Noeudlunaire()
+	return Noeud_lunaire
+end
+
+function conky_Lune_Apogee()
+	return Apogee
+end
+
+function conky_Lune_Perigee()
+	return Perigee
+end
+
+function conky_Lune_Distance()
+	return Distance
+end
+
+function conky_Lune_Age()
+	return Age
+end
+
+function conky_Lune_HLeverLune()
+	return Lever_LuneHeure
+end
+
+function conky_Lune_MLeverLune()
+	return Lever_LuneMinute
+end
+
+function conky_Lune_HCoucherLune()
+	return Coucher_LuneHeure
+end
+
+function conky_Lune_MCoucherLune()
+	return Coucher_LuneMinute
+end
+
+function conky_Lune_EclipsePartielle(format)
+	if format == nil then format = "%A_%d_%B_%Y_à_%H:%M" end
+	format = string.gsub(format, "_", " ")
+	return trad_date(os.date(format, Eclipse_partielle))
+end
+
+function conky_Lune_EclipseTotal()
+	if format == nil then format = "%A_%d_%B_%Y_à_%H:%M" end
+	format = string.gsub(format, "_", " ")
+	return trad_date(os.date(format, Eclipse_total))
+end
+
+
+--Informations sur le lua
+function conky_Version()
+	return Version
+end
+
+function conky_Meteo_fichier_init()
+	return fichier_init
+end
+
+function conky_Meteo_etat_MAJ()
+	return MAJ
+end
+
+
+--Sauvegarde des données
+function sauvegarde()
+
+--sauvegarde prévision
+	for j = 1,jours do
+		local file = assert(io.open(repsauv.."prevision"..j, "w+"))
+		file:write ("\n", conditionJour[j].CondMeteo, "\n")
+		file:write (conditionJour[j].CondMeteo1, "\n")
+		file:write (conditionJour[j].CondMeteo2, "\n")
+		file:write (conditionJour[j].CondMeteo1se, "\n")
+		file:write (conditionJour[j].CondMeteo2se, "\n")
+		file:write (conditionJour[j].Temp, "\n")
+		file:write (conditionJour[j].TempRes, "\n")
+		file:write (conditionJour[j].ProbPrec, "\n")
+		file:write (conditionJour[j].VentDir, "\n")
+		file:write (conditionJour[j].VentP, "\n")
+		file:write (conditionJour[j].VentForce, "\n")
+		file:write (conditionJour[j].VentRafales, "\n")
+		file:write (conditionJour[j].Uv, "\n")
+		file:write (conditionJour[j].ProbOrage, "\n")
+		file:write (conditionJour[j].NivPrec, "\n")
+		file:write (conditionJour[j].QPluie, "\n")
+		file:write (conditionJour[j].QNeige, "\n")
+		file:write (conditionJour[j].Icone, "\n")
+		file:write (conditionJour[j].VentIcone, "\n")
+		file:write (conditionNuit[j].CondMeteo, "\n")
+		file:write (conditionNuit[j].CondMeteo1, "\n")
+		file:write (conditionNuit[j].CondMeteo2, "\n")
+		file:write (conditionNuit[j].CondMeteo1se, "\n")
+		file:write (conditionNuit[j].CondMeteo2se, "\n")
+		file:write (conditionNuit[j].Temp, "\n")
+		file:write (conditionNuit[j].TempRes, "\n")
+		file:write (conditionNuit[j].ProbPrec, "\n")
+		file:write (conditionNuit[j].VentDir, "\n")
+		file:write (conditionNuit[j].VentP, "\n")
+		file:write (conditionNuit[j].VentForce, "\n")
+		file:write (conditionNuit[j].VentRafales, "\n")
+		file:write (conditionNuit[j].ProbOrage, "\n")
+		file:write (conditionNuit[j].NivPrec, "\n")
+		file:write (conditionNuit[j].QPluie, "\n")
+		file:write (conditionNuit[j].QNeige, "\n")
+		file:write (conditionNuit[j].Icone, "\n")
+		file:write (conditionNuit[j].VentIcone, "\n")
+		file:write (InfoJour[j].Jour, "\n")
+		file:write (InfoJour[j].LeverSoleilH, "\n")
+		file:write (InfoJour[j].LeverSoleilM, "\n")
+		file:write (InfoJour[j].CoucherSoleilH, "\n")
+		file:write (InfoJour[j].CoucherSoleilM, "\n")
+		file:write (conditionJour[j].RafalesIcone, "\n")
+		file:write (conditionNuit[j].RafalesIcone, "\n")
+		file:write (conditionJour[j].EVerglas, "\n")
+		file:write (conditionNuit[j].EVerglas, "\n")
+		file:write (InfoJour[j].Histo_Max, "\n")
+		file:write (InfoJour[j].Histo_Min, "\n")
+		io.close(file)
+		if matin == "oui" then
+			local file = assert(io.open(repsauv.."matin"..j, "w+"))
+			file:write ("\n", conditionMatin[j].CondMeteo, "\n")
+			file:write (conditionMatin[j].CondMeteo1, "\n")
+			file:write (conditionMatin[j].CondMeteo2, "\n")
+			file:write (conditionMatin[j].CondMeteo1se, "\n")
+			file:write (conditionMatin[j].CondMeteo2se, "\n")
+			file:write (conditionMatin[j].TempMax, "\n")
+			file:write (conditionMatin[j].TempMin, "\n")
+			file:write (conditionMatin[j].TempMaxR, "\n")
+			file:write (conditionMatin[j].TempMinR, "\n")
+			file:write (conditionMatin[j].ProbPrec, "\n")
+			file:write (conditionMatin[j].VentDir, "\n")
+			file:write (conditionMatin[j].VentP, "\n")
+			file:write (conditionMatin[j].VentForce, "\n")
+			file:write (conditionMatin[j].QPluie, "\n")
+			file:write (conditionMatin[j].QNeige, "\n")
+			file:write (conditionMatin[j].Humidite, "\n")
+			file:write (conditionMatin[j].CouvNuage, "\n")
+			file:write (conditionMatin[j].PointRosee, "\n")
+			file:write (conditionMatin[j].Visibilite, "\n")
+			file:write (conditionMatin[j].Icone, "\n")
+			file:write (conditionMatin[j].VentIcone, "\n")
+			io.close(file)
+		end
+		if apresmidi == "oui" then
+			local file = assert(io.open(repsauv.."ApresMidi"..j, "w+"))
+			file:write ("\n", conditionAM[j].CondMeteo, "\n")
+			file:write (conditionAM[j].CondMeteo1, "\n")
+			file:write (conditionAM[j].CondMeteo2, "\n")
+			file:write (conditionAM[j].CondMeteo1se, "\n")
+			file:write (conditionAM[j].CondMeteo2se, "\n")
+			file:write (conditionAM[j].TempMax, "\n")
+			file:write (conditionAM[j].TempMin, "\n")
+			file:write (conditionAM[j].TempMaxR, "\n")
+			file:write (conditionAM[j].TempMinR, "\n")
+			file:write (conditionAM[j].ProbPrec, "\n")
+			file:write (conditionAM[j].VentDir, "\n")
+			file:write (conditionAM[j].VentP, "\n")
+			file:write (conditionAM[j].VentForce, "\n")
+			file:write (conditionAM[j].QPluie, "\n")
+			file:write (conditionAM[j].QNeige, "\n")
+			file:write (conditionAM[j].Humidite, "\n")
+			file:write (conditionAM[j].CouvNuage, "\n")
+			file:write (conditionAM[j].PointRosee, "\n")
+			file:write (conditionAM[j].Visibilite, "\n")
+			file:write (conditionAM[j].Icone, "\n")
+			file:write (conditionAM[j].VentIcone, "\n")
+			io.close(file)
+		end
+		if soiree == "oui" then
+			local file = assert(io.open(repsauv.."Soiree"..j, "w+"))
+			file:write ("\n", conditionSoiree[j].CondMeteo, "\n")
+			file:write (conditionSoiree[j].CondMeteo1, "\n")
+			file:write (conditionSoiree[j].CondMeteo2, "\n")
+			file:write (conditionSoiree[j].CondMeteo1se, "\n")
+			file:write (conditionSoiree[j].CondMeteo2se, "\n")
+			file:write (conditionSoiree[j].TempMax, "\n")
+			file:write (conditionSoiree[j].TempMin, "\n")
+			file:write (conditionSoiree[j].TempMaxR, "\n")
+			file:write (conditionSoiree[j].TempMinR, "\n")
+			file:write (conditionSoiree[j].ProbPrec, "\n")
+			file:write (conditionSoiree[j].VentDir, "\n")
+			file:write (conditionSoiree[j].VentP, "\n")
+			file:write (conditionSoiree[j].VentForce, "\n")
+			file:write (conditionSoiree[j].QPluie, "\n")
+			file:write (conditionSoiree[j].QNeige, "\n")
+			file:write (conditionSoiree[j].Humidite, "\n")
+			file:write (conditionSoiree[j].CouvNuage, "\n")
+			file:write (conditionSoiree[j].PointRosee, "\n")
+			file:write (conditionSoiree[j].Visibilite, "\n")
+			file:write (conditionSoiree[j].Icone, "\n")
+			file:write (conditionSoiree[j].VentIcone, "\n")
+			io.close(file)
+		end
+		if nuit == "oui" then
+			local file = assert(io.open(repsauv.."Nuit"..j, "w+"))
+			file:write ("\n", conditionNoct[j].CondMeteo, "\n")
+			file:write (conditionNoct[j].CondMeteo1, "\n")
+			file:write (conditionNoct[j].CondMeteo2, "\n")
+			file:write (conditionNoct[j].CondMeteo1se, "\n")
+			file:write (conditionNoct[j].CondMeteo2se, "\n")
+			file:write (conditionNoct[j].TempMax, "\n")
+			file:write (conditionNoct[j].TempMin, "\n")
+			file:write (conditionNoct[j].TempMaxR, "\n")
+			file:write (conditionNoct[j].TempMinR, "\n")
+			file:write (conditionNoct[j].ProbPrec, "\n")
+			file:write (conditionNoct[j].VentDir, "\n")
+			file:write (conditionNoct[j].VentP, "\n")
+			file:write (conditionNoct[j].VentForce, "\n")
+			file:write (conditionNoct[j].QPluie, "\n")
+			file:write (conditionNoct[j].QNeige, "\n")
+			file:write (conditionNoct[j].Humidite, "\n")
+			file:write (conditionNoct[j].CouvNuage, "\n")
+			file:write (conditionNoct[j].PointRosee, "\n")
+			file:write (conditionNoct[j].Visibilite, "\n")
+			file:write (conditionNoct[j].Icone, "\n")
+			file:write (conditionNoct[j].VentIcone, "\n")
+			io.close(file)
+		end
+	end
+
+--sauvegarde lunaison
+	local file = assert(io.open(repsauv.."lunaison", "w+"))
+	file:write ("\n", ephemerides, "\n")
+	file:write (ephemerides1, "\n")
+	file:write (ephemerides2, "\n")
+	file:write (Visibilite, "\n")
+	file:write (Phases, "\n")
+	file:write (Phases1, "\n")
+	file:write (Phases2, "\n")
+	file:write (Noeud_lunaire, "\n")
+	file:write (Apogee, "\n")
+	file:write (Perigee, "\n")
+	file:write (Distance, "\n")
+	file:write (Age, "\n")
+	file:write (Lever_LuneHeure, "\n")
+	file:write (Lever_LuneMinute, "\n")
+	file:write (Coucher_LuneHeure, "\n")
+	file:write (Coucher_LuneMinute, "\n")
+	file:write (Eclipse_partielle, "\n")
+	file:write (Eclipse_total, "\n")
+	io.close(file)
+	
+--Sauvegarde condition courante
+	local file = assert(io.open(repsauv.."CondCour", "w+") )
+	file:write ("\n", conditioncourante.Icone, "\n")
+	file:write (conditioncourante.Tempr, "\n")
+	file:write (conditioncourante.Temp, "\n")
+	file:write (conditioncourante.Cond, "\n")
+	file:write (conditioncourante.CondMeteo1, "\n")
+	file:write (conditioncourante.CondMeteo2, "\n")
+	file:write (conditioncourante.CondMeteo1se, "\n")
+	file:write (conditioncourante.CondMeteo2se, "\n")
+	file:write (conditioncourante.VentDir, "\n")
+	file:write (conditioncourante.VentPlein, "\n")
+	file:write (conditioncourante.VentForce, "\n")
+	file:write (conditioncourante.VentIcone, "\n")
+	file:write (conditioncourante.Humidite, "\n")
+	file:write (conditioncourante.PointRosee, "\n")
+	file:write (conditioncourante.Pression, "\n")
+	file:write (conditioncourante.Visibilite, "\n")
+	file:write (conditioncourante.Date, "\n")
+	file:write (conditioncourante.Ville, "\n")
+	file:write (conditioncourante.CouvNuage, "\n")
+	file:write (conditioncourante.Uv, "\n")
+	file:write (conditioncourante.QPrec, "\n")
+	file:write (conditioncourante.latitude, "\n")
+	file:write (conditioncourante.longitude, "\n")
+	file:write (time, "\n")
+	io.close(file)
+
+end

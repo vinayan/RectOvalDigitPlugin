@@ -2,6 +2,15 @@
 from qgis.core import *
 from math import *
 
+def GetAngleOfLineBetweenTwoPoints(p1, p2, angle_unit="degrees"):
+    xDiff = p2.x() - p1.x()
+    yDiff = p2.y() - p1.y()
+    
+    if angle_unit == "radians":
+        return atan2(yDiff, xDiff)
+    else:
+        return degrees(atan2(yDiff, xDiff))
+
 def calcPente(p1, p2):
     """
     Return the slope of the line represents by two points : p1 and p2

@@ -1,0 +1,102 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  pile_calc.c
+ *
+ *    Description:  Calcul d'une expression arithméque postfixée
+ *
+ *        Version:  1.0
+ *        Created:  11.01.2013 18:10:11
+ *       Revision:  none
+ *       Compiler:  clang
+ *
+ *         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+ *   Organization:  
+ *
+ * =====================================================================================
+ */
+
+
+#include	<stdio.h>
+#include    <stdlib.h>
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  main
+ *  Description:  
+ * =====================================================================================
+ */
+
+#define MAX 20
+int nbelements=0;
+int pile[MAX];
+void initialiser_pile(void);
+void empiler(int c);
+int depiler(void);
+int pile_vide(void);
+
+int main ( int argc, char *argv[] )
+{
+    char caract;
+    int chiffre = 0;
+    initialiser_pile();
+    printf("Entrez un terme\n");
+    while(caract != '\n')
+    {
+        resultat = 0;
+        scanf("%c", &caract);
+            if(caract == '+')
+                empiler(depiler()+depiler());
+            else if(caract == '-')
+            {
+                int n1, n2;
+                n1 = depiler();
+                n2 = depiler();
+                empiler(n2-n1);
+            }
+            else if(caract == '*')
+                empiler(depiler()*depiler());
+            else if(caract == '/')
+            {
+                int n1, n2;
+                n1 = depiler();
+                n2 = depiler();
+                empiler(n2/n1);
+            }
+            else if((caract >= '0') && (caract <= '9'))
+            {
+                while( (caract >= '0') && (caract <= '9'))
+                {
+                    chiffre = caract - 48;
+                    resultat = ((resultat*10)+chiffre);
+                    scanf("%c", &caract);
+                }
+                empiler(resultat);
+            }
+
+        }
+        
+        printf("Résultat : %d\n", depiler());
+
+    return EXIT_SUCCESS;
+}				/* ----------  end of function main  ---------- */
+
+void initialiser_pile(void)
+{
+    nbelements = 0;
+}
+
+void empiler(int c)
+{
+    pile[nbelements++] = c; 
+}
+
+int depiler(void)
+{
+    return pile[--nbelements];
+}
+
+int pile_vide(void)
+{
+    return !nbelements;
+}

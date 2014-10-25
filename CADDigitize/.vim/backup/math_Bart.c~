@@ -1,0 +1,73 @@
+// =====================================================================================
+// 
+//       Filename:  math_Bart.c
+// 
+//    Description:  Math functions
+// 
+//        Version:  1.0
+//        Created:  21.10.2012 19:58:24
+//       Revision:  none
+//       Compiler:  clang
+// 
+//         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+//        Company:  
+// 
+// =====================================================================================
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+
+long gcd_iter(long a, long b);
+long gcd_recurs(long a, long b);
+long lcm(long a, long b);
+
+int main(int argc, char *argv[])
+{
+    if (argc != 3)
+    {
+        fprintf(stderr, "Usage : %s <nombre 1> <nombre 2>\n", argv[0]);
+        exit(0);
+    }
+    clock_t startTime = clock();
+    fprintf(stdout, "Iteration gcd(%s,%s) = %ld\n", argv[1], argv[2], gcd_iter(strtol(argv[1],NULL,10),strtol(argv[2],NULL,10)));
+    fprintf(stdout, "Exécution : %lf s\n", (double)( clock() - startTime ) / (double)CLOCKS_PER_SEC);
+
+    startTime = clock();
+    fprintf(stdout, "Recursion gcd(%s,%s) = %ld\n", argv[1], argv[2], gcd_recurs(strtol(argv[1],NULL,10),strtol(argv[2],NULL,10)));
+    fprintf(stdout, "Exécution : %lf s\n", (double)( clock() - startTime ) / (double)CLOCKS_PER_SEC);
+
+    fprintf(stdout, "lcm(%s, %s) = %ld\n",argv[1], argv[2],  lcm(strtol(argv[1],NULL,10),strtol(argv[2],NULL,10)));
+
+    return 0;
+}
+
+long gcd_iter(long a, long b)
+{
+    long t;
+
+    while(b != 0)
+    {
+        t = a;
+        a = b;
+        b = t % a;
+    }
+    return a;
+
+}
+
+long gcd_recurs(long a, long b)
+{
+    if(b != 0)
+        return gcd_recurs(b, a%b);
+    else
+        return a;
+
+}
+
+long lcm(long a, long b)
+{
+
+    return labs(a*b)/gcd_iter(a,b);
+}

@@ -1,0 +1,11 @@
+#/usr/bin/env Rscript
+#script R pour séparer un fichier par année
+argv <- commandArgs(TRUE)
+meteo <- read.csv2(argv[1], na.strings="mq")
+
+for (v in unique(format(strptime(meteo$DATE, "%d/%m/%Y"), "%Y")))
+{
+    fic = paste(v, "csv", sep=".")
+    tab <- meteo[(format(strptime(meteo$DATE, "%d/%m/%Y"), "%Y")==v), ]
+    write.csv2(tab, fic)
+}

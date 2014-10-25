@@ -1,0 +1,12 @@
+#!/bin/bash
+cd /home/bart/.conky/image/
+
+# Telechargement (uniquement si image plus recente)
+wget -m -nd http://oiswww.eumetsat.org/IPPS/html/latestImages/EUMETSAT_MSG_VIS006EColor-westernEurope.jpg
+# Copie de l image
+cp EUMETSAT_MSG_VIS006EColor-westernEurope.jpg /home/bart/.conky/image/imagesattmp.jpg
+
+# Ajustement de l image : reduction recadrage et suppression de la bande inférieure
+convert imagesattmp.jpg -resize 64% imagesattmp2.jpg
+convert imagesattmp2.jpg -crop 395x200+0+50-10 image.jpg
+exit

@@ -1,0 +1,10 @@
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
+print "Veuillez entrer un nombre :"
+a = float(raw_input())
+
+if a < 0:
+    print "La racine carrée de",a,"ne peut être calculée"
+else:
+    print "La racine carrée de",a,"est", sqrt(a)

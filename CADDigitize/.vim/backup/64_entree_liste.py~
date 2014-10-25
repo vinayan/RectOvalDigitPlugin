@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
+liste = []
+ch = "debut"        # valeur non nulle
+
+while ch != "":
+    print "Veuillez entrer une valeur"
+    a=raw_input()
+    if ch != "":
+        liste.append(float(a))
+
+print liste

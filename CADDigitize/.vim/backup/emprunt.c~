@@ -1,0 +1,59 @@
+// =====================================================================================
+// 
+//       Filename:  emprunt.c
+// 
+//    Description:  Calcul la mensualité d'un crédit immobilier à taux fixe
+// 
+//        Version:  1.0
+//        Created:  03.11.2012 20:34:22
+//       Revision:  none
+//       Compiler:  clang++
+// 
+//         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+//        Company:  
+// 
+// =====================================================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+double calcul_emprunt(long Capital, int Annees, float Taux_an);
+int main(int argc, char *argv[])
+{
+    if(argc!=4)
+    {
+        fprintf(stderr, "Usage : %s <Capital emprunté> <nombre d'années> <taux annuel>\n", argv[0]);
+        exit(0);
+    }
+
+    long capital = strtol(argv[1],NULL,10);
+    int annees = (int)strtol(argv[2], NULL, 10);
+    float taux_an = strtof(argv[3], NULL);
+
+    double mensualite = calcul_emprunt(capital, annees, taux_an);
+    printf("Les Mensualités sont de %8.2f\n", mensualite);
+
+    return EXIT_SUCCESS;
+}
+
+double calcul_emprunt(long Capital, int Annees, float Taux_an)
+{
+
+    double mensu = 0.0;
+    int nbMois = Annees*12;
+    double taux_mens = (Taux_an/100)/12;
+
+    /* Formule : */
+    /* M = C * T * ( ((1+T)^N) / (((1+T)^N)-1) ) */
+    /* C : Capital */
+    /* T : Taux mensuel */
+    /* N : Nombre de mois */
+
+    double calcul_ct = (double)Capital * (double)taux_mens;
+    double calcul_op = pow((1.0+ taux_mens), nbMois);
+
+    mensu = calcul_ct * (calcul_op / (calcul_op -1));
+
+    return mensu;
+}

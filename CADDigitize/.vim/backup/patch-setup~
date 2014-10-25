@@ -1,0 +1,16 @@
+--- setup.py.orig	2013-03-08 23:47:48.000000000 +0100
++++ setup.py	2013-03-08 23:49:25.000000000 +0100
+@@ -92,10 +92,10 @@
+     print "Downloading amalgation."
+ 
+     # find out what's current amalgamation ZIP file
+-    download_page = urllib.urlopen("https://www.gaia-gis.it/fossil/libspatialite/index").read()
++    download_page = urllib.urlopen("https://www.gaia-gis.it/gaia-sins/libspatialite-sources/").read()
+     pattern = re.compile("(libspatialite-amalgamation.*?\.zip)")
+-    download_file = pattern.findall(download_page)[0]
+-    amalgamation_url = "http://www.gaia-gis.it/gaia-sins/" + download_file
++    download_file = pattern.findall(download_page)[-1]
++    amalgamation_url = "http://www.gaia-gis.it/gaia-sins/libspatialite-sources/" + download_file
+     zip_dir = string.replace(download_file,'.zip','')
+     # and download it
+     urllib.urlretrieve(amalgamation_url, "tmp.zip")

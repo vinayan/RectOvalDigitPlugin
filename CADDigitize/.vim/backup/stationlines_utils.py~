@@ -1,0 +1,26 @@
+# -*- coding:utf-8 -*-
+
+from PyQt4.QtCore import *
+from qgis.core import *
+from qgis.gui import *
+
+def listVectorLayer(canvas, layertype):
+    """ return all Vector Layers from a LayerType into a list
+        input :
+            canvas - The MapCanvas
+            layertype - The LayerType like QGis.Line
+        result :
+            A list with a tuple : (An id, Name of the layer)"""
+    m = canvas
+    return [(id, x.name()) for id, x in enumerate(m.layers()) if x.type() == QgsMapLayer.VectorLayer and x.geometryType() == layertype]
+
+def listFieldsFromLayer(layer):
+    """ return all Fields from a Layer
+        input :
+            layer - The Vector Layer
+        result :
+            A list with a tuple : (An id, Name of the field)"""
+    l = layer.dataProvider()
+    return [(id, field.name()) for id, field in enumerate(l.fields()) if field.type() == QVariant.Int or field.type() == QVariant.Double]
+
+

@@ -15,6 +15,7 @@ from CADDigitize_dialog import Ui_CADDigitizeDialog
 class CircleBy2PointsTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
+        self.settings = QSettings()
         self.canvas=canvas
         self.nbPoints = 0
         self.rb = None
@@ -95,8 +96,9 @@ class CircleBy2PointsTool(QgsMapTool):
         self.nbPoints += 1
 
         if self.nbPoints == 2:
+            segments = self.settings.value("/CADDigitize/segments",36,type=int)
             self.circ_center, self.circ_rayon = calc_circleBy2Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2))
-            geom = QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, 360)
+            geom = QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, segments)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
@@ -107,12 +109,13 @@ class CircleBy2PointsTool(QgsMapTool):
 
 
     def canvasMoveEvent(self,event):
+        segments = self.settings.value("/CADDigitize/segments",36,type=int)
         if not self.rb:return
         currpoint = self.toMapCoordinates(event.pos())
         currx = currpoint.x()
         curry = currpoint.y()
         self.circ_center, self.circ_rayon = calc_circleBy2Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(currx, curry))
-    	self.rb.setToGeometry(QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, 360), None)
+    	self.rb.setToGeometry(QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, segments), None)
 
     def showSettingsWarning(self):
         pass
@@ -137,6 +140,7 @@ class CircleBy2PointsTool(QgsMapTool):
 class CircleBy3PointsTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
+        self.settings = QSettings()
         self.canvas = canvas
         self.nbPoints = 0
         self.rb = None
@@ -219,9 +223,10 @@ class CircleBy3PointsTool(QgsMapTool):
         self.nbPoints += 1
 
         if self.nbPoints == 3:
+            segments = self.settings.value("/CADDigitize/segments",36,type=int)
             self.circ_center, self.circ_rayon = calc_circleBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3))
             if self.circ_center != -1 or self.circ_rayon != -1:
-                geom = QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, 360)
+                geom = QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, segments)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
@@ -241,9 +246,10 @@ class CircleBy3PointsTool(QgsMapTool):
             self.rb.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p1, self.y_p1), QgsPoint(currx, curry)]), None)
 
         if self.nbPoints >= 2 and calc_isCollinear(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry)) != 0:
+            segments = self.settings.value("/CADDigitize/segments",36,type=int)
             self.circ_center, self.circ_rayon = calc_circleBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry))
             if self.circ_center != -1 or self.circ_rayon != -1:
-                self.rb.setToGeometry(QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, 360), None)
+                self.rb.setToGeometry(QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, segments), None)
 
     def showSettingsWarning(self):
         pass
@@ -268,6 +274,7 @@ class CircleBy3PointsTool(QgsMapTool):
 class CircleByCenterPointTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
+        self.settings = QSettings()
         self.canvas=canvas
         self.nbPoints = 0
         self.rb = None
@@ -348,8 +355,9 @@ class CircleByCenterPointTool(QgsMapTool):
         self.nbPoints += 1
 
         if self.nbPoints == 2:
+            segments = self.settings.value("/CADDigitize/segments",36,type=int)
             self.circ_center, self.circ_rayon = calc_circleByCenterPoint(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2))
-            geom = QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, 360)
+            geom = QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, segments)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
@@ -360,12 +368,13 @@ class CircleByCenterPointTool(QgsMapTool):
 
 
     def canvasMoveEvent(self,event):
+        segments = self.settings.value("/CADDigitize/segments",36,type=int)
         if not self.rb:return
         currpoint = self.toMapCoordinates(event.pos())
         currx = currpoint.x()
         curry = currpoint.y()
         self.circ_center, self.circ_rayon = calc_circleByCenterPoint(QgsPoint(self.x_p1, self.y_p1), QgsPoint(currx, curry))
-    	self.rb.setToGeometry(QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, 360), None)
+    	self.rb.setToGeometry(QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, segments), None)
 
     def showSettingsWarning(self):
         pass
@@ -389,6 +398,7 @@ class CircleByCenterPointTool(QgsMapTool):
 class CircleByCenterRadiusTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
+        self.settings = QSettings()
         self.canvas=canvas
         self.nbPoints = 0
         self.rb = None
@@ -499,8 +509,9 @@ class CircleByCenterRadiusTool(QgsMapTool):
 
         if self.nbPoints == 2:
             self.dialog.close()
+            segments = self.settings.value("/CADDigitize/segments",36,type=int)
             self.circ_center, self.circ_rayon = calc_circleByCenterPoint(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2))
-            geom = QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, 360)
+            geom = QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, segments)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry = None, None, None, None, None, None
@@ -512,6 +523,7 @@ class CircleByCenterRadiusTool(QgsMapTool):
 
 
     def canvasMoveEvent(self,event):
+        segments = self.settings.value("/CADDigitize/segments",36,type=int)
         if not self.rb:return
         currpoint = self.toMapCoordinates(event.pos())
         self.currx = currpoint.x()
@@ -521,7 +533,7 @@ class CircleByCenterRadiusTool(QgsMapTool):
             self.dialog.SpinBox_Radius.setValue(self.circ_rayon)
 
 
-    	self.rb.setToGeometry(QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, 360), None)
+    	self.rb.setToGeometry(QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, segments), None)
 
     def showSettingsWarning(self):
         pass

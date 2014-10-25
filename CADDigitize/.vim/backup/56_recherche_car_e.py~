@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
+#ch = "Ceci est une chaine contenant e"
+ch = " La, nous l'avons pas"
+
+len_ch = len(ch)    # longueur de la chaîne
+cr = "e"            # caractère à trouver
+i = 0               # indice en cours
+t = 0               # nombre d'occurences trouvées
+
+while i<len_ch:
+    if ch[i] == cr:
+        t +=1
+    i+=1
+
+# Résultat
+if t > 0:
+    print "Le caractère ", cr, " a été trouvé ", t, " fois."
+else:
+    print "Le caractère ", cr, " n'a pas été trouvé."
+

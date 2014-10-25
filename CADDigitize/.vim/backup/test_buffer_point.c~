@@ -1,0 +1,97 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  test_buffer_point.c
+ *
+ *    Description:  
+ *
+ *        Version:  1.0
+ *        Created:  01.12.2013 10:16:40
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+ *   Organization:  
+ *
+ * =====================================================================================
+ */
+
+
+#include	<stdlib.h>
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  main
+ *  Description:  
+ * =====================================================================================
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+#define PI 3.141592654
+
+void buffer(float x, float y, float rayon, int nb_quad);
+void buffer_3d(float x, float y, float z, float dtheta, float dphi, float rayon);
+    
+    int
+main ( int argc, char *argv[] )
+{
+    int nb_quad = 5;
+
+    if (argc != 7)
+    {
+        printf("Usage : %s x, y, z, dtheta, dphi, rayon\n", argv[0]);
+            /*usage();*/
+    }
+                buffer_3d(strtof(argv[1], NULL), strtof(argv[2], NULL), strtof(argv[3], NULL), strtof(argv[4], NULL), strtof(argv[5], NULL), strtof(argv[6], NULL));
+
+    
+    return EXIT_SUCCESS;
+}				/* ----------  end of function main  ---------- */
+
+void buffer(float x, float y, float rayon, int nb_quad)
+{
+    float angle = (2*PI)/(nb_quad*4);
+    float ang_pos = 0;
+
+    int i;
+
+    for (i=0 ; i < nb_quad*4; i++)
+    {
+        float x_buf,y_buf;
+        x_buf = cos(ang_pos)*rayon + x;
+        y_buf = sin(ang_pos)*rayon + y;
+        ang_pos += angle;
+        printf("POINT(%f %f)\n", x_buf, y_buf);
+    }
+}
+
+void buffer_3d(float x, float y, float z, float dtheta, float dphi, float rayon)
+{
+/*    printf("POINT(");*/
+    int theta, phi;
+    float x_buf,y_buf, z_buf = -rayon;
+    
+    for (theta=-90;theta<=90-dtheta;theta+=dtheta)
+    {
+        /*if(theta==-90)
+            printf("(");
+        else
+            printf("),\n(");*/
+        for (phi=1;phi<=360-dphi;phi+=dphi) 
+        { 
+            /*if(phi!=0)
+                printf(",");*/
+            x_buf = cos(phi)*cos(theta)*rayon + x;
+            y_buf = sin(phi)*cos(theta)*rayon + y;            
+            z_buf = sin(theta)*rayon +z;            
+            printf("INSERT INTO \"TEMP\".test3d(geom) VALUES ST_GeomFromText('POINT Z(%f %f %f)',3946)\n", x_buf, y_buf, z_buf);
+        }
+    }
+    /*printf(")\n)\n");*/
+
+}
+
+

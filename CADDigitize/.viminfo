@@ -1,0 +1,1469 @@
+# Ce fichier viminfo a été généré par Vim 7.4.
+# Vous pouvez l'éditer, mais soyez prudent.
+
+# 'encoding' dans lequel ce fichier a été écrit
+*encoding=utf-8
+
+
+# hlsearch on (H) or off (h):
+~h
+# Dernier motif de recherche  :
+~MSle0~/measureLin
+
+# Dernier motif de recherche Substitue  :
+~MSle0&\V\CellipseBy4Points
+
+# Dernières chaînes de substitution :
+$
+
+# Historique ligne de commande (chronologie décroissante) :
+:wq
+:w
+:q
+:close
+:set softtabstop=4
+:set shiftwidth=4
+:set tabstop=4
+:set expandtab
+:'<,'>set expandtab
+:set ai!
+:set indent
+:tabnoindent
+:q!
+:W
+:Q
+:w!
+:w courrier_maison
+:w Desktop/redemarrer.sh
+:tabnew
+:w Desktop/eteindre.sh
+:w stationlines_side.py
+:%retab!
+:x
+:run
+:e mail
+:w personne.py
+:w mail
+:w caf
+:tabnew header/simple.h
+:tabnew src/simple.c
+:!bin/liste
+:make
+:tabnew src/main.c
+:!gdb bin/liste
+:CMake
+:clsoe
+:cmake
+:echo has('x11') && has('clipboard')
+:tabfirst
+:tabf
+:help tabe
+:e src/main.c
+:open src/main.C
+:open
+:cd ../lib_liste/
+:tabnew 
+:cd Downloads/
+:tabnew lib
+:s/postgres/bart/g
+:CMake 
+:h clang_complete
+:w test.x3d
+:w /home/bart/SVN/lbartoletti/M
+:w /home/bart/SVN/lbartoletti/devel/liblas/Makefile
+:%s/.$//
+:s/.$//
+:s//\n//
+:s///\n//
+:s|/\n|/|
+:s|${LOCALBASE}|/usr/local|g
+:<
+:'<,'>q
+:w main.asm
+:w main.m
+:w mail_credit.txt
+:s|/usr/ports/databases/||
+:s/ttk.//g
+:s
+
+# Historique chaîne de recherche (chronologie décroissante) :
+? \s\+$
+?/measureLin
+?/measure
+? \V\Cself.
+? \V\Cself.yc
+?/ ^M
+? \V\CellipseBy4Points
+? \V\CellipseByCenter3Points
+? \V\CellipseByCenter2Points
+? \V\CcircleBy2Points
+? \<def\>
+? \V\Cmath.
+? \V\Cfabs
+?/Gemet
+? \V\Cmenu_test
+?/firefox
+?/openld
+?/define DLL
+?/DLL
+? \V\C<datasource>.\/simple_network.sqlite
+?/zip
+?/gami
+?/tagli
+?/Dist
+? \V\Cstroke-width 0.09
+? \V\Cstroke-width:0.99;
+? \V\Ccalc_distance(
+? \V\C distance
+?/kpath
+?/delete
+? \V\CError: Orphaned: 
+?/lrel
+?/FORCE
+?/force
+?/MPI
+?/PYT
+?/num
+?/NUM
+?/Intens
+?/_VSTD
+?/HDF5
+?/xerc
+?/boo
+?/xml2
+?/geotiff
+?/gnutl
+?/BUILD
+?/ReadNode
+? \<features\>
+?/nan
+?/std
+?/sfcg
+?/nb_fe
+?/position
+?/chk_se
+? ):
+? \<QgsField\>
+?/chk_no
+?/desktop
+?/INSTALL
+?/COMPILER
+?/ECHO
+?/githu
+?/slf
+? \<_slotValueDistanceClicked\>
+?/group
+?/rcc
+? \<etc\>
+? \V\C\'
+?/local
+?/pq.5
+?/fst
+?/fstab
+?// Copie un fichier entier dans un vecteur de chaînes de caractères
+?//: C02:Fillvector.cpp
+?/*// nclude <string>
+?/*    Description:  //: C02:Fillvector.cpp
+?/*
+?/*       Filename:  Fillvector.cpp
+?/* =====================================================================================
+?/*  */
+? \<Copie\>
+?/*// Copie un fichier entier dans un vecteur de chaînes de caractères
+? \V\Cdevel\/c
+? \V\C\/usr\/ports\/
+?/theme
+?/images
+?/share
+?/usr/local/pgsql/data/postgresql.conf
+?/error
+?/OSVERSION
+?/startfi
+?/connec
+?/connectN
+? ^\s*$
+?//
+?/   
+? \V\C, 
+?/SHARE
+? \V\Cpostgres
+? postgres
+?/postgres
+?/compiler
+?/langu
+?/DTOR
+?/cabe
+?/df
+?/glx
+?/free
+?/keym
+? \V\C-- Installing: \/work\/a\/ports\/databases\/pgrouting\/work\/stage\/usr\/local\/
+?/lib
+?/pgrouting--
+?/coin
+?/SF
+?/mbtil
+? \V\Clib64
+?/lib64
+?/mbtiles
+?/MBT
+?/bin
+? \V\C%%GRASS_INST_DIR%%
+?/i.ortho
+?/GEOTIF
+?/sqli
+?/grass64
+?/driver
+?/sqlit
+? \V\C\/usr\/local\/grass-6.4.4
+?/transl
+? \V\Cpkg-static: lstat(
+? \V\C): No such file or directory
+? .$
+? \V\C\<$${LOCALBASE}\>
+?/memory
+?/namespace cb
+? \<USE_GCC\>
+?/hack
+?/shared_ptr
+?/shared_pt
+?/GGRAPH
+?/--- d
+? \V\C\/usr\/ports\/databases
+?/enti
+?/xmms
+? \V\Cttk.
+? ttk.
+
+# Historique expression (chronologie décroissante) :
+
+# Historique ligne de saisie (chronologie décroissante) :
+@y
+@*liste_new(void);
+@display_liste
+@add_elem
+@liste_simple
+@sll
+
+# Historique ligne de saisie (chronologie décroissante) :
+
+# Registres :
+"0	LINE	0
+	from tools.calc import *
+"1	CHAR	0
+	A QGis plugin 
+"2	CHAR	0
+	Rectangles Ovals Digitizing Plugin
+	
+"3	LINE	0
+	            self.distP1P3 = QgsDistanceArea().measureLine(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p3, self.y_p3))
+	            self.distP2P3 = QgsDistanceArea().measureLine(QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3))
+"4	CHAR	0
+	QgsGeometry.fromPolyline([QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3)])
+	            print 
+"5	LINE	0
+	            print ellipseFromFoci(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry))
+"6	LINE	0
+	            self.distTotal = self.distP1P3 + self.distP2P3
+"7	LINE	0
+	            geom = QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, 360)
+"8	CHAR	0
+	ellipseFromFoci(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3)
+"9	CHAR	0
+	            self.circ_center, self.circ_rayon = calc_circleBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry))
+	            if self.circ_center != -1 or self.circ_rayon != -1:
+	
+"-	CHAR	0
+	Ovals
+
+# Marques dans le fichier :
+'0  73  2  ~/scripts/portupdater.sh
+'1  110  22  /etc/X11/xorg.conf
+'2  2861  0  /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/lib/modification/rs_modification.cpp
+'3  74  0  /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/actions/rs_actionmodifyround.cpp
+'4  1181  0  /tmp/WhichEllipsesGoThroughFourPoints-source.nb
+'5  3  28  ~/SVN/github/CADDigitize/README
+'6  16  0  ~/SVN/github/advanceddraw/AdvancedDraw/metadata.txt
+'7  1  0  ~/SVN/github/advanceddraw/AdvancedDraw/metadata.txt
+'8  38  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_circle.py
+'9  13  53  ~/SVN/github/CADDigitize/CADDigitize/advanced_draw_tools_ellipse.py
+
+# Liste de sauts (le plus récent en premier) :
+-'  73  2  ~/scripts/portupdater.sh
+-'  1  0  ~/scripts/portupdater.sh
+-'  110  22  /etc/X11/xorg.conf
+-'  1  0  /etc/X11/xorg.conf
+-'  2861  0  /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/lib/modification/rs_modification.cpp
+-'  1  0  /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/lib/modification/rs_modification.cpp
+-'  74  0  /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/actions/rs_actionmodifyround.cpp
+-'  1  0  /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/actions/rs_actionmodifyround.cpp
+-'  1181  0  /tmp/WhichEllipsesGoThroughFourPoints-source.nb
+-'  1  0  /tmp/WhichEllipsesGoThroughFourPoints-source.nb
+-'  3  28  ~/SVN/github/CADDigitize/README
+-'  1  12  ~/SVN/github/CADDigitize/README
+-'  16  0  ~/SVN/github/advanceddraw/AdvancedDraw/metadata.txt
+-'  1  0  ~/SVN/github/advanceddraw/AdvancedDraw/metadata.txt
+-'  38  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_circle.py
+-'  1  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_circle.py
+-'  13  53  ~/SVN/github/CADDigitize/CADDigitize/advanced_draw_tools_ellipse.py
+-'  1  0  ~/SVN/github/CADDigitize/CADDigitize/advanced_draw_tools_ellipse.py
+-'  14  0  ~/SVN/github/CADDigitize/CADDigitize/ui_getDistance.py
+-'  1  0  ~/SVN/github/CADDigitize/CADDigitize/ui_getDistance.py
+-'  18  0  ~/SVN/github/CADDigitize/.git/COMMIT_EDITMSG
+-'  1  0  ~/SVN/github/CADDigitize/.git/COMMIT_EDITMSG
+-'  1  0  ~/SVN/github/CADDigitize/.git/config
+-'  1  0  ~/SVN/github/CADDigitize/.git/HEAD
+-'  1  0  ~/SVN/github/CADDigitize/.git/index
+-'  15  0  ~/SVN/github/advanceddraw/AdvancedDraw/tools/ellipse.py
+-'  1  0  ~/SVN/github/advanceddraw/AdvancedDraw/tools/ellipse.py
+-'  557  142  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  538  12  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  558  11  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  556  26  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  12  17  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  457  26  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  533  11  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  529  145  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  537  29  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  526  19  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  528  20  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  532  21  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  116  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  155  119  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  112  131  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  75  51  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  82  69  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  79  26  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  1  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  13  0  ~/.qgis2/python/plugins/CadInput/CadEventFilter.py
+-'  1  0  ~/.qgis2/python/plugins/CadInput/CadEventFilter.py
+-'  69  0  ~/.qgis2/python/plugins/CadInput/CadPaintWidget.py
+-'  1  0  ~/.qgis2/python/plugins/CadInput/CadPaintWidget.py
+-'  90  0  ~/.qgis2/python/plugins/CadInput/CadIntersection.py
+-'  1  0  ~/.qgis2/python/plugins/CadInput/CadIntersection.py
+-'  1  10  ~/test2.csvt
+-'  8  1  ~/test2.csv
+-'  1  0  ~/test2.csv
+-'  7  8  ~/test.csv
+-'  1  0  ~/test.csv
+-'  1  0  /media/NAS/Dossiers No/mdp_gmail.txt
+-'  256  8  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  149  25  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  126  41  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  153  41  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  152  206  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  22  27  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  145  106  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  148  11  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  130  71  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  125  47  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  115  114  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+-'  83  0  ~/.qgis2/python/plugins/rectovalDigit/rectovaldigittools.py
+-'  1  0  ~/.qgis2/python/plugins/rectovalDigit/rectovaldigittools.py
+-'  74  0  /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/actions/rs_actiondrawellipseaxis.cpp
+-'  1  0  /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/actions/rs_actiondrawellipseaxis.cpp
+-'  185  0  ~/.qgis2/python/plugins/rectovalDigit/rectovaldigittools.py
+-'  131  0  ~/.qgis2/python/plugins/rectovalDigit/rectovaldigittools.py
+-'  278  0  /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/actions/rs_actiondrawellipseaxis.cpp
+-'  137  96  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  1  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  142  19  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  35  31  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  187  60  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  392  54  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  326  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  325  50  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  276  15  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  261  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  165  35  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  249  3  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  168  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  238  19  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  166  29  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  194  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  188  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  184  40  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  185  40  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  170  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+-'  28  0  ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+
+# Historique des marques dans les fichiers (les plus récentes en premier) :
+
+> ~/scripts/portupdater.sh
+	"	73	2
+	^	73	2
+	.	31	33
+	+	29	0
+	+	30	0
+	+	31	33
+
+> /etc/X11/xorg.conf
+	"	110	22
+
+> /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/lib/modification/rs_modification.cpp
+	"	2861	0
+
+> /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/actions/rs_actionmodifyround.cpp
+	"	74	0
+
+> /tmp/WhichEllipsesGoThroughFourPoints-source.nb
+	"	1181	0
+
+> ~/SVN/github/CADDigitize/README
+	"	3	28
+	^	3	29
+	.	3	28
+	+	1	0
+	+	3	0
+	+	1	58
+	+	3	0
+	+	1	32
+	+	3	28
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/metadata.txt
+	"	16	0
+	^	10	16
+	.	10	15
+	+	10	15
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_circle.py
+	"	38	0
+	^	543	0
+	.	543	0
+	+	544	0
+	+	543	0
+	z	543	0
+
+> ~/SVN/github/CADDigitize/CADDigitize/advanced_draw_tools_ellipse.py
+	"	13	53
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/README.txt
+	"	1	0
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/Makefile
+	"	231	0
+	^	57	13
+	.	57	12
+	+	33	19
+	+	47	19
+	+	118	0
+	+	60	31
+	+	64	0
+	+	61	0
+	+	116	0
+	+	113	57
+	+	118	0
+	+	105	37
+	+	113	65
+	+	115	14
+	+	113	64
+	+	115	77
+	+	36	17
+	+	47	20
+	+	51	28
+	+	37	1
+	+	51	1
+	+	40	16
+	+	54	0
+	+	52	12
+	+	53	15
+	+	54	19
+	+	115	0
+	+	114	0
+	+	116	0
+	+	114	62
+	+	117	79
+	+	53	17
+	+	55	10
+	+	33	26
+	+	34	0
+	+	35	0
+	+	34	24
+	+	35	27
+	+	47	0
+	+	41	0
+	+	40	17
+	+	41	12
+	+	56	17
+	+	57	12
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/Makefile.bak
+	"	23	0
+
+> ~/SVN/github/CADDigitize/CADDigitize/ui_getDistance.py
+	"	14	0
+
+> ~/SVN/github/CADDigitize/.git/COMMIT_EDITMSG
+	"	18	0
+
+> ~/SVN/github/CADDigitize/.git/config
+	"	1	0
+
+> ~/SVN/github/CADDigitize/.git/HEAD
+	"	1	0
+
+> ~/SVN/github/CADDigitize/.git/index
+	"	1	0
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/tools/ellipse.py
+	"	15	0
+	^	8	18
+	.	8	17
+	+	18	0
+	+	3	0
+	+	2	22
+	+	18	53
+	+	29	4
+	+	17	29
+	+	19	90
+	+	29	4
+	+	30	0
+	+	3	23
+	+	20	43
+	+	25	0
+	+	24	0
+	+	4	18
+	+	24	60
+	+	6	17
+	+	7	4
+	+	8	4
+	+	9	4
+	+	10	4
+	+	11	8
+	+	12	8
+	+	13	8
+	+	15	0
+	+	15	14
+	+	6	54
+	+	7	0
+	+	11	0
+	+	14	0
+	+	29	10
+	+	3	5
+	+	18	19
+	+	29	4
+	+	24	4
+	+	23	4
+	+	21	4
+	+	20	4
+	+	19	4
+	+	18	4
+	+	18	4
+	+	19	4
+	+	20	4
+	+	21	4
+	+	23	4
+	+	24	4
+	+	29	4
+	+	19	71
+	+	25	4
+	+	27	37
+	+	25	0
+	+	8	17
+	z	8	17
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_ellipse.py
+	"	28	0
+	^	557	143
+	.	557	136
+	+	122	0
+	+	127	0
+	+	130	71
+	+	146	0
+	+	146	0
+	+	148	0
+	+	145	106
+	+	22	27
+	+	125	111
+	+	152	206
+	+	153	41
+	+	126	41
+	+	123	23
+	+	122	25
+	+	149	25
+	+	256	0
+	+	24	50
+	+	78	0
+	+	73	25
+	+	74	0
+	+	78	0
+	+	78	0
+	+	75	51
+	+	76	25
+	+	77	25
+	+	79	0
+	+	80	0
+	+	81	0
+	+	80	25
+	+	81	25
+	+	82	69
+	+	112	124
+	+	116	111
+	+	155	25
+	+	143	25
+	+	155	130
+	+	116	129
+	+	112	129
+	+	74	51
+	+	75	51
+	+	112	131
+	+	116	132
+	+	155	133
+	+	116	132
+	+	112	132
+	+	116	125
+	+	112	125
+	+	155	127
+	+	143	104
+	+	155	119
+	+	116	0
+	+	578	110
+	+	451	0
+	+	456	68
+	+	457	40
+	+	458	25
+	+	525	18
+	+	526	19
+	+	528	20
+	+	529	20
+	+	532	20
+	+	525	0
+	+	456	129
+	+	457	35
+	+	538	39
+	+	537	0
+	+	537	0
+	+	538	118
+	+	538	121
+	+	538	57
+	+	529	36
+	+	459	27
+	+	529	145
+	+	556	29
+	+	558	0
+	+	557	143
+	+	529	36
+	+	531	8
+	+	532	11
+	+	533	11
+	+	457	26
+	+	12	17
+	+	557	34
+	+	558	128
+	+	557	110
+	+	558	118
+	+	557	148
+	+	556	26
+	+	538	133
+	+	556	26
+	+	557	122
+	+	558	0
+	+	558	12
+	+	557	145
+	+	558	0
+	+	538	145
+	+	539	0
+	+	538	0
+	+	558	34
+	+	557	136
+	z	557	142
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/tools/calc.py
+	"	83	18
+	^	83	19
+	.	83	18
+	+	83	18
+	z	83	18
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/tools/general.py
+	"	17	0
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/tools/circle.py
+	"	62	0
+	^	3	11
+	.	3	0
+	+	115	0
+	+	116	0
+	+	117	20
+	+	140	0
+	+	117	20
+	+	116	21
+	+	115	22
+	+	116	11
+	+	117	13
+	+	116	13
+	+	115	3
+	+	116	3
+	+	117	18
+	+	115	0
+	+	116	0
+	+	117	3
+	+	116	3
+	+	115	3
+	+	125	0
+	+	138	0
+	+	140	0
+	+	133	18
+	+	134	78
+	+	138	0
+	+	130	52
+	+	131	0
+	+	128	55
+	+	134	78
+	+	136	21
+	+	139	1
+	+	134	76
+	+	92	17
+	+	89	18
+	+	92	32
+	+	94	0
+	+	124	0
+	+	1	22
+	+	4	0
+	+	2	23
+	+	3	11
+	+	3	0
+	z	3	0
+
+> /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/lib/engine/rs_ellipse.cpp
+	"	65	0
+
+> ~/.qgis2/python/plugins/CadInput/CadEventFilter.py
+	"	13	0
+
+> ~/.qgis2/python/plugins/CadInput/CadPaintWidget.py
+	"	69	0
+
+> ~/.qgis2/python/plugins/CadInput/CadIntersection.py
+	"	90	0
+
+> ~/test2.csvt
+	"	1	10
+	^	1	11
+	.	1	10
+	+	1	10
+
+> ~/test2.csv
+	"	8	1
+	^	8	2
+	.	8	1
+	+	1	2
+	+	2	1
+	+	3	1
+	+	4	1
+	+	5	1
+	+	6	1
+	+	7	1
+	+	8	1
+
+> ~/test.csv
+	"	7	8
+	^	7	8
+	.	7	7
+	+	1	15
+	+	7	7
+	+	1	4
+	+	2	3
+	+	3	3
+	+	4	4
+	+	5	3
+	+	6	3
+	+	7	2
+	+	1	9
+	+	2	7
+	+	3	7
+	+	4	8
+	+	5	8
+	+	6	8
+	+	7	7
+
+> /media/NAS/Dossiers No/mdp_gmail.txt
+	"	1	0
+
+> ~/.qgis2/python/plugins/rectovalDigit/rectovaldigittools.py
+	"	90	0
+	.	336	6
+	+	336	6
+
+> /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/actions/rs_actiondrawellipseaxis.cpp
+	"	74	0
+
+> /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/actions/rs_actiondrawellipse4points.cpp
+	"	65	0
+
+> /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/actions/rs_actiondrawellipse4points.h
+	"	32	0
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw.py
+	"	137	96
+	^	137	97
+	.	137	96
+	+	159	0
+	+	166	29
+	+	167	29
+	+	168	29
+	+	169	29
+	+	170	29
+	+	170	78
+	+	169	99
+	+	151	13
+	+	169	76
+	+	168	95
+	+	168	82
+	+	167	108
+	+	167	82
+	+	166	108
+	+	168	35
+	+	169	86
+	+	168	82
+	+	153	18
+	+	152	19
+	+	151	19
+	+	150	19
+	+	138	19
+	+	139	19
+	+	141	113
+	+	143	42
+	+	170	0
+	+	184	13
+	+	185	13
+	+	185	31
+	+	185	13
+	+	185	13
+	+	186	13
+	+	186	13
+	+	187	13
+	+	187	13
+	+	188	13
+	+	188	35
+	+	187	36
+	+	186	29
+	+	185	0
+	+	186	0
+	+	185	35
+	+	185	0
+	+	184	65
+	+	185	65
+	+	186	52
+	+	187	59
+	+	188	0
+	+	236	0
+	+	237	3
+	+	238	19
+	+	243	0
+	+	248	0
+	+	249	3
+	+	255	0
+	+	187	46
+	+	169	36
+	+	261	0
+	+	276	25
+	+	166	29
+	+	277	21
+	+	278	21
+	+	277	36
+	+	279	21
+	+	278	30
+	+	280	21
+	+	279	39
+	+	292	55
+	+	293	55
+	+	294	49
+	+	295	51
+	+	296	51
+	+	310	8
+	+	311	8
+	+	312	8
+	+	313	49
+	+	311	36
+	+	312	30
+	+	313	32
+	+	314	32
+	+	322	32
+	+	323	32
+	+	324	32
+	+	325	32
+	+	326	0
+	+	389	19
+	+	390	19
+	+	391	19
+	+	392	18
+	+	393	8
+	+	395	23
+	+	389	63
+	+	390	63
+	+	391	64
+	+	392	54
+	+	187	36
+	+	35	31
+	+	142	19
+	+	137	96
+	z	137	96
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/resources.qrc
+	"	1	0
+	^	15	38
+	.	15	37
+	+	4	0
+	+	12	0
+	+	12	0
+	+	12	0
+	+	12	0
+	+	4	20
+	+	12	0
+	+	5	0
+	+	6	0
+	+	7	0
+	+	5	28
+	+	6	39
+	+	7	0
+	+	8	7
+	+	7	39
+	+	8	23
+	+	9	0
+	+	10	0
+	+	11	0
+	+	9	31
+	+	10	33
+	+	11	35
+	+	12	34
+	+	13	25
+	+	14	35
+	+	15	37
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools_rect.py
+	"	140	24
+	^	509	0
+	.	502	0
+	+	197	4
+	+	206	8
+	+	202	33
+	+	206	0
+	+	203	0
+	+	157	75
+	+	158	0
+	+	231	7
+	+	230	0
+	+	235	40
+	+	232	40
+	+	235	39
+	+	235	47
+	+	237	3
+	+	238	49
+	+	264	0
+	+	193	7
+	+	192	7
+	+	237	11
+	+	238	11
+	+	235	40
+	+	240	11
+	+	241	11
+	+	156	17
+	+	254	8
+	+	255	8
+	+	256	8
+	+	257	19
+	+	256	26
+	+	255	30
+	+	203	0
+	+	206	0
+	+	283	0
+	+	415	0
+	+	398	0
+	+	398	41
+	+	398	0
+	+	398	41
+	+	289	14
+	+	323	12
+	+	323	7
+	+	355	18
+	+	356	18
+	+	323	0
+	+	398	0
+	+	364	3
+	+	365	7
+	+	366	11
+	+	365	11
+	+	364	11
+	+	366	11
+	+	367	11
+	+	368	11
+	+	369	11
+	+	370	11
+	+	364	30
+	+	365	30
+	+	375	28
+	+	416	0
+	+	323	62
+	+	323	8
+	+	323	8
+	+	364	31
+	+	365	31
+	+	366	0
+	+	398	12
+	+	398	4
+	+	323	0
+	+	398	4
+	+	381	0
+	+	384	0
+	+	399	0
+	+	398	0
+	+	382	0
+	+	357	33
+	+	388	47
+	+	389	23
+	+	394	53
+	+	371	57
+	+	388	0
+	+	357	0
+	+	533	0
+	+	418	0
+	+	499	12
+	+	507	0
+	+	505	31
+	+	506	11
+	+	499	58
+	+	501	0
+	+	500	12
+	+	501	11
+	+	502	11
+	+	502	11
+	+	503	11
+	+	504	11
+	+	505	11
+	+	506	11
+	+	507	11
+	+	508	11
+	+	502	0
+	z	502	12
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/-MiniBufExplorer-
+	"	3	0
+	.	4	0
+	+	5	0
+	+	4	0
+	+	4	0
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_tools.py
+	"	682	0
+	^	241	122
+	.	241	121
+	+	653	21
+	+	653	141
+	+	660	43
+	+	636	44
+	+	653	145
+	+	629	39
+	+	630	39
+	+	629	102
+	+	630	107
+	+	653	0
+	+	653	0
+	+	653	0
+	+	653	0
+	+	653	111
+	+	653	8
+	+	653	0
+	+	653	27
+	+	629	103
+	+	653	0
+	+	653	0
+	+	653	84
+	+	653	132
+	+	653	85
+	+	653	0
+	+	653	86
+	+	653	145
+	+	653	29
+	+	653	29
+	+	653	92
+	+	653	92
+	+	653	27
+	+	657	0
+	+	653	32
+	+	653	32
+	+	660	0
+	+	658	0
+	+	653	185
+	+	651	85
+	+	653	51
+	+	653	51
+	+	658	51
+	+	659	51
+	+	651	0
+	+	653	111
+	+	657	122
+	+	653	114
+	+	653	47
+	+	653	47
+	+	658	47
+	+	659	47
+	+	653	21
+	+	653	0
+	+	653	113
+	+	657	113
+	+	653	25
+	+	653	26
+	+	653	30
+	+	655	155
+	+	657	117
+	+	656	25
+	+	654	113
+	+	14	4
+	+	14	50
+	+	14	7
+	+	14	3
+	+	14	7
+	+	14	3
+	+	14	3
+	+	14	32
+	+	14	16
+	+	14	10
+	+	14	19
+	+	14	21
+	+	14	17
+	+	14	14
+	+	245	63
+	+	223	12
+	+	224	3
+	+	14	0
+	+	12	25
+	+	16	0
+	+	14	0
+	+	221	105
+	+	222	0
+	+	240	28
+	+	241	95
+	+	242	0
+	+	11	21
+	+	12	23
+	+	11	0
+	+	221	7
+	+	11	14
+	+	12	25
+	+	11	5
+	+	12	5
+	+	11	5
+	+	241	99
+	+	11	14
+	+	242	12
+	+	241	121
+	z	241	121
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/tools/math.py
+	"	3	0
+	^	14	0
+	.	3	0
+	+	2	0
+	+	3	11
+	+	3	0
+	z	3	0
+
+> ~/.qgis2/python/plugins/cadtools/cadtools.py
+	"	14	1
+
+> ~/.qgis2/python/plugins/cadtools/tools/__init__.py
+	"	1	0
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/__init__.py
+	"	26	0
+
+> ~/.qgis2/python/plugins/rectovalDigit/rectovaldigit.py
+	"	107	43
+
+> ~/.qgis2/python/plugins/DigitizingTools/digitizingtools.py
+	"	92	0
+
+> ~/.qgis2/python/plugins/DigitizingTools/tools/dttools.py
+	"	305	0
+
+> ~/.qgis2/python/plugins/numericalDigitize/resources.qrc
+	"	1	0
+
+> /media/KOBOeReader/metadata.calibre
+	"	303	0
+
+> /media/KOBOeReader/driveinfo.calibre
+	"	1	0
+
+> ~/pkg.csv
+	"	863	4
+
+> ~/epanet/epanet.c
+	"	111	0
+	^	111	0
+	.	111	0
+	+	1492	4
+	+	113	1
+	+	111	0
+
+> ~/epanet/simple_network/simple_network.qgs
+	"	255	12
+	.	57	0
+	+	57	0
+
+> ~/epanet/Makefile
+	"	14	0
+	^	9	28
+	.	9	27
+	+	9	27
+
+> ~/EPANET/Makefile
+	"	25	0
+
+> /var/db/pkg/pkg-1.3.6/distfiles
+	"	1	0
+
+> ~/.qgis2/python/plugins/stationlines/stationlines_algo.py
+	"	1	0
+
+> ~/q
+	"	1	0
+
+> ~/svg_end/export_windroses_svg.png
+	"	1	0
+
+> ~/svg_end/svg.qgs
+	"	1	0
+
+> ~/svg_end/WindRose_LB_01_wt2_i.svg
+	"	138	7
+	^	68	121
+	.	63	0
+	+	78	120
+	+	68	120
+	+	63	0
+
+> ~/svg_end/WindRose_LB_04_wt2.svg
+	"	98	7
+	^	98	7
+	.	63	0
+	+	63	0
+
+> ~/svg_end/WindRose_LB_01_a2_i.svg
+	"	68	121
+	^	68	121
+	.	68	120
+	+	78	120
+	+	68	120
+
+> ~/.qgis2/python/plugins/stationlines/stationlines.py
+	"	320	0
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/advanced_draw_dialog.py
+	"	32	0
+	^	24	42
+	.	24	41
+	+	24	35
+	+	28	57
+	+	24	41
+	z	24	41
+
+> ~/SVN/github/advanceddraw/AdvancedDraw/ui_getDistance.py
+	"	11	0
+
+> ~/.qgis2/python/plugins/stationlines/ui_stationlines.py
+	"	165	0
+
+> ~/.qgis2/python/plugins/stationlines/stationlinesdialog.py
+	"	1	0
+
+> /tmp/Circle.cpp
+	"	104	3
+
+> /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/lib/engine/rs_circle.cpp
+	"	158	0
+
+> /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/lib/creation/rs_creation.cpp
+	"	1292	0
+
+> /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/lib/engine/rs_circle.h
+	"	203	0
+
+> /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/lib/math/rs_math.cpp
+	"	1111	0
+
+> /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/lib/math/lc_quadratic.cpp
+	"	461	0
+
+> /usr/ports/cad/librecad/work/LibreCAD-LibreCAD-1555bd5/librecad/src/actions/rs_actiondrawlinerectangle.cpp
+	"	200	0
+
+> /media/NAS/Programmation/SDL_Geo/SDL_Geo_line.c
+	"	119	0
+
+> /media/NAS/Programmation/SDL_Geo/SDL_Geo_convexHull.c
+	"	29	0
+
+> /media/NAS/Programmation/SDL_Geo/SDL_Geo_points.h
+	"	1	0
+
+> /media/NAS/Programmation/SDL_Geo/SDL_Geo_math.h
+	"	1	0
+
+> /media/NAS/Programmation/SDL_Geo/SDL_Geo_triangle.c
+	"	101	0
+
+> /media/NAS/Programmation/SDL_Geo/SDL_Geo_cercle.c
+	"	179	0
+
+> /media/NAS/Programmation/SDL_Geo/SDL_Geo_points.c
+	"	86	0
+
+> /media/NAS/Programmation/SDL_Geo/SDL_Geo_math.c
+	"	137	0
+
+> /media/NAS/Programmation/C/math_Bart.c
+	"	23	0
+
+> ~/SVN/lbartoletti/graphics/inkscape/Makefile
+	"	6	0
+	.	6	0
+	+	27	20
+	+	5	18
+	+	6	0
+
+> /usr/ports/databases/sfcgal/Makefile
+	"	13	0
+
+> ~/SVN/lbartoletti/math/flann/Makefile
+	"	20	0
+	^	56	55
+	.	56	54
+	+	19	112
+	+	18	30
+	+	5	17
+	+	9	94
+	+	14	15
+	+	22	0
+	+	14	14
+	+	9	63
+	+	13	9
+	+	23	11
+	+	30	49
+	+	31	0
+	+	24	20
+	+	25	0
+	+	26	16
+	+	14	0
+	+	23	11
+	+	19	112
+	+	8	15
+	+	17	0
+	+	18	0
+	+	23	9
+	+	18	0
+	+	32	29
+	+	53	5
+	+	52	0
+	+	50	0
+	+	49	0
+	+	49	0
+	+	49	0
+	+	48	0
+	+	38	14
+	+	48	0
+	+	41	0
+	+	39	0
+	+	45	6
+	+	43	46
+	+	44	0
+	+	45	0
+	+	49	28
+	+	52	20
+	+	44	20
+	+	42	0
+	+	42	29
+	+	45	6
+	+	49	0
+	+	51	13
+	+	34	30
+	+	58	19
+	+	59	0
+	+	42	20
+	+	44	20
+	+	49	20
+	+	52	20
+	+	42	0
+	+	39	21
+	+	43	0
+	+	40	13
+	+	41	11
+	+	51	46
+	+	31	36
+	+	29	34
+	+	29	24
+	+	29	45
+	+	29	51
+	+	29	50
+	+	29	56
+	+	29	51
+	+	29	57
+	+	29	55
+	+	29	60
+	+	29	0
+	+	31	0
+	+	30	49
+	+	33	0
+	+	23	33
+	+	56	53
+	+	57	0
+	+	33	0
+	+	56	54
+
+> ~/SVN/lbartoletti/math/pdal/Makefile
+	"	68	0
+
+> ~/.qgis2/python/plugins/rectovalDigit/resources.qrc
+	"	1	0
+
+> ~/.qgis2/python/plugins/AdvancedDraw/advanced_draw.py
+	"	101	31
+	^	78	107
+	.	111	0
+	+	77	99
+	+	78	99
+	+	79	109
+	+	80	107
+	+	99	94
+	+	77	78
+	+	78	106
+	+	77	69
+	+	111	0
+	z	115	0
+
+> ~/.qgis2/python/plugins/rectovalDigit/resources.py
+	"	649	0
+
+> /etc/make.conf
+	"	1	0
+
+> /usr/ports/UPDATING
+	"	2393	24
+
+> /usr/ports/print/latex/Makefile
+	"	74	0
+
+> /usr/ports/graphics/qgis/Makefile
+	"	14	0
+	^	88	78
+	.	32	0
+	+	32	0
+
+> ~/.qgis2/python/plugins/cadtools/tools/lineintersectiontool.py
+	"	23	0
+
+> ~/.qgis2/python/plugins/cadtools/resources.py
+	"	2290	0
+
+> ~/.qgis2/python/plugins/cadtools/resources.
+	"	1	0
+
+> ~/.qgis2/python/plugins/cadtools/tools/ui_parallelline.py
+	"	85	0
+
+> ~/.qgis2/python/plugins/cadtools/tools/parallellinegui.py
+	"	14	0
+
+> ~/.qgis2/python/plugins/cadtools/tools/parallelline.ui
+	"	62	0

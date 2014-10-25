@@ -1,0 +1,11 @@
+--- core/src/shooting_star_boost_wrapper.cpp.orig	2013-03-18 13:04:46.000000000 +0100
++++ core/src/shooting_star_boost_wrapper.cpp	2013-03-18 13:05:08.000000000 +0100
+@@ -23,7 +23,7 @@
+ 
+ #include <boost/graph/graph_traits.hpp>
+ #include <boost/graph/adjacency_list.hpp>
+-#include <boost/vector_property_map.hpp>
++#include <boost/propertyp_map/vector_property_map.hpp>
+ #include <shooting_star_search.hpp>
+ 
+ #include "shooting_star.h"

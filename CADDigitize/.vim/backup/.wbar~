@@ -1,0 +1,36 @@
+i: /usr/local/share/pixmaps/wbar/osxbarback.png
+c: wbar --bpress --above-desk --vbar --pos right --isize 32 --idist 5 --nanim 4 --falfa 65
+t: /usr/local/lib/X11/fonts/bitstream-vera/VeraMono/10
+
+i: /usr/local/share/pixmaps/wbar/wbar.png
+c: wbar-config
+t: Config
+
+i: /usr/local/share/pixmaps/wbar/pidgin.png
+c: pidgin
+t: Pidgin
+
+i: /usr/local/share/pixmaps/wbar/anjuta.png
+c: anjuta
+t: Anjuta
+
+i: /usr/local/share/icons/Bluecurve/32x32/apps/icon-web-browser.png
+c: chrome
+t: Chromium
+
+i: /usr/local/share/icons/Bluecurve/32x32/apps/email.png
+c: claws-mail
+t: Claws-Mail
+
+i: /usr/local/share/pixmaps/wbar/gimp.png
+c: gimp
+t: Gimp
+
+i: /usr/local/share/pixmaps/wbar/ooffice.png
+c: ooffice
+t: OOffice
+
+i: /usr/local/share/pixmaps/wbar/terminal.png
+c: urxvtc
+t: Terminal
+

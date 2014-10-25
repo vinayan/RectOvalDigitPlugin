@@ -1,0 +1,28 @@
+﻿#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+from math import trunc
+
+def facto(nb):
+	i = 1
+	puissance = 10
+	while i < nb:
+		puissance = puissance * 10
+		i += 1
+	return puissance
+
+def dms2deg(deg, min, sec, prec=8):
+	if (((deg > 90) or (deg < -90)) or ((min < 0) or (min > 59)) or ((sec < 0) or (sec >= 60))):
+		return "Erreur"
+	else:
+		return str(deg) + "." + str(trunc((min/60.0+sec/3600.0)*facto(prec)))
+
+def deg2dms(degre):
+    deg = trunc(degre)
+    print deg
+    reste_min = degre-deg
+    min = trunc(reste_min*60)
+    reste_sec = reste_min*60 - min
+    sec = trunc(round(reste_sec*60))
+    return str(deg) + "°" + str(min) + "\"" + str(sec) + "'"
+
+

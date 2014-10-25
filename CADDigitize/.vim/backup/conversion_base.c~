@@ -1,0 +1,58 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  conversion_base.c
+ *
+ *    Description:  Conversion bases
+ *
+ *        Version:  1.0
+ *        Created:  17.12.2012 18:46:05
+ *       Revision:  none
+ *       Compiler:  clang
+ *
+ *         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+ *   Organization:  
+ *
+ * =====================================================================================
+ */
+
+
+#include	<stdio.h>
+#include    <stdlib.h>
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  main
+ *  Description:  
+ * =====================================================================================
+ */
+
+void usage(char *soft);
+
+int main ( int argc, char *argv[] )
+{
+    if(argc != 3)
+    {
+        usage(argv[0]);
+    }
+    else
+    {
+        int reste, quotient;
+        int base = (int)strtol(argv[2], NULL, 10);
+        int nombre = (int)strtol(argv[1], NULL, 10);
+        quotient = 1;
+        while(quotient != 0)
+        {
+            quotient = nombre / base;
+            reste = nombre % base;
+            nombre = quotient;
+            printf("%d\n", reste);
+
+        }
+    
+    return EXIT_SUCCESS;
+}				/* ----------  end of function main  ---------- */
+
+void usage(char *soft)
+{
+    fprintf(stderr, "Usage : %s <nombre à convertir> <base>\n", soft);
+}

@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[])
+{
+    unsigned long exposant, nbre, r, i;
+    printf("Entrez un exposant : ");
+    scanf("%lu", &exposant);
+    for(i = 0; i <= exposant; i++)
+    {
+        for(nbre = 0; nbre <= i; nbre++)
+        {
+            r = combinaison(i, nbre);
+            printf("%4.lu", r);
+        }
+        printf("\n");
+    }
+    return 0;
+}
+ 
+unsigned long factorielle(unsigned long nbre)
+{
+    unsigned long resultat = 1;
+        while(nbre)
+        {
+            if(nbre == 0)
+            resultat = 1;
+            else
+            {
+                resultat *= nbre;
+                nbre--;
+            }
+        }
+    return resultat;
+}
+ 
+unsigned long combinaison(long p, long q)
+{
+    unsigned long resultat = 0;
+    if(q == 0 && p == 0)
+    resultat = 1;
+    else
+    resultat = factorielle(p)/(factorielle(q)*factorielle(p-q));
+    return resultat;
+}

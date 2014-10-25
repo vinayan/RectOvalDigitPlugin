@@ -33,6 +33,8 @@ import os.path
 from CADDigitize_tools_circle import *
 from CADDigitize_tools_rect import *
 from CADDigitize_tools_ellipse import *
+from CADDigitize_tools_arc import *
+
 
 class CADDigitize:
     """QGIS Plugin Implementation."""
@@ -93,9 +95,11 @@ class CADDigitize:
         self.circleToolButton = QToolButton(self.toolBar)
         self.rectToolButton = QToolButton(self.toolBar)
         self.ellipseToolButton = QToolButton(self.toolBar)
+        self.arcToolButton = QToolButton(self.toolBar)
         self.circleToolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.rectToolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.ellipseToolButton.setPopupMode(QToolButton.MenuButtonPopup)
+        self.arcToolButton.setPopupMode(QToolButton.MenuButtonPopup)
 
         ###
         # Circles
@@ -103,7 +107,7 @@ class CADDigitize:
 
         # Add actions
         self.circleBy2Points = QAction(QIcon(":/plugins/CADDigitize/icons/circleBy2Points.png"),  "Circle by 2 points",  self.iface.mainWindow())
-        self.circleBy3Points = QAction(QIcon(":/plugins/CADDigitize/icons/circleBy3Points.png"),  "Circly by 3 points",  self.iface.mainWindow())
+        self.circleBy3Points = QAction(QIcon(":/plugins/CADDigitize/icons/circleBy3Points.png"),  "Circle by 3 points",  self.iface.mainWindow())
         self.circleByCenterRadius = QAction(QIcon(":/plugins/CADDigitize/icons/circleByCenterRadius.png"),  "Circle by center and radius",  self.iface.mainWindow())
         self.circleByCenterPoint = QAction(QIcon(":/plugins/CADDigitize/icons/circleByCenterPoint.png"),  "Circle by center and a point",  self.iface.mainWindow())
 
@@ -177,7 +181,27 @@ class CADDigitize:
         self.ellipseByExtent.setCheckable(True)
         self.ellipseByExtent.setEnabled(False)
 
+        self.toolBar.addSeparator()
 
+        ###
+        # Arcs
+        ###
+
+        # Add actions
+        self.arcByCenter2Points = QAction(QIcon(":/plugins/CADDigitize/icons/arcByCenter2Points.png"),  "Arc by center and 2 points",  self.iface.mainWindow())
+        self.arcBy3Points = QAction(QIcon(":/plugins/CADDigitize/icons/arcBy3Points.png"),  "Arc by 3 points",  self.iface.mainWindow())
+
+        self.arcToolButton.addActions( [ self.arcByCenter2Points, self.arcBy3Points ] )
+        self.arcToolButton.setDefaultAction(self.arcByCenter2Points)
+        self.toolBar.addWidget( self.arcToolButton )
+
+
+        self.arcByCenter2Points.setCheckable(True)
+        self.arcByCenter2Points.setEnabled(False)
+        self.arcBy3Points.setCheckable(True)
+        self.arcBy3Points.setEnabled(False)
+
+        self.toolBar.addSeparator()
         ### Conect
 
         QObject.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.segmentsettings)
@@ -195,6 +219,8 @@ class CADDigitize:
         QObject.connect(self.ellipseByFociPoint,  SIGNAL("activated()"),  self.ellipseByFociPointDigit)
         QObject.connect(self.ellipseFromCenter,  SIGNAL("activated()"),  self.ellipseFromCenterDigit)
         QObject.connect(self.ellipseByExtent,  SIGNAL("activated()"),  self.ellipseByExtentDigit)
+        QObject.connect(self.arcByCenter2Points,  SIGNAL("activated()"), self.arcByCenter2PointsDigit)
+        QObject.connect(self.arcBy3Points,  SIGNAL("activated()"), self.arcBy3PointsDigit)
 
         QObject.connect(self.iface, SIGNAL("currentLayerChanged(QgsMapLayer*)"), self.toggle)
         QObject.connect(self.canvas, SIGNAL("mapToolSet(QgsMapTool*)"), self.deactivate)
@@ -215,6 +241,8 @@ class CADDigitize:
         self.ellipseByFociPoint_tool = EllipseByFociPointTool( self.canvas )
         self.ellipseByExtent_tool = EllipseByExtentTool( self.canvas )
         self.ellipseFromCenter_tool = EllipseFromCenterTool( self.canvas )
+        self.arcByCenter2Points_tool = ArcByCenter2PointsTool( self.canvas )
+        self.arcBy3Points_tool = ArcBy3PointsTool( self.canvas )
 
     def segmentsettings(self):
         settings = QSettings()
@@ -304,6 +332,17 @@ class CADDigitize:
         self.ellipseByExtent.setChecked(True)
         QObject.connect(self.ellipseByExtent_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
+    def arcByCenter2PointsDigit(self):
+        self.arcToolButton.setDefaultAction(self.arcByCenter2Points)
+        self.canvas.setMapTool(self.arcByCenter2Points_tool)
+        self.arcByCenter2Points.setChecked(True)
+        QObject.connect(self.arcByCenter2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        
+    def arcBy3PointsDigit(self):
+        self.arcToolButton.setDefaultAction(self.arcBy3Points)
+        self.canvas.setMapTool(self.arcBy3Points_tool)
+        self.arcBy3Points.setChecked(True)
+        QObject.connect(self.arcBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
 
     def toggle(self):
@@ -327,6 +366,8 @@ class CADDigitize:
                 self.ellipseFromCenter.setEnabled(True)
                 self.ellipseByExtent.setEnabled(True)
                 self.spinBoxAction.setEnabled(True)
+                self.arcByCenter2Points.setEnabled(True)
+                self.arcBy3Points.setEnabled(True)
 
                 QObject.connect(layer,SIGNAL("editingStopped()"),self.toggle)
                 QObject.disconnect(layer,SIGNAL("editingStarted()"),self.toggle)
@@ -346,6 +387,8 @@ class CADDigitize:
                 self.ellipseFromCenter.setEnabled(False)
                 self.ellipseByExtent.setEnabled(False)
                 self.spinBoxAction.setEnabled(False)
+                self.arcByCenter2Points.setEnabled(False)
+                self.arcBy3Points.setEnabled(False)
 
                 QObject.connect(layer,SIGNAL("editingStarted()"),self.toggle)
                 QObject.disconnect(layer,SIGNAL("editingStopped()"),self.toggle)
@@ -367,6 +410,8 @@ class CADDigitize:
         self.ellipseByFociPoint.setChecked(False)
         self.ellipseFromCenter.setChecked(False)
         self.ellipseByExtent.setChecked(False)
+        self.arcByCenter2Points.setChecked(False)
+        self.arcBy3Points.setChecked(False)
         QObject.disconnect(self.circleBy2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.circleBy2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.circleByCenterRadius_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
@@ -381,6 +426,8 @@ class CADDigitize:
         QObject.disconnect(self.ellipseByFociPoint_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.ellipseFromCenter_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.ellipseByExtent_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.disconnect(self.arcByCenter2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.disconnect(self.arcBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
 
     def createFeature(self, geom):
@@ -450,9 +497,12 @@ class CADDigitize:
         self.ellipseToolButton.removeAction(self.ellipseByFociPoint)
         self.ellipseToolButton.removeAction(self.ellipseFromCenter)
         self.ellipseToolButton.removeAction(self.ellipseByExtent)
+        self.arcToolButton.removeAction(self.arcByCenter2Points)
+        self.arcToolButton.removeAction(self.arcBy3Points)
         del self.circleToolButton
         del self.rectToolButton
         del self.ellipseToolButton
+        del self.arcToolButton
         del self.toolBar
 
 

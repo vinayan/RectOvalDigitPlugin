@@ -1,0 +1,85 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  palindrome_recursif.c
+ *
+ *    Description:  Detecte un palindrome de façon recursive
+ *
+ *        Version:  1.0
+ *        Created:  23.12.2012 09:45:49
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+ *   Organization:  
+ *
+ * =====================================================================================
+ */
+
+
+#include	<stdio.h>
+#include    <stdlib.h>
+#include    <string.h>
+#include    <ctype.h>
+
+int palindrome_recursif(char *chaine, int position);
+void RemoveSpaces(char* source);
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  char *palindrome_recursif
+ *  Description:  
+ * =====================================================================================
+ */
+int palindrome_recursif (char *chaine, int position)
+{
+    if (chaine[position] != chaine[(int)strlen(chaine)-position-1])
+        return 0;
+    else if (position > (int)((strlen(chaine))/2))
+        return 1;
+    else
+    {
+        printf("%c %c\n", chaine[position], chaine[(int)strlen(chaine)-position-1]);
+        return palindrome_recursif(chaine, position+1);
+    }
+}		/* -----  end of function palindrome_recursif  ----- */
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  main
+ *  Description:  
+ * =====================================================================================
+ */
+int main ( int argc, char *argv[] )
+{
+    int ret;
+    char *str=malloc(strlen(argv[1])*sizeof(char));
+    if(str == NULL)
+        return EXIT_SUCCESS;
+
+    strncpy(str, argv[1], strlen(argv[1]));
+    RemoveSpaces(str);
+   
+    ret = palindrome_recursif(str, 0);
+
+    if (ret == 1)
+        printf("\"%s\" est un palindrome\n", str);
+    else
+        printf("\"%s\" n'est pas un palindrome\n", str);
+    
+    free(str);
+    str = NULL;
+    return EXIT_SUCCESS;
+}				/* ----------  end of function main  ---------- */
+
+void RemoveSpaces(char* source)
+{
+  char* i = source;
+  char* j = source;
+  while(*j != 0)
+  {
+    *i = *j++;
+    if(*i != ' ')
+      i++;
+  }
+  *i = 0;
+}
+

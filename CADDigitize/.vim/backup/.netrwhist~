@@ -1,0 +1,6 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =4
+let g:netrw_dirhist_1='/usr/home/bart/Meteo/hobo_txt'
+let g:netrw_dirhist_2='/usr/ports/databases/grass'
+let g:netrw_dirhist_3='/usr/home/bart/.vim/c-support/templates'
+let g:netrw_dirhist_4='/usr/home/bart/SVN/lbartoletti/databases/pgrouting'

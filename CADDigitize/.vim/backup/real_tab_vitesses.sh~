@@ -1,0 +1,12 @@
+#!/bin/sh
+cur_dir=`pwd`
+vit="vitesses.csv"
+echo "Utilisation : " $0 "<fichier sisdata> <fichier sisspeed> <dossier ou stocker donnée ex. 2012-11-23_2012-12-13>"
+rm -rf "/tmp/$3"
+mkdir -p "/tmp/$3/pdf"
+./bin/conversion_viasis_csv "$1" "$2"
+./graph.R "$vit" 50 "/tmp/$3/pdf/"
+cd "/tmp/$3/pdf/"
+gs -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE="../$3.pdf" -dBATCH *.pdf
+#rm -rf "/tmp/$3/pdf/"
+mv "$cur_dir/$vit" "/tmp/$3/$3.csv"

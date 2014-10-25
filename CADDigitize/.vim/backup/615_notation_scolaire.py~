@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
+note = 0    # note non négative
+nb_note = 0
+sum_note = 0.
+note_max = -1
+note_min = 500
+liste_note = []
+
+while note >= 0:
+    print "Veuillez entrer la note de l'élève (une note négative arrête le programme)."
+    note = int(raw_input())
+    if note >= 0:
+        liste_note.append(note)
+        nb_note += 1
+        if note > note_max:
+            note_max = note
+        if note < note_min:
+            note_min = note
+        sum_note += note
+        moyenne = sum_note / nb_note
+        print "Nombre de notes entrées", nb_note
+        print "Note la plus basse", note_min
+        print "Note la plus haute", note_max
+        print "Moyenne", moyenne
+
+

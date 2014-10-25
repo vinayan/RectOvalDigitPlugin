@@ -1,0 +1,6 @@
+#!/bin/tcsh
+set path = "Arcview/"
+foreach i (-R $path*.gdb $path*.shp)
+    echo $i
+end
+

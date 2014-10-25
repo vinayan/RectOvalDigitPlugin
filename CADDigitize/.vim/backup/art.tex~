@@ -1,0 +1,116 @@
+\documentclass[a4paper,11pt,twoside]{book}
+
+\usepackage[frenchb]{babel}             % typo française
+\usepackage[utf8]{inputenc}             % l'encodage
+\usepackage[T1]{fontenc}                % pour les accents
+\usepackage{lmodern}                    % belle police
+\usepackage{eurosym}                    % pour le symbole euro
+\usepackage{setspace}                   % pour les interlignes
+\usepackage{graphicx}                   % pour inclure des graphiques
+%\begin{figure}
+% \center
+% \includegraphics[width=303pt,height=261pt]{expA.png}
+% \caption{Variation du courant (expérience A) \label{graph_experience_A}}
+% \end{figure} 
+
+\usepackage{array}                      % pour de jolies tableaux
+
+% En-têtes et pied de page
+% (à gauche, au centre ou à droite) 
+% \lhead[lh-even]{lh-odd} 	\lfoot[lf-even]{lf-odd}
+% \chead[ch-even]{ch-odd} 	\cfoot[cf-even]{cf-odd}
+% \rhead[rh-even]{rh-odd} 	\rfoot[rf-even]{rf-odd}
+% Exemple :
+
+\usepackage{fancyhdr, lastpage}
+\fancyhead{}
+\lhead{Loïc \bsc{BARTOLETTI}}
+\rhead{\today}
+% Pour inclure le nb de page
+\cfoot{\thepage/\pageref{LastPage}}% si numerotation au centre du pied de page
+\pagestyle{fancy}
+% Géométrie de la page
+% \usepackage{geometry}
+% \geometry{top=''longueur'', bottom=''longueur'', left=''longueur '', right=''longueur''}
+
+
+% Pour la couleur
+\usepackage{color}
+\definecolor{orange}{rgb}{1,0.5,0}          % définition d'une couleur
+
+% Package hyperref
+\usepackage{hyperref}
+% Information pour le pdf
+\hypersetup{
+   backref=true,                           % Permet d'ajouter des liens dans
+   pagebackref=true,                       % les bibliographies
+   hyperindex=true,                        % Ajoute des liens dans les index.
+   colorlinks=true,                        % Colorise les liens.
+   breaklinks=true,                        % Permet le retour à la ligne dans les liens trop longs.
+   urlcolor= blue,                         % Couleur des hyperliens.
+   linkcolor= blue,                        % Couleur des liens internes.
+   bookmarks=true,                         % Créé des signets pour Acrobat.
+   bookmarksopen=true,                     % Si les signets Acrobat sont créés,
+                                           % les afficher complètement.
+   pdftitle={Mon document au format TeX},  % Titre du document.
+                                           % Informations apparaissant dans
+   pdfauthor={Loïc BARTOLETTI},                 % dans les informations du document
+   pdfsubject={Projet wikiBooks}                % sous Acrobat.
+}
+% \href{http://fr.wikipedia.org} inclura par exemple un lien vers Wikipédia.
+% \href{http://fr.wikipedia.org}{Wikipédia} inclura un lien avec l'étiquette Wikipédia.
+% \hyperlink{label1}{etiquette} inclura un lien vers un label identifié par \hypertarget{label1}.
+
+\title{Le test de \LaTeX{}}
+\author{Loïc \bsc{bartoletti}}
+\date{\today} %\today pour la date du jour 
+
+% Marges en page avec Layout
+% \usepackage[francais]{layout} % \layout pour afficher
+% \usepackage{fullpage}
+
+\usepackage{amsmath,amsfonts,amstext,amssymb}
+
+
+\begin{document}
+\maketitle
+%\thispagestyle{fancy}
+
+\mainmatter
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\part{partie}
+
+\chapter{Avant ma naissance}
+\begin{onehalfspace}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae est eget urna luctus posuere vel ac metus. Aliquam pharetra mi in nibh molestie ac. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae est eget urna luctus.
+\end{onehalfspace} 
+
+\input{chap1}
+\section{Introduction}
+Cette section contient...
+ 
+\section{Structure}
+Cette section contient...
+ 
+\subsection{Entrée en matière}
+Cette sous-section contient...
+ 
+\subsubsection{Information de l'article}
+Cette sous-sous-section contient...
+
+\backmatter
+ 
+\tableofcontents 
+
+\appendix
+% même structure que précédemment sauf que là, les chapitres sont vus comme des annexes
+
+\bibliographystyle{nom du style de biblio}
+\bibliography{non du fichier bib} 
+
+
+\end{document}

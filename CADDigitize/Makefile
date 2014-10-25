@@ -33,11 +33,13 @@ SOURCES = \
 	CADDigitize_tools_circle.py \
 	CADDigitize_tools_rect.py \
 	CADDigitize_tools_ellipse.py \
+	CADDigitize_tools_arc.py \
 	ui_getDistance.py \
 	CADDigitize_dialog.py \
 	tools/__init__.py \
 	tools/math.py \
-	tools/circle.py
+	tools/circle.py \
+	tools/circulararc.py
 
 PLUGINNAME = CADDigitize
 
@@ -46,13 +48,15 @@ PY_FILES = \
 	CADDigitize_tools_circle.py \
 	CADDigitize_tools_rect.py \
 	CADDigitize_tools_ellipse.py \
+	CADDigitize_tools_arc.py \
 	ui_getDistance.py \
 	CADDigitize_dialog.py \
 	__init__.py
 PY_FILES_TOOLS = \
 	tools/__init__.py \
 	tools/calc.py \
-	tools/circle.py
+	tools/circle.py \
+	tools/circulararc.py
 
 
 EXTRAS = icon.png metadata.txt

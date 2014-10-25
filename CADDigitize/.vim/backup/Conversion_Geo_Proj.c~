@@ -1,0 +1,193 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  Conversion_Geo_Proj.c
+ *
+ *    Description:  Permet la conversion coordonnées géographiques (Lat/Lon) et coordonnées en projection conique conforme de Lambert 93
+ *
+ *        Version:  1.0
+ *        Created:  12.08.2013 10:55:34
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Loïc BARTOLETTI (), loic.bartoletti@megeve.fr
+ *   Organization:  Mairie de Megève
+ *
+ * =====================================================================================
+ */
+
+
+#include    <stdio.h>
+#include	<stdlib.h>
+#include    <string.h>
+#include    <float.h>
+#include    <math.h>
+#include    "Conversion_Geo_Proj.h"
+
+
+
+Ellipsoid grs80;
+Projection CC42, CC43, CC44, CC45, CC46, CC47, CC48, CC49, CC50, LAMB93;
+
+
+Projection choixProj(long num_epsg)
+{
+    Projection proj;
+
+    switch ( num_epsg ) {
+        case 3942:
+            proj = CC42;
+            break;
+
+        case 3943:
+            proj = CC43;
+            break;
+
+        case 3944:
+            proj = CC44;
+            break;
+
+        case 3945:
+            proj = CC45;
+            break;
+
+        case 3946:
+            proj = CC46;
+            break;
+
+        case 3947:
+            proj = CC47;
+            break;
+
+        case 3948:
+            proj = CC48;
+            break;
+
+        case 3949:
+            proj = CC49;
+            break;
+
+        case 3950:
+            proj = CC50;
+            break;
+
+        default:
+            proj = LAMB93;
+            break;
+    }				/* -----  end switch  ----- */
+
+    return proj;
+}
+
+void initProj(void)
+{
+
+    grs80.a = 6378137.0;
+    grs80.rf = 298.257222101;
+    grs80.e = calc_excentricite_ellipsoide(grs80);
+
+    CC42.lon_0=3, CC42.lat_0=42.00, CC42.lat_1=41.25, CC42.lat_2=42.75, CC42.x_0=1700000, CC42.y_0=1200000, CC42.ellipsoid=grs80;
+    CC43.lon_0=3, CC43.lat_0=43.00, CC43.lat_1=42.25, CC43.lat_2=43.75, CC43.x_0=1700000, CC43.y_0=2200000, CC43.ellipsoid=grs80;
+    CC44.lon_0=3, CC44.lat_0=44.00, CC44.lat_1=43.25, CC44.lat_2=44.75, CC44.x_0=1700000, CC44.y_0=3200000, CC44.ellipsoid=grs80;
+    CC45.lon_0=3, CC45.lat_0=45.00, CC45.lat_1=44.25, CC45.lat_2=45.75, CC45.x_0=1700000, CC45.y_0=4200000, CC45.ellipsoid=grs80;
+    CC46.lon_0=3, CC46.lat_0=46.00, CC46.lat_1=45.25, CC46.lat_2=46.75, CC46.x_0=1700000, CC46.y_0=5200000, CC46.ellipsoid=grs80;
+    CC47.lon_0=3, CC47.lat_0=47.00, CC47.lat_1=46.25, CC47.lat_2=47.75, CC47.x_0=1700000, CC47.y_0=6200000, CC47.ellipsoid=grs80;
+    CC48.lon_0=3, CC48.lat_0=48.00, CC48.lat_1=47.25, CC48.lat_2=48.75, CC48.x_0=1700000, CC48.y_0=7200000, CC48.ellipsoid=grs80;
+    CC49.lon_0=3, CC49.lat_0=49.00, CC49.lat_1=48.25, CC49.lat_2=49.75, CC49.x_0=1700000, CC49.y_0=8200000, CC49.ellipsoid=grs80;
+    CC50.lon_0=3, CC50.lat_0=50.00, CC50.lat_1=49.25, CC50.lat_2=50.75, CC50.x_0=1700000, CC50.y_0=9200000, CC50.ellipsoid=grs80;
+    LAMB93.lon_0=3, LAMB93.lat_0=46.50, LAMB93.lat_1=44, LAMB93.lat_2=49, LAMB93.x_0=700000, LAMB93.y_0=6600000, LAMB93.ellipsoid=grs80;
+
+}
+/*
+ * ===  FUNCTION  ======================================================================
+ *         Name:  main
+ *  Description:
+ * =====================================================================================
+ */
+int
+main ( int argc, char *argv[] )
+{
+
+
+
+    initProj();
+    if(argc == 1)
+    {
+        Point point_lcc;
+
+        double latitude   = 49.036706;
+        double longitude = 2.046721;
+        lcc_secant(longitude, latitude, CC46, &point_lcc);
+        printf("Longitude : %.8lf\t:\tLatitude : %.8lf\n", longitude, latitude);
+        printf("X : %lf\t;\tY : %lf\n",point_lcc.x, point_lcc.y);
+    }
+    else if (argc == 3)
+    {
+        Point point_lcc;
+        lcc_secant(strtod(argv[1], NULL), strtod(argv[2], NULL), LAMB93, &point_lcc);
+        printf("Longitude : %s\t:\tLatitude : %s\n", argv[1], argv[2]); 
+        printf("X : %.3lf\t;\t.3Y : %lf\n",point_lcc.x, point_lcc.y);
+
+    }
+    else if (argc ==4)
+    {
+        Point point_lcc;
+        lcc_secant(strtod(argv[1], NULL), strtod(argv[2], NULL), choixProj(strtol(argv[3], NULL, 10)), &point_lcc);
+        printf("Longitude : %s\t:\tLatitude : %s\n", argv[1], argv[2]);
+        printf("X : %.3lf\t;\t.3Y : %lf\n",point_lcc.x, point_lcc.y);
+    }
+    else
+        fprintf(stderr, "Usage : %s (Lon Lat [Proj])\n", argv[0]);
+
+
+    return EXIT_SUCCESS;
+}				/* ----------  end of function main  ---------- */
+
+double calc_excentricite_ellipsoide(Ellipsoid ellipsoide)
+{
+    double a, b, f, e;
+    a = ellipsoide.a;
+    f = 1/ellipsoide.rf;
+    b = a*(1-f);
+    e = sqrt(pow(a,2) - pow(b,2))/a;
+    printf("e : %.13lf\n", e);
+    return e;
+}
+
+double calc_latitude_isometrique(double latitude, Ellipsoid ellipsoide)
+{
+    return log(tan ( PI/4 + latitude/2) * pow( ( 1 - ellipsoide.e * sin(latitude) ) / (1 + ellipsoide.e * sin(latitude) ), ellipsoide.e/2));
+}
+
+double calc_grande_normale(double latitude, Ellipsoid ellipsoide)
+{
+    return ellipsoide.a / sqrt(1 - pow(ellipsoide.e, 2) * pow(sin(latitude), 2));
+}
+
+
+void lcc_secant(double longitude, double latitude, Projection proj, Point *point_lcc)
+{
+
+    double lat = DEGTORAD(latitude);
+    double lon = DEGTORAD(longitude);
+
+
+    double GN1 = calc_grande_normale(DEGTORAD(proj.lat_1), proj.ellipsoid);
+    double GN2 = calc_grande_normale(DEGTORAD(proj.lat_2), proj.ellipsoid);
+
+
+    double latIso = calc_latitude_isometrique(lat, proj.ellipsoid);
+    double latIso0 = calc_latitude_isometrique(DEGTORAD(proj.lat_0), proj.ellipsoid);
+    double latIso1 = calc_latitude_isometrique(DEGTORAD(proj.lat_1), proj.ellipsoid);
+    double latIso2 = calc_latitude_isometrique(DEGTORAD(proj.lat_2), proj.ellipsoid);
+
+
+    double n = log( (GN2 * cos(DEGTORAD(proj.lat_2))) / (GN1 * cos(DEGTORAD(proj.lat_1)))) / (latIso1 - latIso2);
+
+    double c = ((GN1 * cos(DEGTORAD(proj.lat_1)))/n) * exp(n * latIso1);
+
+    double ys    = proj.y_0 + c * exp( -1 * n * latIso0);
+
+    point_lcc->x = proj.x_0 + c * exp( -1 * n * latIso) * sin( n * ( lon - DEGTORAD(proj.lon_0)));
+    point_lcc->y = ys - c * exp( -1 * n * latIso) * cos( n * ( lon - DEGTORAD(proj.lon_0)));
+}

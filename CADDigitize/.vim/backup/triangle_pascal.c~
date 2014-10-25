@@ -1,0 +1,101 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  triangle_pascal.c
+ *
+ *    Description:  Affiche le triangle de pascal (Deux modes : Chiffre Dessin)
+ *
+ *        Version:  1.0
+ *        Created:  05.01.2013 12:28:20
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+ *   Organization:  
+ *
+ * =====================================================================================
+ */
+
+
+#include	<stdio.h>
+#include    <stdlib.h>
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  main
+ *  Description:  
+ * =====================================================================================
+ */
+int main ( int argc, char *argv[] )
+{
+    if ((argc != 2) && (argc != 5))
+    {
+        fprintf(stderr, "Usage : \n");
+        fprintf(stderr, "%s <Degré N du triangle (ex : 20)>\n", argv[0]);
+        fprintf(stderr, "%s <Degré N du triangle> <caractère pour les chiffres pairs> <caractère pour les chiffres impairs>\n", argv[0]);
+        return EXIT_SUCCESS;
+    }
+    else
+    {
+        int deg = (int)(strtol(argv[1], NULL, 10));
+        int triangle[deg][deg];
+        int i,j;
+        for(i=0 ; i<deg ; i++)
+        {
+            for(j=0 ; j<deg ; j++)
+            {
+                triangle[i][j] = 0;
+            }
+        }
+
+        triangle[0][0] = 1;
+        for(i=1 ; i<deg; i++)
+        {
+            triangle[i][0] = 1;
+            for(j=1 ; j<=i; j++)
+            {
+                triangle[i][j] = triangle[i-1][j-1]+triangle[i-1][j];
+            }
+        }
+
+        if(argc == 2)
+        {
+            for(i=0 ; i<deg ; i++)
+            {
+                for(j=0 ; j<i ; j++)
+                {
+                    printf("%d ", triangle[i][j]);
+                }
+                puts("");
+            }
+        }
+        else if(argc == 5)
+        {
+            int space;
+            int c_space;
+            
+            space = deg; 
+            for(i=0; i<deg ; i++)
+            {
+                for(c_space=0; c_space<space-i; c_space++)
+                {
+                    printf(" ");
+                }
+
+                for(j=0 ; j<i ; j++)
+                {
+
+                    if((triangle[i][j] % 2) == 0)
+                        printf("%c ", argv[2][0]);
+                    else
+                        printf("%c ", argv[3][0]);
+                    
+                }
+                puts("");
+            }
+        }
+
+    }
+    
+    return EXIT_SUCCESS;
+}				/* ----------  end of function main  ---------- */

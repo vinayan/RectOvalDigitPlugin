@@ -1,0 +1,563 @@
+#!/bin/sh
+
+###################
+#     RC & CO     #
+###################
+# SKEL
+######
+# Skel/cshrc
+#
+echo '
+# $FreeBSD: release/9.0.0/share/skel/dot.cshrc 170119 2007-05-29 22:07:57Z dougb $
+#
+# .cshrc - csh resource script, read at beginning of execution by each shell
+#
+# see also csh(1), environ(7).
+#
+
+alias h		history 25
+alias j		jobs -l
+alias la	ls -a
+alias lf	ls -FA
+alias ll	ls -lA
+alias ls    ls -Gp
+
+# A righteous umask
+umask 22
+
+set path = (/sbin /bin /usr/sbin /usr/bin /usr/games /usr/local/sbin /usr/local/bin $HOME/bin)
+
+setenv	EDITOR	vim
+setenv	PAGER	more
+setenv	BLOCKSIZE	K
+
+# set ccache varibles
+setenv PATH /usr/local/libexec/ccache:$PATH
+setenv CCACHE_PATH /usr/bin:/usr/local/bin
+setenv CCACHE_DIR /var/tmp/ccache
+setenv CCACHE_LOGFILE /var/log/ccache.log
+
+# set ccache temp size to 4GB (default 1GB)
+if ( -x /usr/local/bin/ccache ) then
+  /usr/local/bin/ccache -M 4GB > /dev/null
+endif
+
+if ($?prompt) then
+  switch ($TERM)
+            case "xterm*":
+                set prompt="%{^[]0;%C04, %P^G%}%n:%c03%#"
+                setenv LANG fr_FR.UTF-8
+                setenv MM_CHARSET UTF-8
+                setenv LC_ALL fr_FR.UTF-8
+                setenv LC_COLLATE fr_FR.UTF-8
+                setenv LC_CTYPE fr_FR.UTF-8
+                setenv LC_MESSAGES fr_FR.UTF-8
+                setenv LC_MONETARY fr_FR.UTF-8
+                setenv LC_NUMERIC fr_FR.UTF-8
+                setenv LC_TIME fr_FR.UTF-8
+                breaksw
+            default:
+		breaksw
+  endsw
+	# An interactive shell -- set some stuff up
+	set prompt=\'%B[%n@%m%b]%B%~%b%#\'
+	set autolist
+	set nobeep
+	set color
+	set colorcat
+	set filec
+	set history = 100
+	set savehist = 100
+	set mail = (/var/mail/$USER)
+	if ( $?tcsh ) then
+		bindkey "^[[1~" beginning-of-line   # touche Orig
+		bindkey "^[[4~" end-of-line   # touche Fin
+		bindkey "^[[3~" delete-char   # touche Suppr
+		bindkey "^?" backward-delete-char  # touche Retour arrière
+		bindkey -k up history-search-backward # touche flèche haut
+		bindkey -k down history-search-forward # touche flèche bas
+		bindkey "^W" backward-delete-word  # touche alt+Retour arrière	
+	endif
+endif
+' > /usr/share/skel/dot.cshrc
+
+#
+# Skel/login_conf
+#
+echo '
+me:\
+	:charset=UTF-8:\
+	:lang=fr_FR.UTF-8:
+' >> /usr/share/skel/dot.login_conf
+
+#
+# Skel/csh.login
+#
+echo '
+limit coredumpsize 0
+setenv LANG fr_FR.UTF-8
+setenv MM_CHARSET UTF-8
+setenv LC_ALL fr_FR.UTF-8 
+' > /usr/share/skel/dot.csh.login
+
+#
+# /etc/login.conf
+#
+# Variables
+#
+echo '
+french|Utilisateurs francophones:\
+	:charset=UTF-8:\
+	:setenv=LC_COLLATE=fr_FR.UTF-8\
+	,LC_CTYPE=fr_FR.UTF-8\
+	,LC_MESSAGES=fr_FR.UTF-8\
+	,LC_MONETARY=fr_FR.UTF-8\
+	,LC_NUMERIC=fr_FR.UTF-8\
+	,LC_TIME=fr_FR.UTF-8\
+	,LC_ALL=fr_FR.UTF-8:\
+	:lang=fr_FR.UTF-8:\
+	:tc=default:
+' >> /etc/login.conf
+#
+# Default class
+#
+echo "defaultclass=french" > /etc/adduser.conf
+
+cap_mkdb /etc/login.conf
+
+#
+# /etc/make.conf
+# 
+echo '
+# hal no thanks
+WITHOUT_HAL=YES
+# 
+FORCE_MAKE_JOBS=yes
+WITH_QT_PHONON=yes
+QT4_OPTIONS=    CUPS NAS QGTKSTYLE
+
+MASTER_SITE_BACKUP?= ftp://ftp.fr.freebsd.org/pub/FreeBSD/ports/distfiles/${DIST_SUBDIR}/
+MASTER_SITE_OVERRIDE?= ${MASTER_SITE_BACKUP}
+MASTER_SITE_PACKAGES?=  ftp://ftp.fr.freebsd.org/pub/FreeBSD/ports/amd64/package
+
+#<---   CLANG --->
+.if  (!empty(.CURDIR:M/usr/src*) || defined(WITHCLANG)) && !defined(NOCLANG) 
+.if !defined(CC) || ${CC} == "cc"
+CC=clang
+.endif
+.if !defined(CXX) || ${CXX} == "c++"
+CXX=clang++
+.endif
+.if !defined(CPP) || ${CPP} == "cpp"
+CPP=clang -E
+.endif
+# Don\'t die on warnings
+NO_WERROR=
+WERROR=
+# Don\'t forget this when using Jails!
+#NO_FSCHG=
+.endif
+
+#CCACHE
+.if (!empty(.CURDIR:M/usr/src*) || !empty(.CURDIR:M/usr/obj*))
+.if !defined(NOCCACHE)
+	CC:=${CC:C,^cc,/usr/local/libexec/ccache/world/cc,1}
+	CXX:=${CXX:C,^c\+\+,/usr/local/libexec/ccache/world/c++,1}
+.endif
+.endif
+
+#CUPS
+WITH_CUPS=YES
+CUPS_OVERWRITE_BASE=YES
+WITHOUT_LPR=YES
+' > /etc/make.conf
+
+
+####################
+#      PORTS       #
+####################
+# Portsnap server EU
+sed -i.bak 's/SERVERNAME=/SERVERNAME=eu./' /etc/portsnap.conf
+# Fetch ports and extract
+portsnap fetch extract
+# Will use portmaster
+make -C /usr/ports-mgmt/portmaster/ install clean
+cp /usr/local/etc/portmaster.rc.sample /usr/local/etc/portmaster.rc
+sed -i.bak -e 's/# ALWAYS_SCRUB/ALWAYS_SCRUB/' -e 's/# PM_VERBOSE/PM_VERBOSE/' -e 's/# PM_PACKAGES_BUILD/PM_PACKAGES_BUILD/' -e 's/# PM_DEL_BUILD_ONLY/PM_DEL_BUILD_ONLY/' -e 's/# PM_NO_CONFIRM/PM_NO_CONFIRM/' /usr/local/etc/portmaster.rc
+# install ports
+portmaster x11-servers/xorg-server x11-drivers/xorg-drivers x11/xinit x11/xauth x11-fonts/xorg-fonts x11-fonts/webfonts
+
+# Nvidia driver
+kldload linux
+portmaster x11/nvidia-driver x11/nvidia-settings x11/nividia-xconfig
+echo 'linux_enable="YES"' >> /etc/rc.conf
+echo 'nividia_load="YES"' >> /boot/loader.conf
+echo 'linproc /usr/compat/linux/proc linprocfs rw 0 0' >> /etc/fstab
+mount -a
+
+# Xorg
+Xorg -configure
+cp /root/xorg.conf.new /etc/X11/xorg.conf
+# Add fonts
+sed -i.bak -e '
+/ModulePath/ a\
+        FontPath "/usr/local/lib/X11/fonts/bitstream-vera/"\
+        FontPath "/usr/local/lib/X11/fonts/webfonts/"
+' /etc/X11/xorg.conf
+# Ajout du Module freetype
+# Après la première occurence de Load
+sed -i.bak -e '1,/Load/{
+/Load/ a\
+        Load        "freetype"
+}' /etc/X11/xorg.conf
+
+# Ajout pour xcompmgr
+# Ajout de renderaccel et composite
+sed -i.bak -e '
+/BoardName/ a\
+    Option "RenderAccel" "True"
+' /etc/X11/xorg.conf
+
+# Only with nvidia cards
+sed -i.bak -e '
+/BoardName/ a\
+    Option "AllowGLXWithComposite" "True"
+' /etc/X11/xorg.conf
+
+portmaster x11/numlockx x11-wm/openbox x11/tint deskutils/pypanel x11-wm/xcompmgr x11/wbar graphics/feh x11/rxvt-unicode sysutils/automount sysutils/fusefs-ntfs
+
+echo 'kern.maxfiles="25000"' >> /boot/loader.conf
+echo "vfs.usermount=1" >> /etc/sysctl.conf 
+echo 'fusefs_enable="YES"' >> /etc/rc.conf
+
+portmaster www/chromium www/links editors/vim x11-fm/xfe x11-fm/pcmanfm multimedia/vlc multimedia/audacious multimedia/audacious-plugins graphics/mupdf mail/claws-mail mail/bogofilter devel/ccache net-im/pidgin irc/xchat2 devel/clang
+# for my job
+portmaster deskutils/planner graphics/dia math/R math/scilab databases/grass databases/spatialite databases/postgis databases/py-sqlite3 graphics/qgis
+
+# QT4-Gui
+echo 'kern.ipc.shmall=32768' >> /boot/loader.conf
+echo 'kern.ipc.shmmni=1024' >> /boot/loader.conf
+echo 'kern.ipc.shmseg=1024' >> /boot/loader.conf
+
+#
+# My Openbox conf into Skel
+#
+mkdir -p /usr/share/skel/dot.config/{openbox,tint2}
+
+cp /usr/local/etc/xdg/openbox/* /usr/share/skel/dot.config/openbox/
+
+# Autostart
+echo '# Add -C flag to xcompmgr if you do not want tray and dock shadows
+xcompmgr -cfF -r7 -o1 -l-10 -t-10 -D5 &
+
+#feh --bg-scale your_wallpaper &
+
+sleep 2
+wbar -above-desk -bpress -pos bottom center -isize 24 -jumpf 0 -zoomf 2.0 -balfa 0 & 
+
+
+sleep 2
+tint2 &
+urxvtd -q -f -o
+' >> /usr/share/skel/dot.config/openbox/autostart
+
+# Environnement
+sed -i -e 's/#LANG=en_CA.UTF-8/LANG=fr_FR.UTF-8/' /usr/share/skel/dot.config/openbox/environnement
+
+#
+# Tint2
+#
+echo '
+# Tint2 config file
+# Generated by tintwizard (http://code.google.com/p/tintwizard/)
+# For information on manually configuring tint2 see http://code.google.com/p/tint2/wiki/Configure
+
+# Background definitions
+# ID 1
+rounded = 7
+border_width = 2
+background_color = #000000 60
+border_color = #FFFFFF 15
+
+# ID 2
+rounded = 5
+border_width = 0
+background_color = #FFFFFF 40
+border_color = #FFFFFF 47
+
+# ID 3
+rounded = 5
+border_width = 0
+background_color = #FFFFFF 15
+border_color = #FFFFFF 67
+
+# Panel
+panel_monitor = all
+panel_position = top center horizontal
+panel_size = 100% 30
+panel_margin = 0 0
+panel_padding = 7 0 0
+panel_dock = 0
+wm_menu = 1
+panel_layer = normal
+panel_background_id = 1
+
+# Panel Autohide
+autohide = 0
+autohide_show_timeout = 0.3
+autohide_hide_timeout = 2
+autohide_height = 4
+strut_policy = follow_size
+
+# Taskbar
+taskbar_mode = single_desktop
+taskbar_padding = 2 3 2
+taskbar_background_id = 0
+#taskbar_active_background_id = 0
+
+# Tasks
+urgent_nb_of_blink = 8
+task_icon = 1
+task_text = 1
+task_centered = 1
+task_maximum_size = 140 35
+task_padding = 6 3
+task_background_id = 3
+task_active_background_id = 2
+task_urgent_background_id = 0
+task_iconified_background_id = 0
+
+# Task Icons
+task_icon_asb = 100 0 0
+task_active_icon_asb = 100 0 0
+task_urgent_icon_asb = 100 0 0
+task_iconified_icon_asb = 100 0 0
+
+# Fonts
+task_font = sans 7
+task_font_color = #FFFFFF 67
+task_active_font_color = #FFFFFF 82
+task_urgent_font_color = #FFFFFF 100
+task_iconified_font_color = #FFFFFF 100
+font_shadow = 0
+
+# System Tray
+systray = 1
+systray_padding = 0 4 5
+systray_sort = left2right
+systray_background_id = 0
+systray_icon_size = 0
+systray_icon_asb = 100 0 0
+
+# Clock
+time1_format = %H:%M
+time1_font = sans 8
+time2_format = %A %d %B
+time2_font = sans 6
+clock_font_color = #FFFFFF 73
+clock_padding = 1 0
+clock_background_id = 0
+clock_rclick_command = orage
+
+# Tooltips
+tooltip = 0
+tooltip_padding = 2 2
+tooltip_show_timeout = 0.7
+tooltip_hide_timeout = 0.3
+tooltip_background_id = 1
+tooltip_font = sans 10
+tooltip_font_color = #FFFFFF 80
+
+# Mouse
+mouse_middle = none
+mouse_right = close
+mouse_scroll_up = toggle
+mouse_scroll_down = iconify
+
+# Battery
+battery = 0
+battery_low_status = 10
+battery_low_cmd = notify-send "battery low"
+battery_hide = 98
+bat1_font = sans 8
+bat2_font = sans 6
+battery_font_color = #FFFFFF 73
+battery_padding = 1 0
+battery_background_id = 0
+
+# End of config
+' > /usr/share/skel/dot.config/tint2/tint2rc
+
+#
+# urxvt
+#
+echo '
+xterm*font:     -misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1
+xterm*wideFont: -misc-fixed-medium-r-normal-ja-18-120-100-100-c-180-iso10646-1
+
+!---!! urxvt !!---!
+urxvt*termName: rxvt
+urxvt*loginShell:true
+urxvt*inheritPixmap: false
+urxvt*depth:32
+urxvt*background:rgba:2000/2000/2000/cccc
+urxvt*borderLess: false
+urxvt*foreground: White
+urxvt*internalBorder: 0
+urxvt*scrollBar_right: true
+urxvt*scrollstyle:plain
+!urxvt*transpscrollBar : true
+urxvt*font: xft:Bitstream Vera Sans Mono:pixelsize=12
+! Set chrome default launcher with clicking url on terminal
+urxvt*perl-lib:        /usr/local/lib/urxvt/perl/
+URxvt.perl-ext-common:  default,tabbed,matcher,searchable-scrollback
+URxvt.url-launcher:      /usr/local/bin/chrome
+! Clic du milieu
+URxvt*matcher.button: 2
+URxvt*matcher.pattern.1: \\\\b(gopher|mailto|http|https|ftp|file):[/]*[\\\\w-]\\\\.[\\\\w./?&@#-]*[\\\\w/-]
+URxvt*matcher.pattern.2: \\\\bwww\\\\.[\\\\w-]\\\\.[\\\\w./?&@#-]*[\\\\w/-]
+! Set a tab bar on terminal top
+urxvt.tabbed.tabbar-fg: 2
+urxvt.tabbed.tabbar-bg: 0
+urxvt.tabbed.tab-fg:   3
+urxvt.tabbed.tab-bg:   0
+! Black text color
+urxvt*color0:  #000000
+! cest noir, on voit pas sur fond transp/noir : urxvt*color8:  #000000
+! Red text color
+urxvt*color1:  #a35757
+urxvt*color9:  #a35757
+! Green text color / pas assez vert a mon gout
+! urxvt*color2:  #7ac470
+! urxvt*color10: #7ac470
+! Yellow text color
+urxvt*color3:  #dfe14e
+urxvt*color11: #dfe14e
+! Blue text color
+urxvt*color4:  #5083b2
+urxvt*color12: #6494c1
+! Magenta text color
+urxvt*color5:  #b781ac
+urxvt*color13: #c866b4
+! White text color
+urxvt*color7:  #f0f0f0
+urxvt*color15: #ffffff
+! Bold text color
+urxvt*colorBD: #ffffff
+! Underlined text color
+urxvt*colorUL: #fff796
+' > /.Xressources
+
+echo '
+export LC_ALL=fr_FR.UTF-8
+export MM_CHARSET=UTF-8
+export LANG=fr_FR.UTF-8
+export LANGUAGE=fr_FR.UTF-8
+export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
+export BROWSER=chrome
+numlockx &
+xrdb -load ~/.Xresources
+exec openbox-session' > /usr/share/skel/dot.xinitrc
+
+#
+## /etc/devfs.rules
+#
+echo "[localrules=5]
+add path 'da*'    mode 0660 group operator
+add path 'cd*'    mode 0660 group operator
+add path 'uscanner*'    mode 0660 group operator
+add path 'xpt*' mode 660 group operator
+add path 'pass*' mode 660 group operator 
+add path 'md*' mode 0660 group operator
+add path 'msdosfs/*' mode 0660 group operator
+add path 'ext2fs/*' mode 0660 group operator
+add path 'ntfs/*' mode 0660 group operator
+add path 'usb/*' mode 0660 group operator" > /etc/devfs.rules
+
+#
+## /etc/rc.conf
+#
+echo '
+clear_tmp_enable="YES"
+fsck_y_enable="YES" # Set to YES to do fsck -y if the initial preen fails.
+background_fsck="YES"   # Attempt to run fsck in the background where possible.
+
+devfs_system_ruleset="localrules"
+
+sendmail_enable="NONE"
+
+nfs_server_enable="NO"
+nfs_client_enable="YES"
+nfs_client_flags="-n 4"
+
+portmap_enable="NO"
+syslogd_enable="YES"
+syslogd_flags="-ss"
+icmp_log_redirect="YES" 
+icmp_drop_redirect="YES"
+log_in_vain="YES"
+accounting_enable="YES"
+
+keymap="fr.iso.acc"
+font8x8="iso15-8x8"
+font8x14="iso15-8x14"
+font8x16="iso15-8x16"
+scrnmap="NO"
+
+sshd_enable="YES"
+
+atapicam_load="YES"
+
+ntpdate_enable="YES"
+ntpdate_flags="europe.pool.ntp.org"
+
+pf_enable="YES"                 # Charger PF
+pf_rules="/etc/pf.conf"         # Règles, chemin par défaut par défaut.
+pf_flags=""                     # Bonus
+pflog_enable="YES"              # démarrer le journal
+pflog_logfile="/var/log/pflog"  # où trouver le journal
+pflog_flags=""                  # Bonus
+
+#VGA console
+allscreens_flags="MODE_261"' >> /etc/rc.conf
+
+vidcontrol MODE_261
+/etc/rc.d/devfs restart
+
+#
+## splash screen
+#
+fetch -o /boot/splash.bmp http://gugus69.free.fr/images/splash.bmp
+
+
+#
+## /boot/loader.conf
+#
+echo '
+# Delay
+autoboot_delay="2"
+
+# splash screen
+splash_bmp_load="YES"
+bitmap_load="YES"
+bitmap_name="/boot/splash.bmp"
+
+# VBox
+# vboxdrv_load="YES"
+# kern.ipc.semni=40
+# kern.ipc.semmns=300
+
+# CD
+cd9660_load="YES"
+atapicam_load="YES"
+' >> /boot/loader.conf
+
+
+#
+## /etc/sysctl.conf
+#
+echo "#Enhance desktop responsiveness under high CPU use (200/224)" >> /etc/sysctl.conf
+echo "kern.sched.preempt_thresh=224" >> /etc/sysctl.conf
+echo "kern.coredump=0" >> /etc/sysctl.conf
+
+

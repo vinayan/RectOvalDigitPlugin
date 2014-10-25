@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
+from Tkinter import *
+from random import randrange
+
+# Création du damier 10x10
+def create_damier():
+    i = 0
+    while (i < 10):
+        create_ligne(i)
+        i += 1
+
+def create_ligne(indice):
+
+    i = 0
+    if indice % 2 ==0:
+        x = 0
+    else:
+        x = c
+
+    y = indice*c
+
+    while i < 10/2:
+        can.create_rectangle(x,y,x+c, y+c, fill='navy')
+        x += c*2
+        i += 1
+
+def cercle(x, y, r, coul):
+    can.create_oval(x-r, y-r, x+r, y+r, fill=coul)
+
+def create_pions():
+    x = randrange(10)
+    y = randrange(10)
+    pointX = c/2 + x*c # convertit matrice en coordonnées ; met le point au milieu
+    pointY = c/2 + y*c
+    cercle(pointX, pointY, c/3, 'red')
+##### Programme principal : ############
+# Tâchez de bien "paramétrer" vos programmes, comme nous l'avons
+# fait dans ce script. Celui-ci peut en effet tracer des damiers
+# de n'importe quelle taille en changeant seulement la valeur
+# d'une seule variable, à savoir la dimension des carrés
+c = 30
+# taille des carrés
+fen = Tk()
+can = Canvas(fen, width =c*10, height =c*10, bg ='ivory')
+can.pack(side =TOP, padx =5, pady =5)
+b1 = Button(fen, text ='damier', command =create_damier)
+b1.pack(side =LEFT, padx =3, pady =3)
+b2 = Button(fen, text ='pions', command =create_pions)
+b2.pack(side =RIGHT, padx =3, pady =3)
+fen.mainloop()
+

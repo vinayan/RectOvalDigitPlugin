@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
+# Formules
+# Degrés = (Fahrenheit - 32)*5./9
+# Fahrenheit = Degrés * 9./5 + 32
+
+# Premier exemple
+# Conversion de F -> C
+TempF = -40
+Degre = (TempF - 32)*5./9
+
+print TempF, "F = ", Degre, "°C"
+
+# Second exemple
+# Conversion de C -> F
+TempC = 100
+Fahrenheit = TempC * 9./5 + 32
+
+print TempC, "°C = ", Fahrenheit, "F"

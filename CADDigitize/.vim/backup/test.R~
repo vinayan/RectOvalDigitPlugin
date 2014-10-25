@@ -1,0 +1,20 @@
+#!/usr/bin/env Rscript
+
+argv <- commandArgs(TRUE)
+data <- read.table(argv[1], header=FALSE, sep=";", stringsAsFactors=FALSE)
+speed <- read.table(argv[2], header=FALSE)
+
+speed$index <- 0
+
+minuit <- which(is.na(strptime(data$V2, format="%d/%m/%Y %X")))
+data$V2[minuit] <- paste(data$V2[minuit], "00:00:00", sep=" ")
+data$index <- 1:nrow(data)
+pos_p = 1
+for(pos in (1:(nrow(data)-1)))
+{
+    if (pos_p == 0)
+        pos_p = pos_p + 1
+    speed[(data[pos_p,]$V1:data[pos,]$V1),]$index <- pos
+    pos_p = pos
+}
+write.csv2("test.csv", speed)

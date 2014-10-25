@@ -1,0 +1,7 @@
+\documentclass{article}
+\usepackage{url}<++>
+\usepackage[frenchb]{babel}<++>
+
+\begin{document}
+Ceci est un test.
+\end{document}

@@ -1,0 +1,104 @@
+	# -- Conky settings -- #
+	background yes
+	update_interval 1
+
+	cpu_avg_samples 2
+	net_avg_samples 2
+
+	override_utf8_locale yes
+
+	double_buffer yes
+	no_buffers yes
+
+	text_buffer_size 2048
+
+      # couleurs
+
+    	color0 FFC13A # orange
+    	color1 black
+    	color2 white
+   	color3 EFEFEF # argile
+    	color4 68FF3A # vert
+    	color5 7FDD4C # vert clair
+    	color6 CC0000 # rouge
+    	color7 884DA7 # mauve
+    	color8 6892C6 # bleu ciel 2                                     
+    	color9 443AFF # bleu marine
+
+	# -- Window specifications -- #
+
+	own_window yes
+	own_window_type desktop
+	own_window_transparent yes
+#	own_window_hints undecorate,sticky,skip_taskbar,skip_pager,below
+
+	border_inner_margin 0
+	border_outer_margin 0
+
+#	minimum_size 420 0
+#        maximum_width 420
+	
+	alignment tr
+	gap_x 5
+    	gap_y -5
+	
+	# -- Graphics settings -- #
+	draw_shades no
+	draw_outline no
+	draw_borders no
+	draw_graph_borders yes
+
+	# -- Text settings -- #
+	use_xft yes
+	xftfont MaiandraGD:size=24
+	xftalpha 0.4
+
+	uppercase no
+
+	default_color 8b8b8b
+	# -- Déclaration template -- #
+	template0 ${image ~/conky/script2/images/\1 -p \2 -s \3} # -- images fond -- #
+	template1 ${lua Meteo_\1 \2 \3 \4 \5 \6} # -- gestion météo --#
+	template2 ${lua_parse Meteo_\1 \2 \3 \4 60 \5} # -- icônes météo -- \2=répertoire icônes \3=position \4=taille \5=jour (pour les prévisions) #
+	template3 ${lua Lune_\1} 
+	template4 ${lua_parse Images_\1 \2 \3 60 \4} # -- Appelle image -- \2=position \3=taille \4=jour (pour les prévisions) #
+	
+	lua_load ~/conky/script2/meteo.lua
+	lua_load ~/conky/script2/images_meteo.lua
+
+	lua_startup_hook init ~/conky/script2/meteo.cfg
+	
+###############################################################################################################################  
+TEXT
+#### Lancement du script récupérant les données météo ####
+${template1 Maj}
+##### Ville #####
+#${voffset -33}${offset 12}${font Balkeno :size=14}${color4}Nässjö
+${voffset -33}${offset 9}${font Balkeno :size=14}${color4}${template1 Ville}
+##### Température actuelle #####
+${voffset 5}${offset 9}${goto 30}${font Helvetica LT Std :size=14}${color0}${template1 TempAct}° ${font Helvetica LT Std :size=10}(${template1 TempRes}°)
+##### Affichage conditions météo  et phase lunaire #####
+${voffset 5}${goto 240}${font Helvetica LT Std :size=10}${color0}${template3 ephemerides}
+${voffset 5}${offset 9}${font Balkeno :size=12}${color2}${template1 CondMeteo}
+##### Affichage différents paramètres 
+${voffset 5}${offset 9}${font Helvetica LT Std:size=10}${color4}Soleil ${color0}${template1 HLeverSoleil 1}:${template1 MLeverSoleil 1}/${template1 HCoucherSoleil 1}:${template1 MCoucherSoleil 1} (${template1 HDureeJour 1}h ${template1 MDureeJour 1})
+${voffset 3}${offset 9}${font Helvetica LT Std:size=10}${color4}Verglas ${color0}${template1 Jour_EVerglas 1}/${template1 Nuit_EVerglas 1} mm ${goto 110}${font Helvetica LT Std:size=10}${color4}Neige ${color0}${template1 Jour_QNeige 1}/${template1 Nuit_QNeige 1} m
+${voffset 3}${offset 9}${color4}Humidité ${color0}${template1 Humidite} %${goto 108}${color4}Pluie ${color0}${template1 Jour_ProbOrage 1} mm
+${voffset 3}${offset 9}${color4}Vent ${color0}${template1 VentDirP} - ${template1 VentForce} km/h
+##### Affichage temperatures prévisionnelles sur 4 jours journée/nuit #####
+${voffset -25}${font Helvetica LT Std :size=8}${color3}${goto 225}${template1 Jour_Temp 2}°/${template1 Nuit_Temp 2}°${goto 280}${template1 Jour_Temp 3}°/${template1 Nuit_Temp 3}°${goto 330}${template1 Jour_Temp 4}°/${template1 Nuit_Temp 4}°${goto 380}${template1 Jour_Temp 5}°/${template1 Nuit_Temp 5}°
+##### Affichage Date #####
+${voffset -1}${font Helvetica LT Std :size=9}${color4}${goto 230}${template1 Jour %a 2}${goto 280}${template1 Jour %a 3}${goto 330}${template1 Jour %a 4}${goto 380}${template1 Jour %a 5}
+#### Fond ####
+${template0 base.png 0,8 420x180}
+## Icônes 
+########## Météo du jour #########################################################################################################
+${template2 IconeM ~/conky/meteo2/icones 110,7 120x70}
+########## Lune ##################################################################################################################
+${image ~/tmp/lune.png -p 320,18 -s 40x40} 
+########## Météo prévisions sur 4 jours ##########################################################################################
+${template2 AM_IconeM ~/conky/meteo2/icones 208,110 60x35 2}   #J1#
+${template2 AM_IconeM ~/conky/meteo2/icones 258,110 60x35 3}   #J2#
+${template2 AM_IconeM ~/conky/meteo2/icones 308,110 60x35 4}   #J3#
+${template2 AM_IconeM ~/conky/meteo2/icones 358,110 60x35 5}   #J4#
+

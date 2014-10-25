@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+# -*- coding:utf8 -*-
+
+"""
+    module absmod3
+"""
+
+def only_int(func):
+    """Decorator pour vérifier les paramètres."""
+    def _only_int(arg):
+        ifnot isinstance(arg, int):
+            raise TypeError("'%s' doit être un entier" % str(arg))
+        return func(arg)
+    return _only_int
+
+@only_int
+def absmod3(a):
+    """Renvoie 'abs(a) mod 3' pour a entier."""
+    return abs(a) % 3
+

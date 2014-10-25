@@ -1,0 +1,50 @@
+xterm*font:     -misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1
+xterm*wideFont: -misc-fixed-medium-r-normal-ja-18-120-100-100-c-180-iso10646-1
+
+!---!! urxvt !!---!
+urxvt*termName: rxvt
+urxvt*loginShell:true
+[b]urxvt*inheritPixmap: false[/b]
+urxvt*depth:32
+urxvt*background:rgba:2000/2000/2000/cccc
+urxvt*borderLess: false
+urxvt*foreground: White
+urxvt*internalBorder: 0
+urxvt*scrollBar_right: true
+urxvt*scrollstyle:plain
+!urxvt*transpscrollBar : true
+urxvt*font: xft:Bitstream Vera Sans Mono:pixelsize=12
+! Set firefox default launcher with clicking url on terminal
+urxvt.urlLauncher: firefox
+urxvt.matcher.button: 1
+urxvt.perl-ext-common: default,tabbed
+! Set a tab bar on terminal top
+urxvt.tabbed.tabbar-fg: 2
+urxvt.tabbed.tabbar-bg: 0
+urxvt.tabbed.tab-fg:   3
+urxvt.tabbed.tab-bg:   0
+! Black text color
+urxvt*color0:  #000000
+! cest noir, on voit pas sur fond transp/noir : urxvt*color8:  #000000
+! Red text color
+urxvt*color1:  #a35757
+urxvt*color9:  #a35757
+! Green text color / pas assez vert a mon gout
+! urxvt*color2:  #7ac470
+! urxvt*color10: #7ac470
+! Yellow text color
+urxvt*color3:  #dfe14e
+urxvt*color11: #dfe14e
+! Blue text color
+urxvt*color4:  #5083b2
+urxvt*color12: #6494c1
+! Magenta text color
+urxvt*color5:  #b781ac
+urxvt*color13: #c866b4
+! White text color
+urxvt*color7:  #f0f0f0
+urxvt*color15: #ffffff
+! Bold text color
+urxvt*colorBD: #ffffff
+! Underlined text color
+urxvt*colorUL: #fff796

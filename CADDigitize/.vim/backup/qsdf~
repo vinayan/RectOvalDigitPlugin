@@ -1,0 +1,70 @@
+#!/bin/sh
+
+echo "
+ext_if  = \"em0\"
+int_if  = \"dc0\"
+lan_net = \"192.168.0.0/254\"
+
+
+# Déclaration des ports à ne pas logguer
+# (5900 est le port utilisé par VNC)
+ports_not_logged = \"{ netbios-ssn, microsoft-ds, \
+    epmap, ms-sql-s, 5900}\"
+
+
+# Déclaration du tableau référençant toutes les adresses IP affectées au
+# pare-feu.
+table <firewall> const { self }
+
+
+# Ne pas filtrer sur l interface de bouclage
+set skip on lo0
+
+# Normalisation de tous les paquets entrants.
+scrub in all
+
+
+# Redirection freeplayer
+rdr pass on \$ext_if proto udp from mafreebox.fr to \$ext_if -> 192.168.0.39
+#rdr pass on \$ext_if proto udp from 212.27.38.253 -> 192.168.0.39
+
+# Petite nouveauté, on active l\'antispoofing sur l\'interface
+# externe : cette règle bloquera les paquets venant de
+# l\'extérieur essayant d\'utiliser frauduleusement notre
+# adresse pour passer à travers le filtre.
+antispoof for \$int_if
+
+
+# Mise en place d\'une politique d\'interdiction par défaut.
+block in on \$int_if
+# On n a pas envie de remplir nos logs en 5 minutes avec les
+# quelques vers bien connus qui trainent sur internet
+# donc on bloque certains paquets sans les logguer.
+block in on \$int_if inet proto tcp from any to any \
+    port \$ports_not_logged
+
+
+# Activation de la protection contre l usurpation sur toutes les
+# interfaces.
+block in quick from urpf-failed
+
+
+# Autoriser le trafic sortant et entrant sur le réseau local.
+# ces règles créeront des entrées au niveau de la table d état étant
+# donné que le mot-clé "keep state" est automatiquement appliqué.
+pass in  on \$int_if from \$lan_net to any
+pass out on \$int_if from any to \$lan_net
+
+pass out on \$ext_if inet proto tcp all flags S/SA keep state
+pass out on \$ext_if inet proto { udp, icmp } all keep state
+
+# Autoriser les connexions sortantes tcp, udp et icmp sur l interface
+# externe.
+# les connexions tcp seront modulées, et udp/icmp auront un suivi
+# d état.
+pass out on \$ext_if proto { tcp udp icmp } all modulate state
+
+# Log
+pass in log on \$ext_if proto tcp from any to ! <firewall>
+" > /etc/pf.conf
+

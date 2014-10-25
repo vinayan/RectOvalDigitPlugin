@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+# -*- coding:utf8 -*-
+
+from optparse import OptionParser
+import sys
+
+# paramètres du programme
+options = {}
+options[('-p', '--print')] = {'dest': 'print',
+                             'help': 'lance l\'impression'
+                             'action': 'count'}
+options[('-n', '--printer')] = {'dest': 'printer',
+                                'help': 'nom de l\'imprimante'}
+
+def main(options, arguments):
+    print('options %s' % options)
+    print('arguments %s' % arguments)
+
+if __name__ == '__main__':
+    parser = OptionParser()
+    for param, option in options.items():
+        parser.add_option(*param, **option)
+    options, arguments = parser.parse_args()
+    main(options, arguments)
+

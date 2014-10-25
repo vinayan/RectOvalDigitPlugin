@@ -13,5 +13,9 @@
         <file>icons/ellipseByCenter3Points.png</file>
         <file>icons/ellipseBy4Points.png</file>
         <file>icons/ellipseByFociPoint.png</file>
+        <file>icons/ellipseByExtent.png</file>
+        <file>icons/ellipseFromCenter.png</file>
+        <file>icons/arcByCenter2Points.png</file>
+        <file>icons/arcBy3Points.png</file>
      </qresource>
 </RCC>

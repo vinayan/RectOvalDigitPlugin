@@ -1,0 +1,40 @@
+alignment top_left
+double_buffer yes
+default_color white
+background no
+update_interval 1.0 # Sera changé dans le script une fois les données récupérées
+out_to_console no
+out_to_stderr no
+
+own_window yes
+own_window_class Conky
+own_window_type normal
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+own_window_transparent yes
+
+lua_load /usr/local/share/conky/MeteoGoogle/GoogleMeteo.lua
+
+TEXT
+${if_empty ${lua GoogleMeteo_Maj ${curl http://www.google.com/ig/api?weather=Annecy/France&oe=utf8&hl=fr 15 }}}
+En attente ...
+${else}${iconv_start UTF-8 ISO_8859-1}${color Green}${lua GoogleMeteo_city}${offset 8}$color${voffset -2}${hr}
+
+${color grey}Condition à : $color${time %H:%M:%S}
+${lua_parse GoogleMeteo_Icon}${offset 42}${color grey}Température : ${color orange}${lua GoogleMeteo_Temperature } °C
+${offset 42}${color grey}Humidité : $color${lua GoogleMeteo_humidity}%
+${offset 42}${color grey}Vent : $color${lua GoogleMeteo_Wind}
+
+${voffset 3}
+${color grey}Prévision pour ${color orange}Aujourd'hui ${offset 8}${color grey}${voffset -2}${hr}
+
+${lua_parse GoogleMeteo_pIcon 1}${offset 42}$color${lua GoogleMeteo_date }
+${offset 42}${color grey}Températures : $color${lua GoogleMeteo_pMini 1} ${color grey}/ $color${lua GoogleMeteo_pMaxi 1} ${color grey}°C
+
+
+${color grey}Prévision pour les jours suivants ${offset 8}${color grey}${voffset -2}${hr}
+
+${lua_parse GoogleMeteo_pIcon 2}${lua_parse GoogleMeteo_pIcon 3}${lua_parse GoogleMeteo_pIcon 4}
+${voffset 22}  ${color orange}${lua GoogleMeteo_pJour 2}${offset 59}${lua GoogleMeteo_pJour 3}${offset 53}${lua GoogleMeteo_pJour 4}
+$color${lua GoogleMeteo_pMinif 2} ${color grey}/ $color${lua GoogleMeteo_pMaxif 2} ${color grey}°C ${offset 10}$color${lua GoogleMeteo_pMinif 3} ${color grey}/ $color${lua GoogleMeteo_pMaxif 3} ${color grey}°C${offset 10}$color${lua GoogleMeteo_pMinif 4} ${color grey}/ $color${lua GoogleMeteo_pMaxif 4} ${color grey}°C
+$color$hr${iconv_stop}
+${endif}

@@ -1,0 +1,5 @@
+#!/bin/sh
+chemin="/home/bart/SVN/lbartoletti"
+cd $chemin
+sudo make -C $1 clean
+diff -ruN /usr/ports/$1 $1 | sed -e "s| /usr/ports/| a/|g" | sed -e "s| $1| b/$1|g" | sed -e "s|\$FreeBSD: b/$1|\$FreeBSD: /usr/ports/$1|" > $chemin/$2.txt

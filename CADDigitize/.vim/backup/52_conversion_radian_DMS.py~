@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+#-*- coding:utf8 -*-
+
+# conversion degrés > radians
+# 1 rad = 180deg/pi
+# definition de Pi
+pi = 3.14159265359
+# conversion rad / deg
+deg2rad = 180/pi
+
+# definition des valeurs Degrés Minutes Secondes
+deg, min, sec = 32, 13, 49
+
+# Calcul pour transformer DMS en Degrés
+# La seconde et la minute sont des fractions sexadecimales du degré
+# Minutes = Minutes + sec/60
+# Degrés° = Degrés + Minutes/60
+ang = deg + (((sec/60.)+min)/60.)
+
+# conversion de Degré en Radian
+angl_rad = ang / deg2rad
+
+print deg, "°", min, "'", sec, '" =', angl_rad, "radian(s)"

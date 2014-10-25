@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+#-*- coding:utf8 -*-
+
+from donnees import *
+from fonctions import *
+from random import choice
+
+print "Bonjour, veuillez entrer votre nom"
+nom = raw_input()
+print "Bonjour {}".format(nom.capitalize())
+
+
+mot = choice(liste_mot)
+mot_vide = creer_mot_vide(mot)
+
+print mot
+print "".join(mot_vide)
+print "Le mot est {0} et il reste {1} coups".format(mot, nb_coups)
+
+lettre = str()
+while nb_coups != 0 and fini(mot_vide)==0:
+    nb_coups -= 1
+    lettre = raw_input("Veuillez entrer une lettre : ")
+    if recherche_lettre_mots(mot, lettre):
+        new = retourne_lettre_trouvee(mot, lettre, mot_vide)
+        affiche_lettre_mot(new, mot_vide)
+        print "".join(mot_vide)
+
+if fini(mot_vide) == 1:
+    print "Votre score est de {}".format(nb_coups)
+else:
+    print "Vous avez perdu"

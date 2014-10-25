@@ -1,0 +1,65 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  saisie_affichageçchevaux.c
+ *
+ *    Description:  
+ *
+ *        Version:  1.0
+ *        Created:  16.02.2014 17:50:06
+ *       Revision:  none
+ *       Compiler:  clang
+ *
+ *         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+ *   Organization:  
+ *
+ * =====================================================================================
+ */
+
+
+#include    <stdio.h>
+#include	<stdlib.h>
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  main
+ *  Description:  
+ * =====================================================================================
+ */
+
+#define MAX_CHEVAUX 30
+int main ( int argc, char *argv[] )
+{
+    struct cheval_de_course
+    {
+        char nom[20];
+        int dossard;
+        float temps;
+        int classement;
+    };
+    struct cheval_de_course cheval, tab_chevaux[MAX_CHEVAUX];
+    int nbchevaux = 0, i;
+
+    cheval.dossard=1;
+    cheval.temps=0;
+    cheval.classement=0;
+    while (cheval.dossard != 0)
+    {
+        printf("Dossard du cheval : ");
+        scanf("%d", &cheval.dossard);
+        if(cheval.dossard != 0)
+        {
+            printf("Nom du cheval : ");
+            scanf("%s", chevl.nom)
+            tab_chevaux[nbchevaux++]=cheval;
+        }
+    }
+    printf("Nom\t\tDossard\tTemps\tClassement\n");
+    for(i=0; i<nbchevaux; i++)
+    {
+        cheval=tab_chevaux[i];
+        printf("%-15s %5d   ", cheval.nom, cheval.dossard);
+        printf("%5.2f %5d\n", cheval.temps, cheval.classement);
+    }
+    return EXIT_SUCCESS;
+}				/* ----------  end of function main  ---------- */

@@ -1,0 +1,31 @@
+\documentclass{book}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage{url} %pour écrire des adresses cliquables
+\usepackage{lmodern} %pour changer le pack de police
+\usepackage[top=5cm, bottom=5cm, left=6cm, right=3cm]{geometry}
+%pour les marges
+\title{Les droits de l'homme}
+\author{\textsc{Laleloulilo} - \textsc{Zozor}}
+\date{\today} % Pour mettre la date du jour, tapez \today
+\begin{document}
+\maketitle % Page de garde
+
+\frontmatter
+\chapter{Préambule}
+Omni
+
+\mainmatter
+
+\part{Introduction}
+\chapter{Utilité}
+\chapter{Test}
+\section{Intro}
+
+\appendix
+
+\backmatter
+
+\end{document}
+

@@ -1,0 +1,10 @@
+\frametitle {Exemple de page avec du verbatim}
+\framesubtitle{Une deuxième méthode, plus utile !}
+
+\begin{semiverbatim}
+\uncover<1->{Premier texte à afficher}
+\uncover<2->{Deuxième}
+\uncover<3->{Troisième}
+\uncover<4->{etc...}
+\end{semiverbatim}
+

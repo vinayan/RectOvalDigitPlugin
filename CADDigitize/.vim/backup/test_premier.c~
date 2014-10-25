@@ -1,0 +1,71 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  test_premier.c
+ *
+ *    Description:  Fonction permettant de savoir si un nombre est premier
+ *
+ *        Version:  1.0
+ *        Created:  17.12.2012 19:02:39
+ *       Revision:  none
+ *       Compiler:  clang
+ *
+ *         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+ *   Organization:  
+ *
+ * =====================================================================================
+ */
+
+
+#include	<stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  main
+ *  Description:  
+ * =====================================================================================
+ */
+int main ( int argc, char *argv[] )
+{
+    if(argc!=2)
+    {
+        fprintf(stderr, "Usage : %s <nombre à tester>\n", argv[0]);
+    }
+    else
+    {
+        int trouve = 0;
+        int nb = (int)strtol(argv[1], NULL, 10);
+        if(nb > 1)
+        {
+            
+            int i = 2;
+            int limite = (int)sqrt(nb)+1;
+            int diviseur1, diviseur2;
+            while((!trouve) && (i <= limite))
+            {
+                if(nb%i == 0)
+                {
+                    trouve = 1;
+                    diviseur1 = i;
+                    diviseur2 = nb/i;
+                }
+            }
+            if(trouve == 0)
+            {
+                fprintf(stdout, "%d est premier.\n", nb);
+            }
+            else
+            {
+                fprintf(stdout, "%d n'est pas premier.\n", nb);
+                fprintf(stdout, "Il est divisable par %d et %d.\n", diviseur1, diviseur2);
+            }
+        }
+        else
+        {
+            fprintf(stderr, "Le nombre doit être supérieur à 1\n");
+        }
+    }
+    return EXIT_SUCCESS;
+}				/* ----------  end of function main  ---------- */

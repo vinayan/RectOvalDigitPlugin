@@ -1,0 +1,128 @@
+// =====================================================================================
+// 
+//       Filename:  tri_Points.c
+// 
+//    Description:  
+// 
+//        Version:  1.0
+//        Created:  03.11.2012 09:29:22
+//       Revision:  none
+//       Compiler:  g++
+// 
+//         Author:  Loïc BARTOLETTI (), coder@tuxfamily.org
+//        Company:  
+// 
+// =====================================================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+typedef struct _points{
+        double x, y;
+ }Points;
+
+int rand_n(int n)
+{
+    int partSize   = 1 + (n == RAND_MAX ? 0 : (RAND_MAX - n) / (n + 1));
+    int maxUsefull = partSize * n + (partSize - 1);
+    int draw;
+
+    do {
+        draw = rand();
+    } while (draw > maxUsefull);
+
+    return draw / partSize;
+}
+/* Fonction dbl_cmp : Compare deux reels x et y */
+/* Retourne :                                   */
+/*    -1 si x < y                               */
+/*     0 si x = y                               */
+/*     1 si x > y                               */
+/* http://c.developpez.com/faq/?page=float#FLOAT_comparaison */
+int dbl_cmp_Points_sort(void const *cmp_a, void const *cmp_b)
+{
+
+    Points const *pa = cmp_a;
+    Points const *pb = cmp_b;
+
+    double a, b;
+    double eps_a = DBL_EPSILON, eps_r = DBL_EPSILON;
+    int ret;
+
+    /* On tente tout d'abord une comparaison bit a bit. */
+
+    if (pa->x < pb->x)
+    {
+        a = pa->x;
+        b = pb->x;
+        ret = -1;
+    }
+    else if (pa->x > pb->x)
+    {
+        a = pb->x;
+        b = pa->x;
+        ret = 1;
+    }
+    else
+        ret = 0;
+
+    /* Si x != y, on tente alors une comparaison avec tolerance a l'erreur. */
+
+    if (ret != 0)
+    {
+        /* Si eps_a != 0, l'utiliser. */
+
+        if (b - a < eps_a)
+        {
+            ret = 0;
+        }
+
+        if (ret != 0)
+        {
+            /* Si on a encore ret != 0 (i.e. x != y), utiliser eps_r. */
+
+            if ((b - a) / a < eps_r)
+                ret = 0;
+        }
+    }
+
+    return ret;
+}
+
+int main (int argc, char *argv[])
+{
+    if (argc !=2)
+    {
+        fprintf(stderr, "Usage : %s <nombre de Points>\n", argv[0]);
+        exit(0);
+    }
+
+    /* Initialisation du tableau */
+    int nbPoints=(int)strtol(argv[1],NULL,10);
+
+    Points p[nbPoints];
+
+    printf("X\tY\n");
+    int i;
+    for(i=0; i<nbPoints; i++)
+    {
+        p[i].x=rand_n(1000);
+        p[i].y=rand_n(1000);
+        printf("%lf\t%lf\n", p[i].x, p[i].y);
+    }
+
+
+   /* tri */
+   qsort (p, sizeof p / sizeof *p, sizeof *p, dbl_cmp_Points_sort);
+
+   /* résultat */
+   printf("Après qsort\n");
+   printf("X\tY\n");
+   for(i=0; i<nbPoints; i++)
+   {
+       printf("%lf\t%lf\n", p[i].x, p[i].y);
+   }
+
+   return EXIT_SUCCESS;
+}

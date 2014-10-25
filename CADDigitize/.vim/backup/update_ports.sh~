@@ -1,0 +1,5 @@
+#!/bin/sh
+chemin="/home/bart/SVN/lbartoletti"
+svn del $1
+svn commit -m "del $1"
+cp -r "/usr/ports/$1" "chemin/$1"

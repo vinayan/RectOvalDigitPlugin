@@ -1,0 +1,2 @@
+#!/bin/sh
+/usr/local/sbin/smartctl -A /dev/ada1 | egrep Temperature_Celsius | awk '{print $10}'

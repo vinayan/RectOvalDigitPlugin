@@ -1,0 +1,68 @@
+#include "stdio.h"
+#include "stdlib.h"
+#include "math.h"
+
+/*
+   Create N points on a sphere aproximately equi-distant from each other
+   Basically, N points are randomly placed on the sphere and then moved
+   around until then moved around until the minimal distance between the
+   closed two points is minimaised.
+   Paul Bourke, July 1996
+*/
+
+#define PI 3.141592654
+
+#define ABS(x) (x < 0 ? -(x) : (x))
+#define DTOR    2*PI / 360
+typedef struct {
+  double x,y,z;
+} XYZ;
+
+void CreateUnitSphere(int dtheta,int dphi);
+/*
+   Called with three arguments, the number of points to distribute, the
+   radius of the sphere, and the maximum number of iterations to perform.
+*/
+int main(void){
+
+    CreateUnitSphere(180, 360);
+    return EXIT_SUCCESS;
+}
+
+void CreateUnitSphere(int dtheta,int dphi)
+{
+   int n;
+   int theta,phi;
+   XYZ p[4];
+
+   for (theta=-90;theta<=90-dtheta;theta+=dtheta) {
+      for (phi=0;phi<=360-dphi;phi+=dphi) {
+         n = 0;
+         p[n].x = cos(theta*DTOR) * cos(phi*DTOR);
+         p[n].y = cos(theta*DTOR) * sin(phi*DTOR);
+         p[n].z = sin(theta*DTOR);
+         n++;
+         p[n].x = cos((theta+dtheta)*DTOR) * cos(phi*DTOR);
+         p[n].y = cos((theta+dtheta)*DTOR) * sin(phi*DTOR);
+         p[n].z = sin((theta+dtheta)*DTOR);
+         n++;
+         p[n].x = cos((theta+dtheta)*DTOR) * cos((phi+dphi)*DTOR);
+         p[n].y = cos((theta+dtheta)*DTOR) * sin((phi+dphi)*DTOR);
+         p[n].z = sin((theta+dtheta)*DTOR);
+         n++;
+         if (theta > -90 && theta < 90) {
+            p[n].x = cos(theta*DTOR) * cos((phi+dphi)*DTOR);
+            p[n].y = cos(theta*DTOR) * sin((phi+dphi)*DTOR);
+            p[n].z = sin(theta*DTOR);
+            n++;
+         }
+
+         
+         /* Do something with the n vertex facet p */
+
+      }
+   }
+   int i;
+         for(i=0; i< n;i++)
+             printf("%lf %lf %lf\n",p[i].x, p[i].y, p[i].z);
+}
