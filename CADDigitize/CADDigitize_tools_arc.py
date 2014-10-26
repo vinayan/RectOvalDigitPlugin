@@ -55,6 +55,15 @@ class ArcBy3PointsTool(QgsMapTool):
     def keyReleaseEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
+        if event.key() == Qt.Key_Escape:
+            self.nbPoints = 0
+            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
+            self.circ_center, self.circ_rayon = None, None
+            self.rb.reset(True)
+            self.rb=None
+
+            self.canvas.refresh()
+            return
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -155,7 +164,6 @@ class ArcByCenter2PointsTool(QgsMapTool):
         self.rb = None
         self.rb_arcs = None
         self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
-        self.circ_center, self.circ_rayon = None, None
         self.mCtrl = None
         #our own fancy cursor
         self.cursor = QCursor(QPixmap(["16 16 3 1",
@@ -188,7 +196,18 @@ class ArcByCenter2PointsTool(QgsMapTool):
     def keyReleaseEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
+        if event.key() == Qt.Key_Escape:
+            self.nbPoints = 0
+            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
+            self.rb.reset(True)
+            self.rb_arcs.reset(True)
+            self.rb=None
+            self.rb_arcs=None
 
+            self.canvas.refresh()
+            return
+            
+            
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
         if self.nbPoints == 0:
@@ -340,7 +359,9 @@ class ArcByCenterPointAngleTool(QgsMapTool):
         self.angle, self.circ_rayon = None, -1
         self.setval = True
         self.rb.reset(True)
+        self.rb_arcs.reset(True)
         self.rb=None
+        self.rb_arcs=None
 
         self.canvas.refresh()
         self.dialog.SpinBox_Angle.setValue(0)
@@ -355,10 +376,24 @@ class ArcByCenterPointAngleTool(QgsMapTool):
     def keyPressEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = True
-
+            
     def keyReleaseEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
+        if event.key() == Qt.Key_Escape:
+            self.dialog.close()
+
+            self.nbPoints = 0
+            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry, self.x_p3, self.y_p3 = None, None, None, None, None, None, None, None
+            self.angle, self.circ_rayon = None, -1
+            self.setval = True
+            self.rb.reset(True)
+            self.rb_arcs.reset(True)
+            self.rb=None
+            self.rb_arcs=None
+
+            self.canvas.refresh()
+            return
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -457,7 +492,6 @@ class ArcByCenterPointAngleTool(QgsMapTool):
             if self.angle < 0:
                 self.angle += 2*math.pi
             
-            print degrees(self.angle)
             if self.setval == False:
                 self.dialog.SpinBox_Angle.setValue(degrees(self.angle))
                 

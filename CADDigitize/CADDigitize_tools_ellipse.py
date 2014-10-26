@@ -66,6 +66,19 @@ class EllipseByCenter2PointsTool(QgsMapTool):
     def keyReleaseEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
+        if event.key() == Qt.Key_Escape:
+            self.rb.reset(True)
+            self.rb_axis_a.reset(True)
+            self.rb_axis_b.reset(True)
+            self.rb, self.rb_axis_a, self.rb_axis_b = None, None, None
+            self.nbPoints = 0
+            self.angle_exist = 0
+            self.xc, self.yc, self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None, None, None
+            self.length = 0
+            self.axis_a, self.axis_b = 0,0
+        
+            self.canvas.refresh()
+            return
 
     def calcPoint(x,y):
         return p.x() + self.length * cos(radians(90) + self.angle_exist), self.p.y() + self.length * sin(radians(90) + self.angle_exist)
@@ -239,6 +252,18 @@ class EllipseByFociPointTool(QgsMapTool):
     def keyReleaseEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
+        if event.key() == Qt.Key_Escape:
+            self.nbPoints = 0
+            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None # P1 and P2 are foci
+            self.distP1P3, self.distP2P3 = 0,0
+            self.distTotal = 0
+            self.angle_exist = 0
+            self.rb.reset(True)
+            self.rb=None
+
+            self.canvas.refresh()
+        
+            return
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -379,6 +404,15 @@ class EllipseFromCenterTool(QgsMapTool):
     def keyReleaseEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
+        if event.key() == Qt.Key_Escape:
+            self.nbPoints = 0
+            self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
+            self.rb.reset(True)
+            self.rb=None
+
+            self.canvas.refresh()
+        
+            return
 
 
     def canvasPressEvent(self,event):
@@ -522,6 +556,15 @@ class EllipseByExtentTool(QgsMapTool):
     def keyReleaseEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
+        if event.key() == Qt.Key_Escape:
+            self.nbPoints = 0
+            self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
+            self.rb.reset(True)
+            self.rb=None
+
+            self.canvas.refresh()
+        
+            return
 
 
     def canvasPressEvent(self,event):

@@ -50,6 +50,15 @@ class RectBy3PointsTool(QgsMapTool):
     def keyReleaseEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
+        if event.key() == Qt.Key_Escape:
+            self.nbPoints = 0
+            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3, self.x_p4, self.y_p4 = None, None, None, None, None, None, None, None
+            self.rb.reset(True)
+            self.rb=None
+
+            self.canvas.refresh()
+        
+            return
 
     def calcPoint(x,y):
         return p.x() + self.length * cos(radians(90) + self.angle_exist), self.p.y() + self.length * sin(radians(90) + self.angle_exist)
@@ -186,6 +195,16 @@ class RectByExtentTool(QgsMapTool):
     def keyReleaseEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
+        if event.key() == Qt.Key_Escape:
+            self.nbPoints = 0
+            self.mCtrl=None
+            self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
+            self.rb.reset(True)
+            self.rb=None
+
+            self.canvas.refresh()
+        
+            return
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -318,6 +337,15 @@ class RectFromCenterTool(QgsMapTool):
     def keyReleaseEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
+        if event.key() == Qt.Key_Escape:
+            self.nbPoints = 0
+            self.xc, self.yc, self.x_p2, self.y_p2 = None, None, None, None
+            self.rb.reset(True)
+            self.rb=None
+
+            self.canvas.refresh()
+        
+            return
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -453,6 +481,15 @@ class SquareFromCenterTool(QgsMapTool):
     def keyReleaseEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
+        if event.key() == Qt.Key_Escape:
+            self.nbPoints = 0
+            self.xc, self.yc, self.x_p2, self.y_p2 = None, None, None, None
+            self.rb.reset(True)
+            self.rb=None
+
+            self.canvas.refresh()
+        
+            return
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
