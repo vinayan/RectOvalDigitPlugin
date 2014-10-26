@@ -34,7 +34,7 @@ from CADDigitize_tools_circle import *
 from CADDigitize_tools_rect import *
 from CADDigitize_tools_ellipse import *
 from CADDigitize_tools_arc import *
-
+from CADDigitize_dialog import Ui_CADDigitizeSettings
 
 class CADDigitize:
     """QGIS Plugin Implementation."""
@@ -71,10 +71,24 @@ class CADDigitize:
         
         settings = QSettings()
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-        
+        # Add toolbar 
+        self.menu = QMenu()
+        self.menu.setTitle( QCoreApplication.translate( "CADDigitize","&CADDigitize" ) )
+        self.caddigitize_help = QAction( QCoreApplication.translate("CADDigitize", "Help" ), self.iface.mainWindow() )
+        self.caddigitize_settings = QAction( QCoreApplication.translate("CADDigitize", "Settings" ), self.iface.mainWindow() )
+  
+        self.menu.addActions( [self.caddigitize_help, self.caddigitize_settings] )
+
+        menu_bar = self.iface.mainWindow().menuBar()
+        actions = menu_bar.actions()
+        lastAction = actions[ len( actions ) - 1 ]
+        menu_bar.insertMenu( lastAction, self.menu )
+
+        self.caddigitize_help.triggered.connect(self.doHelp)
+        self.caddigitize_settings.triggered.connect(self.doSettings)
 
         # Add button
-        self.toolBar = self.iface.addToolBar("Advanced draw")
+        self.toolBar = self.iface.addToolBar("CADDigitize")
         self.toolBar.setObjectName("CADDigitize")
         
         # Add spinbox
@@ -355,6 +369,14 @@ class CADDigitize:
         self.arcByCenterPointAngle.setChecked(True)
         QObject.connect(self.arcByCenterPointAngle_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
+    def doHelp(self):
+        help_file = "file:///"+ self.plugin_dir + "/help/index.html"
+        QDesktopServices.openUrl(QUrl(help_file))
+        
+    def doSettings(self):
+        self.settings = Ui_CADDigitizeSettings()
+        self.settings.show()
+
     def toggle(self):
         mc = self.canvas
         layer = mc.currentLayer()
@@ -522,5 +544,6 @@ class CADDigitize:
         del self.ellipseToolButton
         del self.arcToolButton
         del self.toolBar
+        del self.menu
 
 

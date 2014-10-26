@@ -36,6 +36,7 @@ SOURCES = \
 	CADDigitize_tools_arc.py \
 	ui_getDistance.py \
 	ui_getAngle.py \
+	ui_CADDigitizeSettings.py \
 	CADDigitize_dialog.py \
 	tools/__init__.py \
 	tools/math.py \
@@ -51,6 +52,7 @@ PY_FILES = \
 	CADDigitize_tools_ellipse.py \
 	CADDigitize_tools_arc.py \
 	ui_getDistance.py \
+	ui_CADDigitizeSettings.py \
 	ui_getAngle.py \
 	CADDigitize_dialog.py \
 	__init__.py
