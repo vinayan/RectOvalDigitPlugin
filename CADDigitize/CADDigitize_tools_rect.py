@@ -9,7 +9,6 @@ from qgis.core import *
 from qgis.gui import *
 from math import *
 from tools.calc import *
-from CADDigitize_dialog import Ui_CADDigitizeDialog
 
 class RectBy3PointsTool(QgsMapTool):
     def __init__(self, canvas):

@@ -2,6 +2,7 @@
 from qgis.core import *
 from math import *
 
+
 def GetAngleOfLineBetweenTwoPoints(p1, p2, angle_unit="degrees"):
     xDiff = p2.x() - p1.x()
     yDiff = p2.y() - p1.y()

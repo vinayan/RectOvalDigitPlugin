@@ -10,7 +10,7 @@ from qgis.gui import *
 from math import *
 from tools.calc import *
 from tools.circle import *
-from CADDigitize_dialog import Ui_CADDigitizeDialog
+from CADDigitize_dialog import Ui_CADDigitizeDialogRadius
 
 class CircleBy2PointsTool(QgsMapTool):
     def __init__(self, canvas):
@@ -434,15 +434,17 @@ class CircleByCenterRadiusTool(QgsMapTool):
         if self.circ_rayon != None and self.circ_rayon > 0:
             self.currx = self.x_p1 + sin(self.circ_rayon)
             self.curry = self.y_p1 + cos(self.circ_rayon)
-    	    self.rb.setToGeometry(QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, 360), None)
+            segments = self.settings.value("/CADDigitize/segments",36,type=int)
+    	    self.rb.setToGeometry(QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, segments), None)
 
     def finishedRadius(self):
-        geom = QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, 360)
+        segments = self.settings.value("/CADDigitize/segments",36,type=int)
+        geom = QgsGeometry.fromPoint(self.circ_center).buffer(self.circ_rayon, segments)
 
         self.nbPoints = 0
         self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), geom)
         self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry = None, None, None, None, None, None
-        self.cric_center, self.circ_rayon = None, -1
+        self.circ_center, self.circ_rayon = None, -1
         self.setval = True
         self.rb.reset(True)
         self.rb=None
@@ -453,7 +455,7 @@ class CircleByCenterRadiusTool(QgsMapTool):
         return
 
     def initGui(self):
-        self.dialog = Ui_CADDigitizeDialog()
+        self.dialog = Ui_CADDigitizeDialogRadius()
         self.dialog.SpinBox_Radius.valueChanged.connect(self.setRadiusValue)
         self.dialog.buttonBox.accepted.connect(self.finishedRadius)
 
