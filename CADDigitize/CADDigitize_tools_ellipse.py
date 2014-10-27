@@ -48,7 +48,7 @@ class EllipseByCenter2PointsTool(QgsMapTool):
                                       "       +.+      "]))
 
     def geomEllipse(self, center, axis_a, axis_b, angle_exist=0):
-        segments = self.settings.value("/CADDigitize/segments",36,type=int)
+        segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
 
         points = []
         for t in [(2*pi)/segments*i for i in range(segments)]:
@@ -220,7 +220,7 @@ class EllipseByFociPointTool(QgsMapTool):
                                       "       +.+      "]))
 
     def geomEllipse(self, center, axis_a, axis_b, angle_exist=0):
-        segments = self.settings.value("/CADDigitize/segments",36,type=int)
+        segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
 
         points = []
         for t in [(2*pi)/segments*i for i in range(segments)]:
@@ -385,7 +385,7 @@ class EllipseFromCenterTool(QgsMapTool):
  
 
     def geomEllipse(self, center, axis_a, axis_b, angle_exist=0):
-        segments = self.settings.value("/CADDigitize/segments",36,type=int)
+        segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
             
         points = []
         for t in [(2*pi)/segments*i for i in range(segments)]:
@@ -537,7 +537,7 @@ class EllipseByExtentTool(QgsMapTool):
  
 
     def geomEllipse(self, center, axis_a, axis_b, angle_exist=0):
-        segments = self.settings.value("/CADDigitize/segments",36,type=int)
+        segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
             
         points = []
         for t in [(2*pi)/segments*i for i in range(segments)]:

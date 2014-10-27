@@ -144,7 +144,7 @@ class CircularArc:
         except ZeroDivisionError:
             return None
             
-    def getArcByCenter2Points(ptCenter, ptStart, ptEnd, method="angle", interValue=1, clockwise=1):
+    def getArcByCenter2Points(ptCenter, ptStart, ptEnd, method="angle", interValue=1, clockwise="ClockWise"):
 
         coords = []
         coords.append(ptStart)
@@ -170,7 +170,7 @@ class CircularArc:
         a1 = math.atan2( ptStart.y() - center.y(), ptStart.x() - center.x() )
         a2 = math.atan2( ptEnd.y() - center.y(), ptEnd.x() - center.x() )
 
-        if clockwise == 1:
+        if clockwise == "ClockWise":
             if a2 < a1:
                 sweep = a1 - a2
                 arcIncr *= -1.0
@@ -182,7 +182,7 @@ class CircularArc:
             ptcount = int(math.ceil( math.fabs ( sweep / arcIncr  )))
         
         
-        if clockwise == 0:
+        if clockwise == "CounterClockWise":
             angle = a2 - a1
             if angle < 0:
                 angle += 2*math.pi
@@ -219,7 +219,7 @@ class CircularArc:
         return g
     
 
-    def getArcByCenterPointAngle(ptCenter, ptStart, inAngle, method="angle", interValue=1, clockwise=1):
+    def getArcByCenterPointAngle(ptCenter, ptStart, inAngle, method="angle", interValue=1, clockwise="ClockWise"):
 
         coords = []
         coords.append(ptStart)
@@ -230,7 +230,6 @@ class CircularArc:
         cy = center.y()
         r =QgsDistanceArea().measureLine(ptStart, ptCenter)
         
-        inAngle = inAngle
         ## If the method is "pitch" (=Pfeilhöhe) then
         ## we need to calculate the corresponding
         ## angle.
@@ -246,10 +245,19 @@ class CircularArc:
 
         ptcount = int(math.ceil( math.fabs ( (a1-inAngle) / arcIncr  )))
 
+        if clockwise == "ClockWise":
+            if inAngle < a1:
+                sweep = a1 - inAngle
+                arcIncr *= -1.0
+            else:
+                sweep = 2*math.pi - inAngle +a1
+                arcIncr *= -1.0
 
+
+            ptcount = int(math.ceil( math.fabs ( sweep / arcIncr  )))
          
         angle = a1
-        
+
         for i in range(0,  ptcount-1):
             angle += arcIncr
     

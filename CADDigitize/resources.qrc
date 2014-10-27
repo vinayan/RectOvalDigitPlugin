@@ -17,5 +17,6 @@
         <file>icons/ellipseFromCenter.png</file>
         <file>icons/arcByCenter2Points.png</file>
         <file>icons/arcBy3Points.png</file>
+        <file>icons/arcByCenterPointAngle.png</file>
      </qresource>
 </RCC>

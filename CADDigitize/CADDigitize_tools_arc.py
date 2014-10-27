@@ -109,7 +109,7 @@ class ArcBy3PointsTool(QgsMapTool):
         self.nbPoints += 1
 
         if self.nbPoints == 3:
-            segments = self.settings.value("/CADDigitize/segments",36,type=int)
+            segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
             self.circ_center, self.circ_rayon = calc_circleBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3))
             if self.circ_center != -1 or self.circ_rayon != -1:
                 geom = CircularArc.getArcBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), None, segments)
@@ -132,7 +132,7 @@ class ArcBy3PointsTool(QgsMapTool):
             self.rb.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p1, self.y_p1), QgsPoint(currx, curry)]), None)
 
         if self.nbPoints >= 2 and calc_isCollinear(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry)) != 0:
-            segments = self.settings.value("/CADDigitize/segments",36,type=int)
+            segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
             self.rb.setToGeometry(CircularArc.getArcBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry), None, segments), None)
 
     def showSettingsWarning(self):
@@ -257,8 +257,10 @@ class ArcByCenter2PointsTool(QgsMapTool):
         self.nbPoints += 1
 
         if self.nbPoints == 3:
-            segments = self.settings.value("/CADDigitize/segments",36,type=int)
-            geom = CircularArc.getArcByCenter2Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), None, segments)
+            segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
+            clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
+            method = self.settings.value("/CADDigitize/arc/method",  "pitch")
+            geom = CircularArc.getArcByCenter2Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), method, segments, clock)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
@@ -278,9 +280,13 @@ class ArcByCenter2PointsTool(QgsMapTool):
             self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p1, self.y_p1), QgsPoint(currx, curry)]), None)
 
         if self.nbPoints >= 2 and calc_isCollinear(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry)) != 0:
-            segments = self.settings.value("/CADDigitize/segments",36,type=int)
+            segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
+            clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
+            method = self.settings.value("/CADDigitize/arc/method",  "pitch")
+            geom = CircularArc.getArcByCenter2Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry), method, segments, clock)
+            
             self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(currx, curry)]), None)
-            self.rb.setToGeometry(CircularArc.getArcByCenter2Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry), None, segments), None)
+            self.rb.setToGeometry(geom, None)
 
     def showSettingsWarning(self):
         pass
@@ -341,17 +347,42 @@ class ArcByCenterPointAngleTool(QgsMapTool):
         
         if self.circ_rayon != None and self.circ_rayon > 0:
         
-            self.currx = self.x_p1 + cos(self.angle + self.a1) * self.circ_rayon
-            self.curry = self.y_p1 + sin(self.angle + self.a1) * self.circ_rayon
-            segments = self.settings.value("/CADDigitize/segments",36,type=int)
-            self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
             
-            geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, None, segments)
+            segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
+            clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
+            method = self.settings.value("/CADDigitize/arc/method",  "pitch")
+            
+            if clock == "ClockWise":
+                self.currx = self.x_p1 + cos(self.a1 - self.angle) * self.circ_rayon
+                self.curry = self.y_p1 + sin(self.a1 - self.angle) * self.circ_rayon
+                self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
+            
+                geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.a1 - self.angle, method, segments, clock)
+            elif clock == "CounterClockWise":
+                self.currx = self.x_p1 + cos(self.angle + self.a1) * self.circ_rayon
+                self.curry = self.y_p1 + sin(self.angle + self.a1) * self.circ_rayon
+                self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
+            
+                geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, method, segments, clock)
+            
     	    self.rb.setToGeometry(geom, None)
 
     def finishedAngle(self):
-        segments = self.settings.value("/CADDigitize/segments",36,type=int)
-        geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, None, segments)
+        segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
+        clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
+        method = self.settings.value("/CADDigitize/arc/method",  "pitch")
+        if clock == "ClockWise":
+            self.currx = self.x_p1 + cos(self.a1 - self.angle) * self.circ_rayon
+            self.curry = self.y_p1 + sin(self.a1 - self.angle) * self.circ_rayon
+            self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
+            
+            geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.a1 - self.angle, method, segments, clock)
+        elif clock == "CounterClockWise":
+            self.currx = self.x_p1 + cos(self.angle + self.a1) * self.circ_rayon
+            self.curry = self.y_p1 + sin(self.angle + self.a1) * self.circ_rayon
+            self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
+            
+            geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, method, segments, clock)
 
         self.nbPoints = 0
         self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), geom)
@@ -443,12 +474,26 @@ class ArcByCenterPointAngleTool(QgsMapTool):
             self.a1 = math.atan2( self.y_p2 - self.y_p1, self.x_p2 - self.x_p1 )
             self.angle = radians(self.dialog.SpinBox_Angle.value())
             self.circ_rayon = QgsDistanceArea().measureLine(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2))
-            segments = self.settings.value("/CADDigitize/segments",36,type=int)
-            self.currx = self.x_p1 + cos(self.angle + self.a1) * self.circ_rayon
-            self.curry = self.y_p1 + sin(self.angle + self.a1) * self.circ_rayon
+            
+            segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
+            clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
+            method = self.settings.value("/CADDigitize/arc/method",  "pitch")
+            
+            if clock == "ClockWise":
+                self.currx = self.x_p1 + cos(self.a1 - self.angle) * self.circ_rayon
+                self.curry = self.y_p1 + sin(self.a1 - self.angle) * self.circ_rayon
+                self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
+            
+                geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.a1 - self.angle, method, segments, clock)
+            elif clock == "CounterClockWise":
+                self.currx = self.x_p1 + cos(self.angle + self.a1) * self.circ_rayon
+                self.curry = self.y_p1 + sin(self.angle + self.a1) * self.circ_rayon
+                self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
+            
+                geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, method, segments, clock)
+                
             self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
             
-            geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, None, segments)
     	    self.rb.setToGeometry(geom, None)
         else:
             self.x_p3 = pointMap.x()
@@ -458,9 +503,16 @@ class ArcByCenterPointAngleTool(QgsMapTool):
 
         if self.nbPoints == 3:
             self.dialog.close()
-            segments = self.settings.value("/CADDigitize/segments",36,type=int)
+            segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
+            clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
+            method = self.settings.value("/CADDigitize/arc/method",  "pitch")
             
-            geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, None, segments)
+            if clock == "ClockWise":
+            
+                geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.a1 - self.angle, method, segments, clock)
+            elif clock == "CounterClockWise":
+            
+                geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, method, segments, clock)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry, self.x_p3, self.y_p3 = None, None, None, None, None, None, None, None
@@ -472,7 +524,7 @@ class ArcByCenterPointAngleTool(QgsMapTool):
 
 
     def canvasMoveEvent(self,event):
-        segments = self.settings.value("/CADDigitize/segments",36,type=int)
+        
         if not self.rb:return
         currpoint = self.toMapCoordinates(event.pos())
         self.currx = currpoint.x()
@@ -482,22 +534,33 @@ class ArcByCenterPointAngleTool(QgsMapTool):
             self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
 
         if self.nbPoints >= 2 and calc_isCollinear(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.currx, self.curry)) != 0:
-            segments = self.settings.value("/CADDigitize/segments",36,type=int)
+        
+            segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
+            clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
+            method = self.settings.value("/CADDigitize/arc/method",  "pitch")
             self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
             
             
             self.a2 = math.atan2( self.curry - self.y_p1, self.currx - self.x_p1 )
-
             self.angle = self.a2 - self.a1
             if self.angle < 0:
                 self.angle += 2*math.pi
+
+
+                
+            if clock == "ClockWise":
+                self.angle = 2*math.pi - self.angle            
+                geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.a1 - self.angle, method, segments, clock)
+
+            elif clock == "CounterClockWise":
+            
+                geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, method, segments, clock)
             
             if self.setval == False:
                 self.dialog.SpinBox_Angle.setValue(degrees(self.angle))
                 
-            self.rb.setToGeometry(CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, None, segments), None)
-
-
+            self.rb.setToGeometry(geom, None)
+            
     def showSettingsWarning(self):
         pass
 
