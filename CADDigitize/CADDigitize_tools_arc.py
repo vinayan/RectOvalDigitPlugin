@@ -110,9 +110,10 @@ class ArcBy3PointsTool(QgsMapTool):
 
         if self.nbPoints == 3:
             segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
+            method = self.settings.value("/CADDigitize/arc/method",  "pitch")
             self.circ_center, self.circ_rayon = calc_circleBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3))
             if self.circ_center != -1 or self.circ_rayon != -1:
-                geom = CircularArc.getArcBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), None, segments)
+                geom = CircularArc.getArcBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), method, segments)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
@@ -133,7 +134,8 @@ class ArcBy3PointsTool(QgsMapTool):
 
         if self.nbPoints >= 2 and calc_isCollinear(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry)) != 0:
             segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
-            self.rb.setToGeometry(CircularArc.getArcBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry), None, segments), None)
+            method = self.settings.value("/CADDigitize/arc/method",  "pitch")
+            self.rb.setToGeometry(CircularArc.getArcBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry), method, segments), None)
 
     def showSettingsWarning(self):
         pass

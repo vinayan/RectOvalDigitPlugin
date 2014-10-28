@@ -52,7 +52,7 @@ class CircularArc:
         ## we need to calculate the corresponding
         ## angle.
         if method == "pitch":
-            myAlpha = 2.0 * math.acos( 1.0 - ( interValue / 1000 ) / r )
+            myAlpha = 2.0 * math.acos( 1.0 - ( interValue / 1000.0 ) / r )
             arcIncr = myAlpha
 #            print "myAlpha: " + str(myAlpha)
         else:
@@ -160,7 +160,7 @@ class CircularArc:
         ## we need to calculate the corresponding
         ## angle.
         if method == "pitch":
-            myAlpha = 2.0 * math.acos( 1.0 - ( interValue / 1000 ) / r )
+            myAlpha = 2.0 * math.acos( 1.0 - ( interValue / 1000.0 ) / r )
             arcIncr = myAlpha
 #            print "myAlpha: " + str(myAlpha)
         else:
@@ -186,7 +186,7 @@ class CircularArc:
             angle = a2 - a1
             if angle < 0:
                 angle += 2*math.pi
-            ptcount = int(math.ceil( math.fabs ( (angle) / arcIncr  )))
+            ptcount = int(math.ceil( math.fabs ( angle / arcIncr  )))
 
 
          
@@ -234,7 +234,7 @@ class CircularArc:
         ## we need to calculate the corresponding
         ## angle.
         if method == "pitch":
-            myAlpha = 2.0 * math.acos( 1.0 - ( interValue / 1000 ) / r )
+            myAlpha = 2.0 * math.acos( 1.0 - ( interValue / 1000.0 ) / r )
             arcIncr = myAlpha
 #            print "myAlpha: " + str(myAlpha)
         else:

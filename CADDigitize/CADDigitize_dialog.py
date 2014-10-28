@@ -60,7 +60,7 @@ class Ui_CADDigitizeSettings(QtGui.QDialog, Ui_CADDigitizeSettings):
         self.settings = QtCore.QSettings()
         self.circle_segments = self.settings.value("/CADDigitize/circle/segments", 36,type=int)
         self.ellipse_points = self.settings.value("/CADDigitize/ellipse/segments", 36,type=int)
-        self.arc_featurePitch = self.settings.value("/CADDigitize/arc/pitch", 2,type=int)
+        self.arc_featurePitch = self.settings.value("/CADDigitize/arc/pitch", 2,type=float)
         self.arc_featureAngle = self.settings.value("/CADDigitize/arc/angle", 1,type=int)
         self.arc_method = self.settings.value("/CADDigitize/arc/method",  "pitch")
         self.arc_angleDirection = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
@@ -89,11 +89,11 @@ class Ui_CADDigitizeSettings(QtGui.QDialog, Ui_CADDigitizeSettings):
         if self.arc_method == "pitch":
             self.radioFeaturePitch.setChecked(True)
             self.radioFeatureAngle.setChecked(False)
-            self.settings.setValue("/CADDigitize/arc/segments", self.settings.value("/CADDigitize/arc/pitch"))
+            self.settings.setValue("/CADDigitize/arc/segments", self.settings.value("/CADDigitize/arc/pitch", 2,type=float))
         else:
             self.radioFeaturePitch.setChecked(False)
             self.radioFeatureAngle.setChecked(True) 
-            self.settings.setValue("/CADDigitize/arc/segments", self.settings.value("/CADDigitize/arc/angle"))
+            self.settings.setValue("/CADDigitize/arc/segments", self.settings.value("/CADDigitize/arc/angle", 1,type=int))
             
         if self.arc_angleDirection == "ClockWise":
             self.ArcClockWise.setChecked(True)
