@@ -64,6 +64,7 @@ class Ui_CADDigitizeSettings(QtGui.QDialog, Ui_CADDigitizeSettings):
         self.arc_featureAngle = self.settings.value("/CADDigitize/arc/angle", 1,type=int)
         self.arc_method = self.settings.value("/CADDigitize/arc/method",  "pitch")
         self.arc_angleDirection = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
+        self.arc_polygonCreation = self.settings.value("/CADDigitize/arc/polygon",  "pie")
 
         self.ArcFeaturePitch.setMinimum(1)
         self.ArcFeaturePitch.setMaximum(1000)
@@ -101,7 +102,14 @@ class Ui_CADDigitizeSettings(QtGui.QDialog, Ui_CADDigitizeSettings):
         else:
             self.ArcClockWise.setChecked(False)
             self.ArcCounterClockWise.setChecked(True)
-                
+            
+        if self.arc_polygonCreation == "pie":
+            self.ArcPolygonPie.setChecked(True)
+            self.ArcPolygonChord.setChecked(False)
+        else:
+            self.ArcPolygonPie.setChecked(False)
+            self.ArcPolygonChord.setChecked(True)         
+                  
         self.okButton = self.buttonBox.button(QtGui.QDialogButtonBox.Ok)
         self.okButton.clicked.connect(self.accept)
 
@@ -137,5 +145,9 @@ class Ui_CADDigitizeSettings(QtGui.QDialog, Ui_CADDigitizeSettings):
         else:
             self.settings.setValue("/CADDigitize/arc/direction",  "CounterClockWise")
             
+        if self.ArcPolygonPie.isChecked():
+            self.settings.setValue("/CADDigitize/arc/polygon", "pie")
+        else:
+            self.settings.setValue("/CADDigitize/arc/polygon", "chord")            
         self.close()
         

@@ -455,7 +455,6 @@ class CADDigitize:
         if layer.geometryType() == 2:
             arcPolygonSettings = QSettings()
             
-            print arcPolygonSettings.value("/CADDigitize/arc/polygon","chord")
             if arcPolygonSettings.value("/CADDigitize/arc/polygon","chord") == "pie":
                 geom.insertVertex(center.x(), center.y(),0)
                 
