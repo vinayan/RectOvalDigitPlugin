@@ -1,9 +1,8 @@
-# -*- coding: latin1 -*-
+# -*- coding: utf-8 -*-
 # Import the PyQt and QGIS libraries
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
-from calc import *
 
 import math
 
@@ -12,7 +11,7 @@ import math
 #CirculArc from CadTools
 #
 #CadTools provides some tools to perform CAD like functions in QGIS.
-#There is some code adopted from the Numerical Vertex Edit plugin (Cédric Möri), fTools (Carson Farmer) and the Python console. Thank you!
+#There is some code adopted from the Numerical Vertex Edit plugin (CÃ©dric MÃ¶ri), fTools (Carson Farmer) and the Python console. Thank you!
 #And thanks to Giuseppe Sucameli for solving the lost icons issue.
 #Ported to QGIS 2.0 API version by Angelos Tzotsos (gcpp.kalxas@gmail.com) and Matthias Uden (matthias.uden@gmail.com)
 #LICENSING INFORMATION:
@@ -24,12 +23,12 @@ import math
 #You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 #
-# Modified by Loïc Bartoletti (l.bartoletti@free.fr) 2014
+# Modified by LoÃ¯c Bartoletti (l.bartoletti@free.fr) 2014
 
 
 class CircularArc:
     
-    def getArcBy3Points(ptStart,  ptArc, ptEnd,  method,  interValue):
+    def getArcBy3Points(ptStart,  ptArc, ptEnd,  method="angle",  interValue=1):
         
         coords = []
         coords.append(ptStart)
@@ -48,7 +47,7 @@ class CircularArc:
         py = ptArc.y()
         r = ( ( cx-px ) * ( cx-px ) + ( cy-py ) * ( cy-py ) ) ** 0.5
 
-        ## If the method is "pitch" (=Pfeilhöhe) then
+        ## If the method is "pitch" (=PfeilhÃ¶he) then
         ## we need to calculate the corresponding
         ## angle.
         if method == "pitch":
@@ -156,7 +155,7 @@ class CircularArc:
         r =QgsDistanceArea().measureLine(ptStart, ptCenter)
         
 
-        ## If the method is "pitch" (=Pfeilhöhe) then
+        ## If the method is "pitch" (=PfeilhÃ¶he) then
         ## we need to calculate the corresponding
         ## angle.
         if method == "pitch":
@@ -170,6 +169,7 @@ class CircularArc:
         a1 = math.atan2( ptStart.y() - center.y(), ptStart.x() - center.x() )
         a2 = math.atan2( ptEnd.y() - center.y(), ptEnd.x() - center.x() )
 
+        ptcount = 0
         if clockwise == "ClockWise":
             if a2 < a1:
                 sweep = a1 - a2
@@ -230,7 +230,7 @@ class CircularArc:
         cy = center.y()
         r =QgsDistanceArea().measureLine(ptStart, ptCenter)
         
-        ## If the method is "pitch" (=Pfeilhöhe) then
+        ## If the method is "pitch" (=PfeilhÃ¶he) then
         ## we need to calculate the corresponding
         ## angle.
         if method == "pitch":

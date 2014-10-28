@@ -9,6 +9,7 @@ from qgis.core import *
 from qgis.gui import *
 from math import *
 from tools.calc import *
+from tools.ellipse import *
 
 
 
@@ -47,17 +48,7 @@ class EllipseByCenter2PointsTool(QgsMapTool):
                                       "      ++.++     ",
                                       "       +.+      "]))
 
-    def geomEllipse(self, center, axis_a, axis_b, angle_exist=0):
-        segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
 
-        points = []
-        for t in [(2*pi)/segments*i for i in range(segments)]:
-            points.append((center.x() + axis_a*cos(t)*cos(angle_exist) - axis_b*sin(t)*sin(angle_exist), center.y() + axis_a*cos(t)*sin(angle_exist) + axis_b*sin(t)*cos(angle_exist)))
-        polygon = [QgsPoint(i[0],i[1]) for i in points]
-        geom = QgsGeometry.fromPolygon([polygon])
-
-        return geom
-        
     def keyPressEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = True
@@ -140,7 +131,8 @@ class EllipseByCenter2PointsTool(QgsMapTool):
         self.nbPoints += 1
 
         if self.nbPoints == 3:
-            geom = self.geomEllipse(QgsPoint(self.xc, self.yc), self.axis_a, self.axis_b, self.angle_exist)
+            segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
+            geom = Ellipse.getEllipse(QgsPoint(self.xc, self.yc), self.axis_a, self.axis_b, self.angle_exist, segments)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.xc, self.yc = None, None, None, None, None, None
@@ -162,8 +154,10 @@ class EllipseByCenter2PointsTool(QgsMapTool):
             self.x_p2, self.y_p2 = self.xc + self.length * cos(radians(90) + self.angle_exist), self.yc + self.length * sin(radians(90) + self.angle_exist)
             self.axis_b = QgsDistanceArea().measureLine(QgsPoint(self.xc, self.yc), QgsPoint(self.x_p2, self.y_p2))
             self.rb_axis_b.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.xc, self.yc), QgsPoint(self.x_p2, self.y_p2)]), None)
+
+            segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
             
-            geom = self.geomEllipse(QgsPoint(self.xc, self.yc), self.axis_a, self.axis_b, self.angle_exist)
+            geom = Ellipse.getEllipse(QgsPoint(self.xc, self.yc), self.axis_a, self.axis_b, self.angle_exist, segments)
             
             self.rb.setToGeometry(geom, None)
 
@@ -219,31 +213,6 @@ class EllipseByFociPointTool(QgsMapTool):
                                       "      ++.++     ",
                                       "       +.+      "]))
 
-    def geomEllipse(self, center, axis_a, axis_b, angle_exist=0):
-        segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
-
-        points = []
-        for t in [(2*pi)/segments*i for i in range(segments)]:
-            points.append((center.x() + axis_a*cos(t)*cos(angle_exist) - axis_b*sin(t)*sin(angle_exist), center.y() + axis_a*cos(t)*sin(angle_exist) + axis_b*sin(t)*cos(angle_exist)))
-        polygon = [QgsPoint(i[0],i[1]) for i in points]
-        geom = QgsGeometry.fromPolygon([polygon])
-
-        return geom
-        
-    def ellipseFromFoci(self, f1, f2, f3):
-        dist_f1f2 = QgsDistanceArea().measureLine(f1, f2)
-        dist_tot = QgsDistanceArea().measureLine(f1, f3) + QgsDistanceArea().measureLine(f2, f3)
-        angle_exist = calcAngleExistant(f1, f2)
-        center_f1f2 = calc_milieuLine(f1, f2)
-
-        axis_a = dist_tot / 2.0
-        axis_b = sqrt((dist_tot/2.0)**2.0 - (dist_f1f2/2.0)**2.0)
-
-        if axis_a < axis_b:
-            axis_a,axis_b = axis_b, axis_a
-
-        return self.geomEllipse(center_f1f2, axis_a, axis_b, angle_exist)
-        
     def keyPressEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = True
@@ -310,7 +279,9 @@ class EllipseByFociPointTool(QgsMapTool):
         self.nbPoints += 1
 
         if self.nbPoints == 3:
-            geom = self.ellipseFromFoci(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3))
+        
+            segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
+            geom = Ellipse.getEllipseFromFoci(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), segments)
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
             
@@ -329,7 +300,8 @@ class EllipseByFociPointTool(QgsMapTool):
             self.rb.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p1, self.y_p1), QgsPoint(currx, curry)]), None)
 
         if self.nbPoints > 1:
-            self.rb.setToGeometry(self.ellipseFromFoci(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry)), None)
+            segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
+            self.rb.setToGeometry(Ellipse.getEllipseFromFoci(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry), segments), None)
 
     def showSettingsWarning(self):
         pass
@@ -383,18 +355,6 @@ class EllipseFromCenterTool(QgsMapTool):
                                       "       +.+      "]))
                                   
  
-
-    def geomEllipse(self, center, axis_a, axis_b, angle_exist=0):
-        segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
-            
-        points = []
-        for t in [(2*pi)/segments*i for i in range(segments)]:
-            points.append((center.x() + axis_a*cos(t)*cos(angle_exist) - axis_b*sin(t)*sin(angle_exist), center.y() + axis_a*cos(t)*sin(angle_exist) + axis_b*sin(t)*cos(angle_exist)))
-        
-        polygon = [QgsPoint(i[0],i[1]) for i in points]
-        geom = QgsGeometry.fromPolygon([polygon])
-        
-        return geom
 
     def keyPressEvent(self,  event):
         if event.key() == Qt.Key_Control:
@@ -459,8 +419,9 @@ class EllipseFromCenterTool(QgsMapTool):
         if self.nbPoints == 2:
             xOffset = abs( self.x_p2 - self.x_p1)
             yOffset = abs( self.y_p2 - self.y_p1)
+            segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
             
-            geom = self.geomEllipse(QgsPoint(self.x_p1, self.y_p1), xOffset, yOffset)
+            geom = Ellipse.getEllipse(QgsPoint(self.x_p1, self.y_p1), xOffset, yOffset, segments=segments)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
@@ -479,8 +440,9 @@ class EllipseFromCenterTool(QgsMapTool):
         curry = currpoint.y()
         xOffset = abs( currx - self.x_p1)
         yOffset = abs( curry - self.y_p1)
+        segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
 
-        self.rb.setToGeometry(self.geomEllipse(QgsPoint(self.x_p1, self.y_p1), xOffset, yOffset), None)
+        self.rb.setToGeometry(Ellipse.getEllipse(QgsPoint(self.x_p1, self.y_p1), xOffset, yOffset, segments=segments), None)
   
 
     def showSettingsWarning(self):
@@ -535,18 +497,6 @@ class EllipseByExtentTool(QgsMapTool):
                                       "       +.+      "]))
                                   
  
-
-    def geomEllipse(self, center, axis_a, axis_b, angle_exist=0):
-        segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
-            
-        points = []
-        for t in [(2*pi)/segments*i for i in range(segments)]:
-            points.append((center.x() + axis_a*cos(t)*cos(angle_exist) - axis_b*sin(t)*sin(angle_exist), center.y() + axis_a*cos(t)*sin(angle_exist) + axis_b*sin(t)*cos(angle_exist)))
-        
-        polygon = [QgsPoint(i[0],i[1]) for i in points]
-        geom = QgsGeometry.fromPolygon([polygon])
-        
-        return geom
 
     def keyPressEvent(self,  event):
         if event.key() == Qt.Key_Control:
@@ -613,8 +563,9 @@ class EllipseByExtentTool(QgsMapTool):
             yc = self.y_p1 + ((self.y_p2 - self.y_p1) / 2) 
             xOffset = (abs( self.x_p2 - self.x_p1))/2
             yOffset = (abs( self.y_p2 - self.y_p1))/2
+            segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
             
-            geom = self.geomEllipse(QgsPoint(xc, yc), xOffset, yOffset)
+            geom = Ellipse.getEllipse(QgsPoint(xc, yc), xOffset, yOffset, segments=segments)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
@@ -635,9 +586,10 @@ class EllipseByExtentTool(QgsMapTool):
         yc = self.y_p1 + ((curry - self.y_p1) / 2) 
         xOffset = (abs( currx - self.x_p1))/2
         yOffset = (abs( curry - self.y_p1))/2
+        segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
             
         
-        self.rb.setToGeometry(self.geomEllipse(QgsPoint(xc, yc), xOffset, yOffset), None)
+        self.rb.setToGeometry(Ellipse.getEllipse(QgsPoint(xc, yc), xOffset, yOffset, segments=segments), None)
   
 
     def showSettingsWarning(self):

@@ -3,7 +3,7 @@
 /***************************************************************************
  CADDigitize
                                  A QGIS plugin
- CAD like for circle, rectangle, ellipse
+ CAD like for circle, rectangle, ellipse, arc
                               -------------------
         begin                : 2014-08-11
         git sha              : $Format:%H$
