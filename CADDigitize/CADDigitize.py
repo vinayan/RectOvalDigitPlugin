@@ -90,22 +90,7 @@ class CADDigitize:
         # Add button
         self.toolBar = self.iface.addToolBar("CADDigitize")
         self.toolBar.setObjectName("CADDigitize")
-        
-        # Add spinbox
-        self.spinBox = QSpinBox(self.iface.mainWindow())
-        self.spinBox.setMinimum(3)
-        self.spinBox.setMaximum(72)
-        segvalue = settings.value("/CADDigitize/segments",36,type=int)
-        if not segvalue:
-            settings.setValue("/CADDigitize/segments", 36)
-        self.spinBox.setValue(segvalue)
-        self.spinBox.setSingleStep(1)
-        self.spinBoxAction = self.toolBar.addWidget(self.spinBox)
-        self.spinBox.setToolTip("Number of segments for circles and ellipses")
-        self.spinBoxAction.setEnabled(False)
-
-        self.toolBar.addSeparator()
-        
+               
         self.circleToolButton = QToolButton(self.toolBar)
         self.rectToolButton = QToolButton(self.toolBar)
         self.ellipseToolButton = QToolButton(self.toolBar)
@@ -221,7 +206,6 @@ class CADDigitize:
         self.toolBar.addSeparator()
         ### Conect
 
-        QObject.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.segmentsettings)
         QObject.connect(self.circleBy2Points,  SIGNAL("activated()"), self.circleBy2PointsDigit)
         QObject.connect(self.circleBy3Points,  SIGNAL("activated()"), self.circleBy3PointsDigit)
         QObject.connect(self.circleByCenterRadius,  SIGNAL("activated()"),  self.circleByCenterRadiusDigit)
@@ -262,10 +246,6 @@ class CADDigitize:
         self.arcByCenter2Points_tool = ArcByCenter2PointsTool( self.canvas )
         self.arcBy3Points_tool = ArcBy3PointsTool( self.canvas )
         self.arcByCenterPointAngle_tool = ArcByCenterPointAngleTool( self.canvas )
-
-    def segmentsettings(self):
-        settings = QSettings()
-        settings.setValue("/CADDigitize/segments", self.spinBox.value())
 
     def circleBy2PointsDigit(self):
         self.circleToolButton.setDefaultAction(self.circleBy2Points)
@@ -355,19 +335,19 @@ class CADDigitize:
         self.arcToolButton.setDefaultAction(self.arcByCenter2Points)
         self.canvas.setMapTool(self.arcByCenter2Points_tool)
         self.arcByCenter2Points.setChecked(True)
-        QObject.connect(self.arcByCenter2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.connect(self.arcByCenter2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
         
     def arcBy3PointsDigit(self):
         self.arcToolButton.setDefaultAction(self.arcBy3Points)
         self.canvas.setMapTool(self.arcBy3Points_tool)
         self.arcBy3Points.setChecked(True)
-        QObject.connect(self.arcBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.connect(self.arcBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
 
     def arcByCenterPointAngleDigit(self):
         self.arcToolButton.setDefaultAction(self.arcByCenterPointAngle)
         self.canvas.setMapTool(self.arcByCenterPointAngle_tool)
         self.arcByCenterPointAngle.setChecked(True)
-        QObject.connect(self.arcByCenterPointAngle_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.connect(self.arcByCenterPointAngle_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
 
     def doHelp(self):
         help_file = "file:///"+ self.plugin_dir + "/help/index.html"
@@ -397,7 +377,6 @@ class CADDigitize:
                 self.ellipseByFociPoint.setEnabled(True)
                 self.ellipseFromCenter.setEnabled(True)
                 self.ellipseByExtent.setEnabled(True)
-                self.spinBoxAction.setEnabled(True)
                 self.arcByCenter2Points.setEnabled(True)
                 self.arcBy3Points.setEnabled(True)
                 self.arcByCenterPointAngle.setEnabled(True)
@@ -419,7 +398,6 @@ class CADDigitize:
                 self.ellipseByFociPoint.setEnabled(False)
                 self.ellipseFromCenter.setEnabled(False)
                 self.ellipseByExtent.setEnabled(False)
-                self.spinBoxAction.setEnabled(False)
                 self.arcByCenter2Points.setEnabled(False)
                 self.arcBy3Points.setEnabled(False)
                 self.arcByCenterPointAngle.setEnabled(False)
@@ -463,11 +441,28 @@ class CADDigitize:
         QObject.disconnect(self.ellipseByFociPoint_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.ellipseFromCenter_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.ellipseByExtent_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
-        QObject.disconnect(self.arcByCenter2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
-        QObject.disconnect(self.arcBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
-        QObject.disconnect(self.arcByCenterPointAngle_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.disconnect(self.arcByCenter2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
+        QObject.disconnect(self.arcBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
+        QObject.disconnect(self.arcByCenterPointAngle_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
 
 
+
+    def arcFeature(self, arc):
+        geom = arc[0]
+        center = arc[1]
+        mc = self.canvas
+        layer = mc.currentLayer()
+        if layer.geometryType() == 2:
+            arcPolygonSettings = QSettings()
+            
+            print arcPolygonSettings.value("/CADDigitize/arc/polygon","chord")
+            if arcPolygonSettings.value("/CADDigitize/arc/polygon","chord") == "pie":
+                geom.insertVertex(center.x(), center.y(),0)
+                
+            geom = geom.convertToType(2, False)
+        
+        self.createFeature(geom)
+            
     def createFeature(self, geom):
         settings = QSettings()
         mc = self.canvas

@@ -111,14 +111,14 @@ class ArcBy3PointsTool(QgsMapTool):
         if self.nbPoints == 3:
             segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
             method = self.settings.value("/CADDigitize/arc/method",  "pitch")
-            self.circ_center, self.circ_rayon = calc_circleBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3))
-            if self.circ_center != -1 or self.circ_rayon != -1:
-                geom = CircularArc.getArcBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), method, segments)
+            
+            geom = CircularArc.getArcBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), method, segments)
 
             self.nbPoints = 0
+            center = CircularArc.getArcCenter(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3))
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
 
-            self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), geom)
+            self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), [geom, center])
 
         if self.rb:return
 
@@ -263,11 +263,12 @@ class ArcByCenter2PointsTool(QgsMapTool):
             clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
             method = self.settings.value("/CADDigitize/arc/method",  "pitch")
             geom = CircularArc.getArcByCenter2Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), method, segments, clock)
+            center, start = QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
 
-            self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), geom)
+            self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), [geom, center])
 
         if self.rb:return
 
@@ -517,9 +518,10 @@ class ArcByCenterPointAngleTool(QgsMapTool):
                 geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, method, segments, clock)
 
             self.nbPoints = 0
+            center = QgsPoint(self.x_p1, self.y_p1)
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry, self.x_p3, self.y_p3 = None, None, None, None, None, None, None, None
 
-            self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), geom)
+            self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), [geom, center])
 
 
         if self.rb:return
