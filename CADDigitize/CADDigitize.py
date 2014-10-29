@@ -466,7 +466,7 @@ class CADDigitize:
         settings = QSettings()
         mc = self.canvas
         layer = mc.currentLayer()
-        renderer = mc.mapRenderer()
+        renderer = mc.mapSettings()
         layerCRSSrsid = layer.crs().srsid()
         projectCRSSrsid = renderer.destinationCrs().srsid()
         provider = layer.dataProvider()
