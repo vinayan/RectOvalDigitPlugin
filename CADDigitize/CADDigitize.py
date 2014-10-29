@@ -3,7 +3,8 @@
 /***************************************************************************
  CADDigitize
                                  A QGIS plugin
- CAD like for circle, rectangle, ellipse, arc
+ CAD like tools for QGis
+ Fork of Rectangles Ovals Digitizing. Inspired by CadTools, LibreCAD/AutoCAD.
                               -------------------
         begin                : 2014-08-11
         git sha              : $Format:%H$

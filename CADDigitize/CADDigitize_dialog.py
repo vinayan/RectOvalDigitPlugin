@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- StationLinesDialog
+ CADDigitize
                                  A QGIS plugin
- Create lines along a polyline with specifications (length, side, angle)
-                             -------------------
-        begin                : 2014-04-11
+ CAD like tools for QGis
+ Fork of Rectangles Ovals Digitizing. Inspired by CadTools, LibreCAD/AutoCAD.
+ 
+                              -------------------
+        begin                : 2014-08-11
+        git sha              : $Format:%H$
         copyright            : (C) 2014 by Loïc BARTOLETTI
         email                : l.bartoletti@free.fr
  ***************************************************************************/
