@@ -42,6 +42,7 @@ SOURCES = \
 	tools/math.py \
 	tools/circle.py \
 	tools/ellipse.py \
+	tools/rectangle.py \
 	tools/circulararc.py
 
 PLUGINNAME = CADDigitize
@@ -62,6 +63,7 @@ PY_FILES_TOOLS = \
 	tools/calc.py \
 	tools/circle.py \
 	tools/ellipse.py \
+	tools/rectangle.py \
 	tools/circulararc.py
 
 

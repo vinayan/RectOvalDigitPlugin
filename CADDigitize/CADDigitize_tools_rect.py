@@ -9,6 +9,7 @@ from qgis.core import *
 from qgis.gui import *
 from math import *
 from tools.calc import *
+from tools.rectangle import *
 
 class RectBy3PointsTool(QgsMapTool):
     def __init__(self, canvas):
@@ -52,7 +53,7 @@ class RectBy3PointsTool(QgsMapTool):
             self.mCtrl = False
         if event.key() == Qt.Key_Escape:
             self.nbPoints = 0
-            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3, self.x_p4, self.y_p4 = None, None, None, None, None, None, None, None
+            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
             self.rb.reset(True)
             self.rb=None
 
@@ -60,7 +61,7 @@ class RectBy3PointsTool(QgsMapTool):
         
             return
 
-    def calcPoint(x,y):
+    def calcPoint(p):
         return p.x() + self.length * cos(radians(90) + self.angle_exist), self.p.y() + self.length * sin(radians(90) + self.angle_exist)
 
     def canvasPressEvent(self,event):
@@ -100,19 +101,18 @@ class RectBy3PointsTool(QgsMapTool):
         elif self.nbPoints == 1:
             self.x_p2 = pointMap.x()
             self.y_p2 = pointMap.y()
-            self.angle_exist = calcAngleExistant(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2))
         else:
-            self.x_p3, self.y_p3 = self.x_p2 + self.length * cos(radians(90) + self.angle_exist), self.y_p2 + self.length * sin(radians(90) + self.angle_exist)
-            self.x_p4, self.y_p4 = self.x_p1 + self.length * cos(radians(90) + self.angle_exist), self.y_p1 + self.length * sin(radians(90) + self.angle_exist)
+            self.x_p3 = pointMap.x()
+            self.y_p3 = pointMap.y()
 
 
         self.nbPoints += 1
 
         if self.nbPoints == 3:
-            geom = QgsGeometry.fromPolygon([[QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), QgsPoint(self.x_p4, self.y_p4)]])
+            geom = Rectangle.getRectBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3))
 
             self.nbPoints = 0
-            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3, self.x_p4, self.y_p4 = None, None, None, None, None, None, None, None
+            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
 
             self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), geom)
 
@@ -122,18 +122,11 @@ class RectBy3PointsTool(QgsMapTool):
 
         if not self.rb:return
         currpoint = self.toMapCoordinates(event.pos())
-        currx = currpoint.x()
-        curry = currpoint.y()
+        
         if self.nbPoints == 1:
-            self.rb.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p1, self.y_p1), QgsPoint(currx, curry)]), None)
+            self.rb.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p1, self.y_p1), currpoint]), None)
         if self.nbPoints >= 2:
-            side = calc_isCollinear(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), currpoint) # check if x_p2 > x_p1 and inverse side
-            if self.x_p1 < self.x_p2:
-                side *= -1
-            self.length = QgsDistanceArea().measureLine(QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry)) * side
-            self.x_p3, self.y_p3 = self.x_p2 + self.length * cos(radians(90) + self.angle_exist), self.y_p2 + self.length * sin(radians(90) + self.angle_exist)
-            self.x_p4, self.y_p4 = self.x_p1 + self.length * cos(radians(90) + self.angle_exist), self.y_p1 + self.length * sin(radians(90) + self.angle_exist)
-            geom = QgsGeometry.fromPolygon([[QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), QgsPoint(self.x_p4, self.y_p4)]])
+            geom = Rectangle.getRectBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), currpoint)
             self.rb.setToGeometry(geom, None)
 
     def showSettingsWarning(self):
@@ -247,13 +240,7 @@ class RectByExtentTool(QgsMapTool):
         self.nbPoints += 1
 
         if self.nbPoints == 2:
-            pt1 = (self.x_p1, self.y_p1)
-            pt2 = (self.x_p1, self.y_p2)
-            pt3 = (self.x_p2, self.y_p2)
-            pt4 = (self.x_p2, self.y_p1)
-            points = [pt1, pt2, pt3, pt4]
-            polygon = [QgsPoint(i[0],i[1]) for i in points]
-            geom = QgsGeometry.fromPolygon([polygon])
+            geom = Rectangle.getRectByExtent(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2))
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
@@ -266,16 +253,8 @@ class RectByExtentTool(QgsMapTool):
     def canvasMoveEvent(self,event):
         if not self.rb:return
         currpoint = self.toMapCoordinates(event.pos())
-        currx = currpoint.x()
-        curry = currpoint.y()
-        self.rb.reset(True)
-        pt1 = (self.x_p1, self.y_p1)
-        pt2 = (self.x_p1, curry)
-        pt3 = (currx, curry)
-        pt4 = (currx, self.y_p1)
-        points = [pt1, pt2, pt3, pt4]
-        polygon = [QgsPoint(i[0],i[1]) for i in points]
-	self.rb.setToGeometry(QgsGeometry.fromPolygon([polygon]), None)
+        geom = Rectangle.getRectByExtent(QgsPoint(self.x_p1, self.y_p1), currpoint)
+	self.rb.setToGeometry(geom, None)
         #delete [self.rb.addPoint( point ) for point in polygon]
 
     def showSettingsWarning(self):
@@ -388,16 +367,9 @@ class RectFromCenterTool(QgsMapTool):
         self.nbPoints += 1
 
         if self.nbPoints == 2:
-            xOffset = abs( self.x_p2 - self.xc)
-            yOffset = abs( self.y_p2 - self.yc)
-            pt1 = QgsPoint(-xOffset, -yOffset)
-            pt2 = QgsPoint(-xOffset, yOffset)
-            pt3 = QgsPoint(xOffset, yOffset)
-            pt4 = QgsPoint(xOffset, -yOffset)
-            points = [pt1, pt2, pt3, pt4]
-            polygon = [QgsPoint(self.xc + i[0], self.yc + i[1]) for i in points]
-            geom = QgsGeometry.fromPolygon([polygon])
 
+            geom = Rectangle.getRectFromCenter(QgsPoint(self.xc, self.yc), QgsPoint(self.x_p2, self.y_p2))
+            
             self.nbPoints = 0
             self.xc, self.yc, self.x_p2, self.y_p2 = None, None, None, None
 
@@ -408,18 +380,9 @@ class RectFromCenterTool(QgsMapTool):
     def canvasMoveEvent(self,event):
         if not self.rb:return
         currpoint = self.toMapCoordinates(event.pos())
-        currx = currpoint.x()
-        curry = currpoint.y()
-        xOffset = abs( currx - self.xc)
-        yOffset = abs( curry - self.yc)
-        self.rb.reset(True)
-        pt1 = QgsPoint(-xOffset, -yOffset)
-        pt2 = QgsPoint(-xOffset, yOffset)
-        pt3 = QgsPoint(xOffset, yOffset)
-        pt4 = QgsPoint(xOffset, -yOffset)
-        points = [pt1, pt2, pt3, pt4]
-        polygon = [QgsPoint(self.xc + i[0], self.yc + i[1]) for i in points]
-	self.rb.setToGeometry(QgsGeometry.fromPolygon([polygon]), None)
+
+        geom = Rectangle.getRectFromCenter(QgsPoint(self.xc, self.yc), currpoint)
+	self.rb.setToGeometry(geom, None)
         #delete [self.rb.addPoint( point ) for point in polygon]
 
     def showSettingsWarning(self):
@@ -532,16 +495,8 @@ class SquareFromCenterTool(QgsMapTool):
         self.nbPoints += 1
 
         if self.nbPoints == 2:
-            currpoint = self.toMapCoordinates(event.pos())
-            distance= sqrt(currpoint.sqrDist( self.xc, self.yc ))
-            offset = distance/sqrt(2)
-            pt1 = (-offset, -offset)
-            pt2 = (-offset, offset)
-            pt3 = (offset, offset)
-            pt4 = (offset, -offset)
-            points = [pt1, pt2, pt3, pt4]
-            polygon = [QgsPoint(self.xc + i[0], self.yc + i[1]) for i in points]
-            geom = QgsGeometry.fromPolygon([polygon])
+
+            geom = Rectangle.getSquareFromCenter(QgsPoint(self.xc, self.yc), QgsPoint(self.x_p2, self.y_p2))
 
             self.nbPoints = 0
             self.xc, self.yc, self.x_p2, self.y_p2 = None, None, None, None
@@ -554,17 +509,9 @@ class SquareFromCenterTool(QgsMapTool):
     def canvasMoveEvent(self,event):
         if not self.rb:return
         currpoint = self.toMapCoordinates(event.pos())
-        distance= sqrt(currpoint.sqrDist( self.xc, self.yc ))
-        offset = distance/sqrt(2)
-        self.rb.reset(True)
-        pt1 = (-offset, -offset)
-        pt2 = (-offset, offset)
-        pt3 = (offset, offset)
-        pt4 = (offset, -offset)
-        points = [pt1, pt2, pt3, pt4]
-        polygon = [QgsPoint(i[0]+self.xc,i[1]+self.yc) for i in points]
-        #delete [self.rb.addPoint( point ) for point in polygon]
-	self.rb.setToGeometry(QgsGeometry.fromPolygon([polygon]), None)
+        geom = Rectangle.getSquareFromCenter(QgsPoint(self.xc, self.yc), currpoint)
+        
+	self.rb.setToGeometry(geom, None)
 
     def showSettingsWarning(self):
         pass
