@@ -92,6 +92,9 @@ class CADDigitize:
         # Add button
         self.toolBar = self.iface.addToolBar("CADDigitize")
         self.toolBar.setObjectName("CADDigitize")
+        
+        self.optionsToolBar = self.iface.addToolBar("CADDigitize options")
+        self.optionsToolBar.setObjectName("CADDigitize options")
                
         self.circleToolButton = QToolButton(self.toolBar)
         self.rectToolButton = QToolButton(self.toolBar)
@@ -103,6 +106,8 @@ class CADDigitize:
         self.ellipseToolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.arcToolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.rpolygonToolButton.setPopupMode(QToolButton.MenuButtonPopup)
+
+
 
         ###
         # Circles
@@ -276,86 +281,157 @@ class CADDigitize:
         self.arcByCenterPointAngle_tool = ArcByCenterPointAngleTool( self.canvas )
         self.rpolygonByCenterPoint_tool = RPolygonByCenterPointTool( self.canvas )
         self.rpolygonBy2Corners_tool = RPolygon2CornersTool( self.canvas )
+
+
+    def segmentsettingsCircle(self):
+        settings = QSettings()
+        settings.setValue("/CADDigitize/circle/segments", self.spinBox.value())
+
+    def segmentsettingsEllipse(self):
+        settings = QSettings()
+        settings.setValue("/CADDigitize/ellipse/segments", self.spinBox.value())    
+
+    def circleOptions(self):
+        settings = QSettings()
+        self.optionsToolBar.clear()
+        ###
+        # Options
+        ###
+        # Add spinbox circle
+        self.spinBox = QSpinBox(self.iface.mainWindow())
+        self.spinBox.setMinimum(3)
+        self.spinBox.setMaximum(3600)
+        segvalue = settings.value("/CADDigitize/circle/segments",36,type=int)
+        if not segvalue:
+            settings.setValue("/CADDigitize/circle/segments", 36)
+        self.spinBox.setValue(segvalue)
+        self.spinBox.setSingleStep(1)
+        self.spinBoxAction = self.optionsToolBar.addWidget(self.spinBox)
+        self.spinBox.setToolTip("Number of quadrant segments")
+        self.spinBoxAction.setEnabled(True)
+        
+        
+        QObject.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.segmentsettingsCircle)
+
+    def ellipseOptions(self):
+        settings = QSettings()
+        self.optionsToolBar.clear()
+        ###
+        # Options
+        ###
+        # Add spinbox circle
+        self.spinBox = QSpinBox(self.iface.mainWindow())
+        self.spinBox.setMinimum(3)
+        self.spinBox.setMaximum(3600)
+        segvalue = settings.value("/CADDigitize/ellipse/segments",36,type=int)
+        if not segvalue:
+            settings.setValue("/CADDigitize/ellipse/segments", 36)
+        self.spinBox.setValue(segvalue)
+        self.spinBox.setSingleStep(1)
+        self.spinBoxAction = self.optionsToolBar.addWidget(self.spinBox)
+        self.spinBox.setToolTip("Number of points")
+        self.spinBoxAction.setEnabled(True)
+        
+        
+        QObject.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.segmentsettingsEllipse)
+                
+    def rectOptions(self):
+        self.optionsToolBar.clear()        
+
     
     def circleBy2PointsDigit(self):
+        self.circleOptions()
         self.circleToolButton.setDefaultAction(self.circleBy2Points)
         self.canvas.setMapTool(self.circleBy2Points_tool)
         self.circleBy2Points.setChecked(True)
         QObject.connect(self.circleBy2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def circleBy3PointsDigit(self):
+        self.circleOptions()
         self.circleToolButton.setDefaultAction(self.circleBy3Points)
         self.canvas.setMapTool(self.circleBy3Points_tool)
         self.circleBy3Points.setChecked(True)
         QObject.connect(self.circleBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def circleByCenterRadiusDigit(self):
+        self.circleOptions()
         self.circleToolButton.setDefaultAction(self.circleByCenterRadius)
         self.canvas.setMapTool(self.circleByCenterRadius_tool)
         self.circleByCenterRadius.setChecked(True)
         QObject.connect(self.circleByCenterRadius_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def circleByCenterPointDigit(self):
+        self.circleOptions()
         self.circleToolButton.setDefaultAction(self.circleByCenterPoint)
         self.canvas.setMapTool(self.circleByCenterPoint_tool)
         self.circleByCenterPoint.setChecked(True)
         QObject.connect(self.circleByCenterPoint_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def rectBy3PointsDigit(self):
+        self.rectOptions()
         self.rectToolButton.setDefaultAction(self.rectBy3Points)
         self.canvas.setMapTool(self.rectBy3Points_tool)
         self.rectBy3Points.setChecked(True)
         QObject.connect(self.rectBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def rectByExtentDigit(self):
+        self.rectOptions()
         self.rectToolButton.setDefaultAction(self.rectByExtent)
         self.canvas.setMapTool(self.rectByExtent_tool)
         self.rectByExtent.setChecked(True)
         QObject.connect(self.rectByExtent_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def rectFromCenterDigit(self):
+        self.rectOptions()
         self.rectToolButton.setDefaultAction(self.rectFromCenter)
         self.canvas.setMapTool(self.rectFromCenter_tool)
         self.rectFromCenter.setChecked(True)
         QObject.connect(self.rectFromCenter_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def squareFromCenterDigit(self):
+        self.rectOptions()
         self.rectToolButton.setDefaultAction(self.squareFromCenter)
         self.canvas.setMapTool(self.squareFromCenter_tool)
         self.squareFromCenter.setChecked(True)
         QObject.connect(self.squareFromCenter_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def ellipseByCenter2PointsDigit(self):
+        self.ellipseOptions()
         self.ellipseToolButton.setDefaultAction(self.ellipseByCenter2Points)
         self.canvas.setMapTool(self.ellipseByCenter2Points_tool)
         self.ellipseByCenter2Points.setChecked(True)
         QObject.connect(self.ellipseByCenter2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def ellipseByCenter3PointsDigit(self):
+        self.ellipseOptions()
         self.ellipseToolButton.setDefaultAction(self.ellipseByCenter3Points)
         self.canvas.setMapTool(self.ellipseByCenter3Points_tool)
         self.ellipseByCenter3Points.setChecked(True)
         QObject.connect(self.ellipseByCenter3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def ellipseBy4PointsDigit(self):
+        self.ellipseOptions()
         self.ellipseToolButton.setDefaultAction(self.ellipseBy4Points)
         self.canvas.setMapTool(self.ellipseBy4Points_tool)
         self.ellipseBy4Points.setChecked(True)
         QObject.connect(self.ellipseBy4Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def ellipseByFociPointDigit(self):
+        self.ellipseOptions()
         self.ellipseToolButton.setDefaultAction(self.ellipseByFociPoint)
         self.canvas.setMapTool(self.ellipseByFociPoint_tool)
         self.ellipseByFociPoint.setChecked(True)
         QObject.connect(self.ellipseByFociPoint_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def ellipseFromCenterDigit(self):
+        self.ellipseOptions()
         self.ellipseToolButton.setDefaultAction(self.ellipseFromCenter)
         self.canvas.setMapTool(self.ellipseFromCenter_tool)
         self.ellipseFromCenter.setChecked(True)
         QObject.connect(self.ellipseFromCenter_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def ellipseByExtentDigit(self):
+        self.ellipseOptions()
         self.ellipseToolButton.setDefaultAction(self.ellipseByExtent)
         self.canvas.setMapTool(self.ellipseByExtent_tool)
         self.ellipseByExtent.setChecked(True)
@@ -451,6 +527,7 @@ class CADDigitize:
 
                 QObject.connect(layer,SIGNAL("editingStarted()"),self.toggle)
                 QObject.disconnect(layer,SIGNAL("editingStopped()"),self.toggle)
+                self.optionsToolBar.clear()  
 
 
 
@@ -583,6 +660,7 @@ class CADDigitize:
         self.arcToolButton.removeAction(self.arcByCenterPointAngle)
         self.rpolygonToolButton.removeAction(self.rpolygonByCenterPoint)
         self.rpolygonToolButton.removeAction(self.rpolygonBy2Corners)
+        self.optionsToolBar.clear()  
                 
         del self.circleToolButton
         del self.rectToolButton
@@ -590,6 +668,7 @@ class CADDigitize:
         del self.arcToolButton
         del self.rpolygonToolButton
         del self.toolBar
+        del self.optionsToolBar
         del self.menu
 
 

@@ -55,7 +55,7 @@ class Ellipse:
         if axis_a < axis_b:
             axis_a,axis_b = axis_b, axis_a
 
-        return Ellipse.getEllipse(center_f1f2, axis_a, axis_b, angle_exist)
+        return Ellipse.getEllipse(center_f1f2, axis_a, axis_b, angle_exist, segments)
         
 
         
