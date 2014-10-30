@@ -291,6 +291,32 @@ class CADDigitize:
         settings = QSettings()
         settings.setValue("/CADDigitize/ellipse/segments", self.spinBox.value())    
 
+    def segmentsettingsRPolygon(self):
+        settings = QSettings()
+        settings.setValue("/CADDigitize/rpolygon/nbedges", self.spinBox.value())    
+        
+    def rpolygonOptions(self):
+        settings = QSettings()
+        self.optionsToolBar.clear()
+        ###
+        # Options
+        ###
+        # Add spinbox circle
+        self.spinBox = QSpinBox(self.iface.mainWindow())
+        self.spinBox.setMinimum(3)
+        self.spinBox.setMaximum(9999)
+        segvalue = settings.value("/CADDigitize/rpolygon/nbedges",36,type=int)
+        if not segvalue:
+            settings.setValue("/CADDigitize/rpolygon/nbedges", 36)
+        self.spinBox.setValue(segvalue)
+        self.spinBox.setSingleStep(1)
+        self.spinBoxAction = self.optionsToolBar.addWidget(self.spinBox)
+        self.spinBox.setToolTip("Number of edges")
+        self.spinBoxAction.setEnabled(True)
+        
+        
+        QObject.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.segmentsettingsRPolygon)
+
     def circleOptions(self):
         settings = QSettings()
         self.optionsToolBar.clear()
@@ -321,7 +347,7 @@ class CADDigitize:
         ###
         # Add spinbox circle
         self.spinBox = QSpinBox(self.iface.mainWindow())
-        self.spinBox.setMinimum(3)
+        self.spinBox.setMinimum(4)
         self.spinBox.setMaximum(3600)
         segvalue = settings.value("/CADDigitize/ellipse/segments",36,type=int)
         if not segvalue:
@@ -457,12 +483,14 @@ class CADDigitize:
 
 
     def rpolygonByCenterPointDigit(self):
+        self.rpolygonOptions()
         self.rpolygonToolButton.setDefaultAction(self.rpolygonByCenterPoint)
         self.canvas.setMapTool(self.rpolygonByCenterPoint_tool)
         self.rpolygonByCenterPoint.setChecked(True)
         QObject.connect(self.rpolygonByCenterPoint_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         
     def rpolygonBy2CornersDigit(self):
+        self.rpolygonOptions()
         self.rpolygonToolButton.setDefaultAction(self.rpolygonBy2Corners)
         self.canvas.setMapTool(self.rpolygonBy2Corners_tool)
         self.rpolygonBy2Corners.setChecked(True)
