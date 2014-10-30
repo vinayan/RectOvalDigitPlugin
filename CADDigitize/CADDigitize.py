@@ -276,7 +276,7 @@ class CADDigitize:
         self.arcByCenterPointAngle_tool = ArcByCenterPointAngleTool( self.canvas )
         self.rpolygonByCenterPoint_tool = RPolygonByCenterPointTool( self.canvas )
         self.rpolygonBy2Corners_tool = RPolygon2CornersTool( self.canvas )
-
+    
     def circleBy2PointsDigit(self):
         self.circleToolButton.setDefaultAction(self.circleBy2Points)
         self.canvas.setMapTool(self.circleBy2Points_tool)
