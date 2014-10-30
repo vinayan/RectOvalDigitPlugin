@@ -35,6 +35,7 @@ from CADDigitize_tools_circle import *
 from CADDigitize_tools_rect import *
 from CADDigitize_tools_ellipse import *
 from CADDigitize_tools_arc import *
+from CADDigitize_tools_regularpolygon import *
 from CADDigitize_dialog import Ui_CADDigitizeSettings
 
 class CADDigitize:
@@ -96,10 +97,12 @@ class CADDigitize:
         self.rectToolButton = QToolButton(self.toolBar)
         self.ellipseToolButton = QToolButton(self.toolBar)
         self.arcToolButton = QToolButton(self.toolBar)
+        self.rpolygonToolButton = QToolButton(self.toolBar)
         self.circleToolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.rectToolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.ellipseToolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.arcToolButton.setPopupMode(QToolButton.MenuButtonPopup)
+        self.rpolygonToolButton.setPopupMode(QToolButton.MenuButtonPopup)
 
         ###
         # Circles
@@ -205,6 +208,27 @@ class CADDigitize:
         self.arcByCenterPointAngle.setEnabled(False)
 
         self.toolBar.addSeparator()
+        
+        
+        ###
+        # Regular Polygon
+        ###
+
+        self.rpolygonByCenterPoint = QAction(QIcon(":/plugins/CADDigitize/icons/rpolygonByCenterPoint.png"),  "Regular polygon by center and point",  self.iface.mainWindow())
+        self.rpolygonBy2Corners = QAction(QIcon(":/plugins/CADDigitize/icons/rpolygonBy2Corners.png"),  "Regular polygon by 2 corners",  self.iface.mainWindow())
+        
+        self.rpolygonToolButton.addActions( [ self.rpolygonByCenterPoint, self.rpolygonBy2Corners ] )
+        self.rpolygonToolButton.setDefaultAction(self.rpolygonByCenterPoint)
+        self.toolBar.addWidget( self.rpolygonToolButton )
+
+        self.rpolygonByCenterPoint.setCheckable(True)
+        self.rpolygonByCenterPoint.setEnabled(False)
+        self.rpolygonBy2Corners.setCheckable(True)
+        self.rpolygonBy2Corners.setEnabled(False)
+
+        self.toolBar.addSeparator()
+        
+        
         ### Conect
 
         QObject.connect(self.circleBy2Points,  SIGNAL("activated()"), self.circleBy2PointsDigit)
@@ -224,11 +248,14 @@ class CADDigitize:
         QObject.connect(self.arcByCenter2Points,  SIGNAL("activated()"), self.arcByCenter2PointsDigit)
         QObject.connect(self.arcBy3Points,  SIGNAL("activated()"), self.arcBy3PointsDigit)
         QObject.connect(self.arcByCenterPointAngle,  SIGNAL("activated()"), self.arcByCenterPointAngleDigit)
+        QObject.connect(self.rpolygonByCenterPoint,  SIGNAL("activated()"), self.rpolygonByCenterPointDigit)
+        QObject.connect(self.rpolygonBy2Corners,  SIGNAL("activated()"), self.rpolygonBy2CornersDigit)
 
         QObject.connect(self.iface, SIGNAL("currentLayerChanged(QgsMapLayer*)"), self.toggle)
         QObject.connect(self.canvas, SIGNAL("mapToolSet(QgsMapTool*)"), self.deactivate)
 
 
+        
         # Get the tools
         self.circleBy2Points_tool = CircleBy2PointsTool( self.canvas )
         self.circleBy3Points_tool = CircleBy3PointsTool( self.canvas )
@@ -247,6 +274,8 @@ class CADDigitize:
         self.arcByCenter2Points_tool = ArcByCenter2PointsTool( self.canvas )
         self.arcBy3Points_tool = ArcBy3PointsTool( self.canvas )
         self.arcByCenterPointAngle_tool = ArcByCenterPointAngleTool( self.canvas )
+        self.rpolygonByCenterPoint_tool = RPolygonByCenterPointTool( self.canvas )
+        self.rpolygonBy2Corners_tool = RPolygon2CornersTool( self.canvas )
 
     def circleBy2PointsDigit(self):
         self.circleToolButton.setDefaultAction(self.circleBy2Points)
@@ -350,6 +379,19 @@ class CADDigitize:
         self.arcByCenterPointAngle.setChecked(True)
         QObject.connect(self.arcByCenterPointAngle_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
 
+
+    def rpolygonByCenterPointDigit(self):
+        self.rpolygonToolButton.setDefaultAction(self.rpolygonByCenterPoint)
+        self.canvas.setMapTool(self.rpolygonByCenterPoint_tool)
+        self.rpolygonByCenterPoint.setChecked(True)
+        QObject.connect(self.rpolygonByCenterPoint_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        
+    def rpolygonBy2CornersDigit(self):
+        self.rpolygonToolButton.setDefaultAction(self.rpolygonBy2Corners)
+        self.canvas.setMapTool(self.rpolygonBy2Corners_tool)
+        self.rpolygonBy2Corners.setChecked(True)
+        QObject.connect(self.rpolygonBy2Corners_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)        
+        
     def doHelp(self):
         help_file = "file:///"+ self.plugin_dir + "/help/index.html"
         QDesktopServices.openUrl(QUrl(help_file))
@@ -381,7 +423,9 @@ class CADDigitize:
                 self.arcByCenter2Points.setEnabled(True)
                 self.arcBy3Points.setEnabled(True)
                 self.arcByCenterPointAngle.setEnabled(True)
-
+                self.rpolygonByCenterPoint.setEnabled(True)
+                self.rpolygonBy2Corners.setEnabled(True)
+                
                 QObject.connect(layer,SIGNAL("editingStopped()"),self.toggle)
                 QObject.disconnect(layer,SIGNAL("editingStarted()"),self.toggle)
             else:
@@ -402,6 +446,8 @@ class CADDigitize:
                 self.arcByCenter2Points.setEnabled(False)
                 self.arcBy3Points.setEnabled(False)
                 self.arcByCenterPointAngle.setEnabled(False)
+                self.rpolygonByCenterPoint.setEnabled(False)
+                self.rpolygonBy2Corners.setEnabled(False)
 
                 QObject.connect(layer,SIGNAL("editingStarted()"),self.toggle)
                 QObject.disconnect(layer,SIGNAL("editingStopped()"),self.toggle)
@@ -426,7 +472,8 @@ class CADDigitize:
         self.arcByCenter2Points.setChecked(False)
         self.arcBy3Points.setChecked(False)
         self.arcByCenterPointAngle.setChecked(False)
-        
+        self.rpolygonByCenterPoint.setChecked(False)
+        self.rpolygonBy2Corners.setChecked(False)
         
         QObject.disconnect(self.circleBy2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.circleBy2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
@@ -445,7 +492,8 @@ class CADDigitize:
         QObject.disconnect(self.arcByCenter2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
         QObject.disconnect(self.arcBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
         QObject.disconnect(self.arcByCenterPointAngle_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
-
+        QObject.disconnect(self.rpolygonByCenterPoint_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.disconnect(self.rpolygonBy2Corners_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
 
     def arcFeature(self, arc):
@@ -533,11 +581,14 @@ class CADDigitize:
         self.arcToolButton.removeAction(self.arcByCenter2Points)
         self.arcToolButton.removeAction(self.arcBy3Points)
         self.arcToolButton.removeAction(self.arcByCenterPointAngle)
-        
+        self.rpolygonToolButton.removeAction(self.rpolygonByCenterPoint)
+        self.rpolygonToolButton.removeAction(self.rpolygonBy2Corners)
+                
         del self.circleToolButton
         del self.rectToolButton
         del self.ellipseToolButton
         del self.arcToolButton
+        del self.rpolygonToolButton
         del self.toolBar
         del self.menu
 

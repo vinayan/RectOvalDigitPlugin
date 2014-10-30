@@ -1,30 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-/***************************************************************************
- CADDigitize
-                                 A QGIS plugin
- CAD like tools for QGis
- Fork of Rectangles Ovals Digitizing. Inspired by CadTools, LibreCAD/AutoCAD.
-                              -------------------
-        begin                : 2014-08-11
-        git sha              : $Format:%H$
-        copyright            : (C) 2014 by Loïc BARTOLETTI
-        email                : l.bartoletti@free.fr
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-"""
 
 # Form implementation generated from reading ui file 'ui_CADDigitizeSettings.ui'
 #
-# Created: Tue Oct 28 07:00:18 2014
+# Created: Thu Oct 30 21:48:00 2014
 #      by: PyQt4 UI code generator 4.11.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -93,6 +71,25 @@ class Ui_CADDigitizeSettings(object):
         self.ellipsePointsSpinbox.setObjectName(_fromUtf8("ellipsePointsSpinbox"))
         self.verticalLayout_4.addWidget(self.ellipsePointsSpinbox)
         self.tabWidget.addTab(self.EllipseTab, _fromUtf8(""))
+        self.tab = QtGui.QWidget()
+        self.tab.setObjectName(_fromUtf8("tab"))
+        self.layoutWidget_3 = QtGui.QWidget(self.tab)
+        self.layoutWidget_3.setGeometry(QtCore.QRect(10, 20, 134, 39))
+        self.layoutWidget_3.setObjectName(_fromUtf8("layoutWidget_3"))
+        self.verticalLayout_9 = QtGui.QVBoxLayout(self.layoutWidget_3)
+        self.verticalLayout_9.setMargin(0)
+        self.verticalLayout_9.setObjectName(_fromUtf8("verticalLayout_9"))
+        self.label_3 = QtGui.QLabel(self.layoutWidget_3)
+        self.label_3.setObjectName(_fromUtf8("label_3"))
+        self.verticalLayout_9.addWidget(self.label_3)
+        self.rpolygonEdgesSpinbox = QtGui.QDoubleSpinBox(self.layoutWidget_3)
+        self.rpolygonEdgesSpinbox.setDecimals(0)
+        self.rpolygonEdgesSpinbox.setMinimum(3.0)
+        self.rpolygonEdgesSpinbox.setMaximum(9999.0)
+        self.rpolygonEdgesSpinbox.setProperty("value", 5.0)
+        self.rpolygonEdgesSpinbox.setObjectName(_fromUtf8("rpolygonEdgesSpinbox"))
+        self.verticalLayout_9.addWidget(self.rpolygonEdgesSpinbox)
+        self.tabWidget.addTab(self.tab, _fromUtf8(""))
         self.ArcTab = QtGui.QWidget()
         self.ArcTab.setObjectName(_fromUtf8("ArcTab"))
         self.layoutWidget2 = QtGui.QWidget(self.ArcTab)
@@ -173,7 +170,7 @@ class Ui_CADDigitizeSettings(object):
         self.verticalLayout_6.addLayout(self.verticalLayout)
 
         self.retranslateUi(CADDigitizeSettings)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), CADDigitizeSettings.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), CADDigitizeSettings.reject)
         QtCore.QMetaObject.connectSlotsByName(CADDigitizeSettings)
@@ -184,6 +181,8 @@ class Ui_CADDigitizeSettings(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.CircleTab), _translate("CADDigitizeSettings", "Circle", None))
         self.label.setText(_translate("CADDigitizeSettings", "Number of points on ellipse", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.EllipseTab), _translate("CADDigitizeSettings", "Ellipse", None))
+        self.label_3.setText(_translate("CADDigitizeSettings", "Number of edges", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("CADDigitizeSettings", "Regular polygon", None))
         self.groupBox.setTitle(_translate("CADDigitizeSettings", "Feature Segmentation", None))
         self.radioFeatureAngle.setText(_translate("CADDigitizeSettings", "Angle", None))
         self.ArcFeatureAngle.setPrefix(_translate("CADDigitizeSettings", "Degree(s) ", None))

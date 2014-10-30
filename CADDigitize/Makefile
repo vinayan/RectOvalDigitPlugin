@@ -33,6 +33,7 @@ SOURCES = \
 	CADDigitize_tools_circle.py \
 	CADDigitize_tools_rect.py \
 	CADDigitize_tools_ellipse.py \
+	CADDigitize_tools_regularpolygon.py \
 	CADDigitize_tools_arc.py \
 	ui_getDistance.py \
 	ui_getAngle.py \
@@ -43,6 +44,7 @@ SOURCES = \
 	tools/circle.py \
 	tools/ellipse.py \
 	tools/rectangle.py \
+	tools/regularpolygon.py \
 	tools/circulararc.py
 
 PLUGINNAME = CADDigitize
@@ -52,6 +54,7 @@ PY_FILES = \
 	CADDigitize_tools_circle.py \
 	CADDigitize_tools_rect.py \
 	CADDigitize_tools_ellipse.py \
+	CADDigitize_tools_regularpolygon.py \
 	CADDigitize_tools_arc.py \
 	ui_getDistance.py \
 	ui_CADDigitizeSettings.py \
@@ -64,6 +67,7 @@ PY_FILES_TOOLS = \
 	tools/circle.py \
 	tools/ellipse.py \
 	tools/rectangle.py \
+	tools/regularpolygon.py \
 	tools/circulararc.py
 
 

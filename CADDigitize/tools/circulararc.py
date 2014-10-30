@@ -250,7 +250,7 @@ class CircularArc:
         
         cx = center.x()
         cy = center.y()
-        r =QgsDistanceArea().measureLine(ptStart, ptCenter)
+        r = QgsDistanceArea().measureLine(ptStart, ptCenter)
         
         ## If the method is "pitch" (=Pfeilhöhe) then
         ## we need to calculate the corresponding

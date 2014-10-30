@@ -63,6 +63,7 @@ class Ui_CADDigitizeSettings(QtGui.QDialog, Ui_CADDigitizeSettings):
         self.settings = QtCore.QSettings()
         self.circle_segments = self.settings.value("/CADDigitize/circle/segments", 36,type=int)
         self.ellipse_points = self.settings.value("/CADDigitize/ellipse/segments", 36,type=int)
+        self.rpolygon_edges = self.settings.value("/CADDigitize/rpolygon/nbedges", 5,type=int)
         self.arc_featurePitch = self.settings.value("/CADDigitize/arc/pitch", 2,type=float)
         self.arc_featureAngle = self.settings.value("/CADDigitize/arc/angle", 1,type=int)
         self.arc_method = self.settings.value("/CADDigitize/arc/method",  "pitch")
@@ -88,7 +89,11 @@ class Ui_CADDigitizeSettings(QtGui.QDialog, Ui_CADDigitizeSettings):
         self.ellipsePointsSpinbox.setMaximum(3600)
         self.ellipsePointsSpinbox.setDecimals(0)    
         self.ellipsePointsSpinbox.setValue(int(self.ellipse_points))             
-      
+        
+        self.rpolygonEdgesSpinbox.setMinimum(3)
+        self.rpolygonEdgesSpinbox.setMaximum(9999)
+        self.rpolygonEdgesSpinbox.setDecimals(0)    
+        self.rpolygonEdgesSpinbox.setValue(int(self.rpolygon_edges))      
 
         if self.arc_method == "pitch":
             self.radioFeaturePitch.setChecked(True)
@@ -135,6 +140,7 @@ class Ui_CADDigitizeSettings(QtGui.QDialog, Ui_CADDigitizeSettings):
         self.settings.setValue("/CADDigitize/ellipse/segments", self.ellipsePointsSpinbox.value())
         self.settings.setValue("/CADDigitize/arc/pitch", self.ArcFeaturePitch.value())
         self.settings.setValue("/CADDigitize/arc/angle", self.ArcFeatureAngle.value())
+        self.settings.setValue("/CADDigitize/rpolygon/nbedges", self.rpolygonEdgesSpinbox.value())
         
         if self.radioFeaturePitch.isChecked():
             self.settings.setValue("/CADDigitize/arc/method",  "pitch")
