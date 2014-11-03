@@ -37,6 +37,7 @@ from CADDigitize_tools_ellipse import *
 from CADDigitize_tools_arc import *
 from CADDigitize_tools_regularpolygon import *
 from CADDigitize_dialog import Ui_CADDigitizeSettings
+from tools.arc_options import *
 
 class CADDigitize:
     """QGIS Plugin Implementation."""
@@ -464,6 +465,7 @@ class CADDigitize:
         QObject.connect(self.ellipseByExtent_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def arcByCenter2PointsDigit(self):
+        CircularArcOptions(self.iface, self.optionsToolBar)
         self.arcToolButton.setDefaultAction(self.arcByCenter2Points)
         self.canvas.setMapTool(self.arcByCenter2Points_tool)
         self.arcByCenter2Points.setChecked(True)
@@ -639,21 +641,31 @@ class CADDigitize:
 
         # add attribute fields to feature
         fields = layer.pendingFields()
-
+        
         # vector api change update
-
         f.initAttributes(fields.count())
         for i in range(fields.count()):
             f.setAttribute(i,provider.defaultValue(i))
+            
+        disable_attributes = settings.value( "/qgis/digitizing/disable_enter_attribute_values_dialog", False, type=bool)
 
-        if not (settings.value("/qgis/digitizing/disable_enter_attribute_values_dialog")):
-            self.iface.openFeatureForm( layer, f, False)
+        if disable_attributes:
+            cancel = 1
+        else:
+            dlg = QgsAttributeDialog(layer, f, False)
+            dlg.setIsAddDialog(True)
+            if not dlg.dialog().exec_():
+                cancel = 0
+            else:
+                layer.destroyEditCommand()
+                cancel = 1
 
-        layer.beginEditCommand("Feature added")
-        layer.addFeature(f)
-        layer.endEditCommand()
-
-
+        if cancel == 1:
+            layer.addFeature(f)
+            layer.endEditCommand()
+            
+        mc.refresh()
+        
     def changegeom(self, result):
         mc = self.canvas
         layer = mc.currentLayer()

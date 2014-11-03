@@ -76,7 +76,7 @@ class Ui_CADDigitizeSettings(QtGui.QDialog, Ui_CADDigitizeSettings):
         self.ArcFeaturePitch.setValue(int(self.arc_featurePitch))
         
         self.ArcFeatureAngle.setMinimum(1)
-        self.ArcFeatureAngle.setMaximum(90)
+        self.ArcFeatureAngle.setMaximum(3600)
         self.ArcFeatureAngle.setDecimals(0)    
         self.ArcFeatureAngle.setValue(int(self.arc_featureAngle))    
         
