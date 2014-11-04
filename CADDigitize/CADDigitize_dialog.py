@@ -27,7 +27,7 @@ from PyQt4 import QtCore, QtGui
 from ui_getDistance import Ui_DialogRadius
 from ui_getAngle import Ui_DialogAngle
 from ui_CADDigitizeSettings import Ui_CADDigitizeSettings
-# create the dialog for zoom to point
+from ui_Circle_options import Ui_Circle_DockWidget
 
 
 class Ui_CADDigitizeDialogRadius(QtGui.QDialog, Ui_DialogRadius):
@@ -127,14 +127,6 @@ class Ui_CADDigitizeSettings(QtGui.QDialog, Ui_CADDigitizeSettings):
         pass
 
 
-
-#    @pyqtSignature("on_btnSelectVertex_clicked()") 
-#    def on_btnSelectVertex_clicked(self):
-#        self.method = "vertex"
-#        self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)   
-#        self.btnSelectVertex_clicked.emit()
-#
-#
     def accept(self):
         self.settings.setValue("/CADDigitize/circle/segments", self.circleSegmentsSpinbox.value())
         self.settings.setValue("/CADDigitize/ellipse/segments", self.ellipsePointsSpinbox.value())
@@ -160,3 +152,4 @@ class Ui_CADDigitizeSettings(QtGui.QDialog, Ui_CADDigitizeSettings):
             self.settings.setValue("/CADDigitize/arc/polygon", "chord")            
         self.close()
         
+

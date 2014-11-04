@@ -37,7 +37,7 @@ from CADDigitize_tools_ellipse import *
 from CADDigitize_tools_arc import *
 from CADDigitize_tools_regularpolygon import *
 from CADDigitize_dialog import Ui_CADDigitizeSettings
-from tools.arc_options import *
+from tools.arc_options import CircularArcOptions
 
 class CADDigitize:
     """QGIS Plugin Implementation."""
@@ -94,9 +94,9 @@ class CADDigitize:
         self.toolBar = self.iface.addToolBar("CADDigitize")
         self.toolBar.setObjectName("CADDigitize")
         
-        self.optionsToolBar = self.iface.addToolBar("CADDigitize options")
-        self.optionsToolBar.setObjectName("CADDigitize options")
-               
+        self.optionsToolBar = self.iface.addToolBar("CADDigitize Options")
+        self.optionsToolBar.setObjectName("CADDigitize Options")
+        
         self.circleToolButton = QToolButton(self.toolBar)
         self.rectToolButton = QToolButton(self.toolBar)
         self.ellipseToolButton = QToolButton(self.toolBar)
@@ -284,14 +284,138 @@ class CADDigitize:
         self.rpolygonBy2Corners_tool = RPolygon2CornersTool( self.canvas )
 
 
-    def segmentsettingsCircle(self):
-        settings = QSettings()
-        settings.setValue("/CADDigitize/circle/segments", self.spinBox.value())
+#####################################################################################################
+#                                                                                                   #
+#                                                                                                   #
+#                                       TOOLBAR OPTIONS                                             #
+#                                                                                                   #
+#                                                                                                   #
+#####################################################################################################
 
-    def segmentsettingsEllipse(self):
+    #####################
+    #       Arcs        #
+    #####################
+    def arcOptions(self):
         settings = QSettings()
-        settings.setValue("/CADDigitize/ellipse/segments", self.spinBox.value())    
+        self.optionsToolBar.clear()
+        
+        
+        self.arc_featurePitch = settings.value("/CADDigitize/arc/pitch", 2,type=float)
+        self.arc_featureAngle = settings.value("/CADDigitize/arc/angle", 1,type=int)
+        self.arc_method = settings.value("/CADDigitize/arc/method",  "pitch")
+        self.arc_angleDirection = settings.value("/CADDigitize/arc/direction",  "ClockWise")
+        
+        mc = self.canvas
+        layer = mc.currentLayer()
+        if layer.geometryType() == 2:
+            self.arc_polygonCreation = settings.value("/CADDigitize/arc/polygon",  "pie")
+            self.ArcPolygonCombo = QComboBox(self.iface.mainWindow())
+            self.ArcPolygonCombo.addItems(["pie", "chord"])
+            self.ArcPolygonComboAction = self.optionsToolBar.addWidget(self.ArcPolygonCombo)
+            if self.arc_polygonCreation == "pie":
+                self.ArcPolygonCombo.setCurrentIndex(0)
+            else:
+                self.ArcPolygonCombo.setCurrentIndex(1) 
+                
+            QObject.connect(self.ArcPolygonCombo, SIGNAL("currentIndexChanged(int)"), self.polygonArc)  
+            
+        self.ArcFeatureSpin = QDoubleSpinBox(self.iface.mainWindow())
+        self.ArcAngleDirectionCombo = QComboBox(self.iface.mainWindow())
+        self.ArcAngleDirectionCombo.addItems(["ClockWise", "CounterClockWise"])
+        self.ArcAngleDirectionComboAction = self.optionsToolBar.addWidget(self.ArcAngleDirectionCombo)
+        self.ArcFeatureCombo = QComboBox(self.iface.mainWindow())
+        self.ArcFeatureCombo.addItems(["pitch", "angle"])
+        self.ArcFeatureComboAction = self.optionsToolBar.addWidget(self.ArcFeatureCombo)
+        
 
+        if self.arc_method == "pitch":
+            self.ArcFeatureCombo.setCurrentIndex(0)
+            self.ArcFeatureSpin.setMinimum(1)
+            self.ArcFeatureSpin.setMaximum(1000)
+            self.ArcFeatureSpin.setDecimals(1)
+            self.ArcFeatureSpin.setValue(self.arc_featurePitch)
+            self.ArcFeatureSpinAction = self.optionsToolBar.addWidget(self.ArcFeatureSpin)
+            self.ArcFeatureSpin.setToolTip("Pitch")
+            self.ArcFeatureSpinAction.setEnabled(True)
+        else:
+            self.ArcFeatureCombo.setCurrentIndex(1)
+            self.ArcFeatureSpin.setMinimum(1)
+            self.ArcFeatureSpin.setMaximum(3600)
+            self.ArcFeatureSpin.setDecimals(0)
+            self.ArcFeatureSpin.setValue(self.arc_featureAngle)
+            self.ArcFeatureSpinAction = self.optionsToolBar.addWidget(self.ArcFeatureSpin)
+            self.ArcFeatureSpin.setToolTip("Angle")
+            self.ArcFeatureSpinAction.setEnabled(True)            
+
+        
+        if self.arc_angleDirection == "ClockWise":
+            self.ArcAngleDirectionCombo.setCurrentIndex(0)
+        else:
+            self.ArcAngleDirectionCombo.setCurrentIndex(1)
+            
+        
+      
+            
+        
+        QObject.connect(self.ArcFeatureSpin, SIGNAL("valueChanged(double)"), self.segmentsettingsArc)
+        QObject.connect(self.ArcFeatureCombo, SIGNAL("currentIndexChanged(int)"), self.featureArc)
+        QObject.connect(self.ArcAngleDirectionCombo, SIGNAL("currentIndexChanged(int)"), self.angleDirectionArc) 
+
+
+    def polygonArc(self):
+        settings = QSettings()
+        if self.ArcPolygonCombo.currentText() == "pie":
+            settings.setValue("/CADDigitize/arc/polygon", "pie")
+        else:
+            settings.setValue("/CADDigitize/arc/polygon", "chord")  
+
+              
+    def angleDirectionArc(self):
+        settings = QSettings()
+        if self.ArcAngleDirectionCombo.currentText() == "ClockWise":
+            settings.setValue("/CADDigitize/arc/direction",  "ClockWise")
+        else:
+            settings.setValue("/CADDigitize/arc/direction",  "CounterClockWise")     
+                
+    def segmentsettingsArc(self):
+        settings = QSettings()
+        if self.arc_method == "pitch":
+            settings.setValue("/CADDigitize/arc/segments", self.ArcFeatureSpin.value())
+            settings.setValue("/CADDigitize/arc/pitch", self.ArcFeatureSpin.value())
+        else:
+            settings.setValue("/CADDigitize/arc/segments", int(self.ArcFeatureSpin.value()))
+            settings.setValue("/CADDigitize/arc/angle", int(self.ArcFeatureSpin.value()))        
+        
+    def featureArc(self):
+        settings = QSettings()
+    
+        if self.ArcFeatureCombo.currentText() == "pitch":
+            self.ArcFeatureSpin.setMinimum(1)
+            self.ArcFeatureSpin.setMaximum(1000)
+            self.ArcFeatureSpin.setDecimals(1)
+            self.ArcFeatureSpin.setValue(settings.value("/CADDigitize/arc/pitch", 2,type=float))
+            self.ArcFeatureSpinAction = self.optionsToolBar.addWidget(self.ArcFeatureSpin)
+            self.ArcFeatureSpin.setToolTip("Pitch")
+            self.ArcFeatureSpinAction.setEnabled(True)
+            self.arc_method = "pitch"
+            settings.setValue("/CADDigitize/arc/method",  "pitch")
+        else:
+            self.ArcFeatureSpin.setMinimum(1)
+            self.ArcFeatureSpin.setMaximum(3600)
+            self.ArcFeatureSpin.setDecimals(0)
+            self.ArcFeatureSpin.setValue(settings.value("/CADDigitize/arc/angle", 1,type=int))
+            self.ArcFeatureSpinAction = self.optionsToolBar.addWidget(self.ArcFeatureSpin)
+            self.ArcFeatureSpin.setToolTip("Angle")
+            self.ArcFeatureSpinAction.setEnabled(True)
+            self.arc_method = "angle"   
+            settings.setValue("/CADDigitize/arc/method",  "angle")        
+        
+        
+        
+    #####################
+    #     RPolygon      #
+    #####################
+   
     def segmentsettingsRPolygon(self):
         settings = QSettings()
         settings.setValue("/CADDigitize/rpolygon/nbedges", self.spinBox.value())    
@@ -318,6 +442,14 @@ class CADDigitize:
         
         QObject.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.segmentsettingsRPolygon)
 
+    #####################
+    #      Circle       #
+    #####################      
+      
+    def segmentsettingsCircle(self):
+        settings = QSettings()
+        settings.setValue("/CADDigitize/circle/segments", self.spinBox.value())
+
     def circleOptions(self):
         settings = QSettings()
         self.optionsToolBar.clear()
@@ -340,6 +472,14 @@ class CADDigitize:
         
         QObject.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.segmentsettingsCircle)
 
+    #####################
+    #      Ellipse      #
+    #####################
+
+    def segmentsettingsEllipse(self):
+        settings = QSettings()
+        settings.setValue("/CADDigitize/ellipse/segments", self.spinBox.value()) 
+        
     def ellipseOptions(self):
         settings = QSettings()
         self.optionsToolBar.clear()
@@ -361,10 +501,23 @@ class CADDigitize:
         
         
         QObject.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.segmentsettingsEllipse)
-                
+
+    #####################
+    #       Rect        #
+    #####################  
+                  
     def rectOptions(self):
         self.optionsToolBar.clear()        
 
+
+
+#####################################################################################################
+#                                                                                                   #
+#                                                                                                   #
+#                                         FUNCTIONS                                                 #
+#                                                                                                   #
+#                                                                                                   #
+#####################################################################################################
     
     def circleBy2PointsDigit(self):
         self.circleOptions()
@@ -465,19 +618,21 @@ class CADDigitize:
         QObject.connect(self.ellipseByExtent_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
     def arcByCenter2PointsDigit(self):
-        CircularArcOptions(self.iface, self.optionsToolBar)
+        self.arcOptions()
         self.arcToolButton.setDefaultAction(self.arcByCenter2Points)
         self.canvas.setMapTool(self.arcByCenter2Points_tool)
         self.arcByCenter2Points.setChecked(True)
         QObject.connect(self.arcByCenter2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
         
     def arcBy3PointsDigit(self):
+        self.arcOptions()
         self.arcToolButton.setDefaultAction(self.arcBy3Points)
         self.canvas.setMapTool(self.arcBy3Points_tool)
         self.arcBy3Points.setChecked(True)
         QObject.connect(self.arcBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
 
     def arcByCenterPointAngleDigit(self):
+        self.arcOptions()
         self.arcToolButton.setDefaultAction(self.arcByCenterPointAngle)
         self.canvas.setMapTool(self.arcByCenterPointAngle_tool)
         self.arcByCenterPointAngle.setChecked(True)
@@ -503,10 +658,12 @@ class CADDigitize:
         QDesktopServices.openUrl(QUrl(help_file))
         
     def doSettings(self):
+        self.optionsToolBar.clear()
         self.settings = Ui_CADDigitizeSettings()
         self.settings.show()
 
     def toggle(self):
+        self.optionsToolBar.clear()
         mc = self.canvas
         layer = mc.currentLayer()
         #Decide whether the plugin button/menu is enabled or disabled
@@ -557,7 +714,6 @@ class CADDigitize:
 
                 QObject.connect(layer,SIGNAL("editingStarted()"),self.toggle)
                 QObject.disconnect(layer,SIGNAL("editingStopped()"),self.toggle)
-                self.optionsToolBar.clear()  
 
 
 
@@ -700,7 +856,7 @@ class CADDigitize:
         self.arcToolButton.removeAction(self.arcByCenterPointAngle)
         self.rpolygonToolButton.removeAction(self.rpolygonByCenterPoint)
         self.rpolygonToolButton.removeAction(self.rpolygonBy2Corners)
-        self.optionsToolBar.clear()  
+        self.optionsToolBar.clear()
                 
         del self.circleToolButton
         del self.rectToolButton

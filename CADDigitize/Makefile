@@ -40,7 +40,6 @@ SOURCES = \
 	ui_CADDigitizeSettings.py \
 	CADDigitize_dialog.py \
 	tools/__init__.py \
-	tools/arc_options.py \
 	tools/math.py \
 	tools/circle.py \
 	tools/ellipse.py \
@@ -64,7 +63,6 @@ PY_FILES = \
 	__init__.py
 PY_FILES_TOOLS = \
 	tools/__init__.py \
-	tools/arc_options.py \
 	tools/calc.py \
 	tools/circle.py \
 	tools/ellipse.py \

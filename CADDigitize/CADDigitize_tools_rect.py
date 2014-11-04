@@ -158,8 +158,14 @@ class RectBy3PointsTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        pass
+        self.rb.reset(True)
+        self.rb=None
 
+        self.canvas.refresh()
+
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
+        
     def isZoomTool(self):
         return False
 
@@ -286,7 +292,13 @@ class RectByExtentTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        pass
+        self.rb.reset(True)
+        self.rb=None
+
+        self.canvas.refresh()
+
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
 
     def isZoomTool(self):
         return False
@@ -414,7 +426,13 @@ class RectFromCenterTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        pass
+        self.rb.reset(True)
+        self.rb=None
+
+        self.canvas.refresh()
+
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
 
     def isZoomTool(self):
         return False
@@ -542,7 +560,13 @@ class SquareFromCenterTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        pass
+        self.rb.reset(True)
+        self.rb=None
+
+        self.canvas.refresh()
+
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
 
     def isZoomTool(self):
         return False

@@ -190,7 +190,14 @@ class EllipseByCenter2PointsTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        pass
+        self.rb.reset(True)
+        self.rb_axis_a.reset(True)
+        self.rb_axis_b.reset(True)
+        self.rb, self.rb_axis_a, self.rb_axis_b = None, None, None
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.xc, self.yc = None, None, None, None, None, None
+
+        self.canvas.refresh()
 
     def isZoomTool(self):
         return False
@@ -332,7 +339,12 @@ class EllipseByFociPointTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        pass
+        self.rb.reset(True)
+        self.rb=None
+
+        self.canvas.refresh()
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
 
     def isZoomTool(self):
         return False
@@ -474,8 +486,14 @@ class EllipseFromCenterTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
         
     def deactivate(self):
-        pass
+        self.rb.reset(True)
+        self.rb=None
 
+        self.canvas.refresh()
+
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
+        
     def isZoomTool(self):
         return False
   
@@ -621,7 +639,13 @@ class EllipseByExtentTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
         
     def deactivate(self):
-        pass
+        self.rb.reset(True)
+        self.rb=None
+
+        self.canvas.refresh()
+
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
 
     def isZoomTool(self):
         return False

@@ -152,7 +152,12 @@ class RPolygonByCenterPointTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        pass
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
+        self.rb.reset(True)
+        self.rb=None
+
+        self.canvas.refresh()
 
     def isZoomTool(self):
         return False
@@ -283,7 +288,12 @@ class RPolygon2CornersTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        pass
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
+        self.rb.reset(True)
+        self.rb=None
+
+        self.canvas.refresh()
 
     def isZoomTool(self):
         return False
