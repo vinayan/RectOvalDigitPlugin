@@ -9,7 +9,7 @@
 [general]
 name=CADDigitize
 qgisMinimumVersion=2.0
-description=CAD like for circle, rectangle, ellipse
+description=CAD like tools for QGis. Fork of Rectangles Ovals Digitizing. Inspired by CadTools, LibreCAD/AutoCAD.
 version=0.1
 author=Loïc BARTOLETTI
 email=l.bartoletti@free.fr
@@ -22,14 +22,14 @@ email=l.bartoletti@free.fr
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=vector, cad, circle, rectangle, ellipse
+tags=vector, cad, circle, rectangle, ellipse, square, arc, polygon
 
-homepage=
-tracker=
-repository=
+homepage=http://hub.qgis.org/projects/caddigitize/
+tracker=http://hub.qgis.org/projects/caddigitize/issues
+repository=https://github.com/lbartoletti/CADDigitize
 icon=icon.png
 # experimental flag
-experimental=True
+experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False

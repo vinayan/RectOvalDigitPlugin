@@ -166,12 +166,14 @@ class ArcBy3PointsTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        self.rb.reset(True)
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
+        self.circ_center, self.circ_rayon = None, None
+        if self.rb:
+            self.rb.reset(True)
         self.rb=None
 
         self.canvas.refresh()
-        self.nbPoints = 0
-        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
         
     def isZoomTool(self):
         return False
@@ -325,12 +327,16 @@ class ArcByCenter2PointsTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        self.rb.reset(True)
-        self.rb=None
-
-        self.canvas.refresh()
         self.nbPoints = 0
         self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
+        if self.rb:
+            self.rb.reset(True)
+        if self.rb_arcs:
+            self.rb_arcs.reset(True)
+        self.rb=None
+        self.rb_arcs=None
+
+        self.canvas.refresh()
 
     def isZoomTool(self):
         return False
@@ -604,13 +610,20 @@ class ArcByCenterPointAngleTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        self.rb.reset(True)
-        self.rb=None
+        self.dialog.close()
 
-        self.canvas.refresh()
         self.nbPoints = 0
         self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry, self.x_p3, self.y_p3 = None, None, None, None, None, None, None, None
-        self.dialog.close()
+        self.angle, self.circ_rayon = None, -1
+        self.setval = True
+        if self.rb:
+            self.rb.reset(True)
+        if self.rb_arcs:
+            self.rb_arcs.reset(True)
+        self.rb=None
+        self.rb_arcs=None
+
+        self.canvas.refresh()
 
     def isZoomTool(self):
         return False

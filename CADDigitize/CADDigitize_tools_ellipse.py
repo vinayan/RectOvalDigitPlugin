@@ -80,9 +80,12 @@ class EllipseByCenter2PointsTool(QgsMapTool):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
         if event.key() == Qt.Key_Escape:
-            self.rb.reset(True)
-            self.rb_axis_a.reset(True)
-            self.rb_axis_b.reset(True)
+            if self.rb:
+                self.rb.reset(True)
+            if self.rb_axis_a:
+                self.rb_axis_a.reset(True)
+            if self.rb_axis_b:
+                self.rb_axis_b.reset(True)
             self.rb, self.rb_axis_a, self.rb_axis_b = None, None, None
             self.nbPoints = 0
             self.angle_exist = 0
@@ -190,13 +193,19 @@ class EllipseByCenter2PointsTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        self.rb.reset(True)
-        self.rb_axis_a.reset(True)
-        self.rb_axis_b.reset(True)
+        if self.rb:
+            self.rb.reset(True)
+        if self.rb_axis_a:
+            self.rb_axis_a.reset(True)
+        if self.rb_axis_b:
+            self.rb_axis_b.reset(True)
         self.rb, self.rb_axis_a, self.rb_axis_b = None, None, None
         self.nbPoints = 0
-        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.xc, self.yc = None, None, None, None, None, None
-
+        self.angle_exist = 0
+        self.xc, self.yc, self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None, None, None
+        self.length = 0
+        self.axis_a, self.axis_b = 0,0
+        
         self.canvas.refresh()
 
     def isZoomTool(self):
@@ -256,7 +265,8 @@ class EllipseByFociPointTool(QgsMapTool):
             self.distP1P3, self.distP2P3 = 0,0
             self.distTotal = 0
             self.angle_exist = 0
-            self.rb.reset(True)
+            if self.rb:
+                self.rb.reset(True)
             self.rb=None
 
             self.canvas.refresh()
@@ -339,13 +349,17 @@ class EllipseByFociPointTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        self.rb.reset(True)
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None # P1 and P2 are foci
+        self.distP1P3, self.distP2P3 = 0,0
+        self.distTotal = 0
+        self.angle_exist = 0
+        if self.rb:
+            self.rb.reset(True)
         self.rb=None
 
         self.canvas.refresh()
-        self.nbPoints = 0
-        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
-
+        
     def isZoomTool(self):
         return False
 
@@ -401,7 +415,8 @@ class EllipseFromCenterTool(QgsMapTool):
         if event.key() == Qt.Key_Escape:
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
-            self.rb.reset(True)
+            if self.rb:
+                self.rb.reset(True)
             self.rb=None
 
             self.canvas.refresh()
@@ -486,13 +501,13 @@ class EllipseFromCenterTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
         
     def deactivate(self):
-        self.rb.reset(True)
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
+        if self.rb:
+            self.rb.reset(True)
         self.rb=None
 
         self.canvas.refresh()
-
-        self.nbPoints = 0
-        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
         
     def isZoomTool(self):
         return False
@@ -549,7 +564,8 @@ class EllipseByExtentTool(QgsMapTool):
         if event.key() == Qt.Key_Escape:
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
-            self.rb.reset(True)
+            if self.rb:
+                self.rb.reset(True)
             self.rb=None
 
             self.canvas.refresh()
@@ -639,13 +655,13 @@ class EllipseByExtentTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
         
     def deactivate(self):
-        self.rb.reset(True)
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
+        if self.rb:
+            self.rb.reset(True)
         self.rb=None
 
         self.canvas.refresh()
-
-        self.nbPoints = 0
-        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
 
     def isZoomTool(self):
         return False

@@ -77,7 +77,8 @@ class RPolygonByCenterPointTool(QgsMapTool):
         if event.key() == Qt.Key_Escape:
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
-            self.rb.reset(True)
+            if self.rb:
+                self.rb.reset(True)
             self.rb=None
 
             self.canvas.refresh()
@@ -154,7 +155,8 @@ class RPolygonByCenterPointTool(QgsMapTool):
     def deactivate(self):
         self.nbPoints = 0
         self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
-        self.rb.reset(True)
+        if self.rb:
+            self.rb.reset(True)
         self.rb=None
 
         self.canvas.refresh()
@@ -213,7 +215,8 @@ class RPolygon2CornersTool(QgsMapTool):
         if event.key() == Qt.Key_Escape:
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
-            self.rb.reset(True)
+            if self.rb:
+                self.rb.reset(True)
             self.rb=None
 
             self.canvas.refresh()
@@ -290,7 +293,8 @@ class RPolygon2CornersTool(QgsMapTool):
     def deactivate(self):
         self.nbPoints = 0
         self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
-        self.rb.reset(True)
+        if self.rb:
+            self.rb.reset(True)
         self.rb=None
 
         self.canvas.refresh()

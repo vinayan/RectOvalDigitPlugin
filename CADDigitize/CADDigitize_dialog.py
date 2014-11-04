@@ -27,7 +27,6 @@ from PyQt4 import QtCore, QtGui
 from ui_getDistance import Ui_DialogRadius
 from ui_getAngle import Ui_DialogAngle
 from ui_CADDigitizeSettings import Ui_CADDigitizeSettings
-from ui_Circle_options import Ui_Circle_DockWidget
 
 
 class Ui_CADDigitizeDialogRadius(QtGui.QDialog, Ui_DialogRadius):

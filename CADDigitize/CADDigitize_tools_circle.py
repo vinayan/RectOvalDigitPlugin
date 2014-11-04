@@ -76,7 +76,8 @@ class CircleBy2PointsTool(QgsMapTool):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
         if event.key() == Qt.Key_Escape:
-            self.rb.reset(True)
+            if self.rb:
+                self.rb.reset(True)
             self.nbPoints = 0
             self.rb = None
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
@@ -153,12 +154,12 @@ class CircleBy2PointsTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        self.rb.reset(True)
-        self.rb=None
-
-        self.canvas.refresh()
+        if self.rb:
+            self.rb.reset(True)
         self.nbPoints = 0
+        self.rb = None
         self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
+        self.canvas.refresh()
         
 
     def isZoomTool(self):
@@ -215,7 +216,8 @@ class CircleBy3PointsTool(QgsMapTool):
         if event.key() == Qt.Key_Escape:
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
-            self.rb.reset(True)
+            if self.rb:
+                self.rb.reset(True)
             self.rb=None
 
             self.canvas.refresh()
@@ -300,12 +302,13 @@ class CircleBy3PointsTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        self.rb.reset(True)
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
+        if self.rb:
+            self.rb.reset(True)
         self.rb=None
 
         self.canvas.refresh()
-        self.nbPoints = 0
-        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
 
     def isZoomTool(self):
         return False
@@ -362,7 +365,8 @@ class CircleByCenterPointTool(QgsMapTool):
         if event.key() == Qt.Key_Escape:
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
-            self.rb.reset(True)
+            if self.rb:
+                self.rb.reset(True)
             self.rb=None
 
             self.canvas.refresh()
@@ -437,12 +441,13 @@ class CircleByCenterPointTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        self.rb.reset(True)
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
+        if self.rb:
+            self.rb.reset(True)
         self.rb=None
 
         self.canvas.refresh()
-        self.nbPoints = 0
-        self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
 
     def isZoomTool(self):
         return False
@@ -530,11 +535,13 @@ class CircleByCenterRadiusTool(QgsMapTool):
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry = None, None, None, None, None, None
             self.circ_rayon = -1
             self.setval = True
-            self.rb.reset(True)
+            if self.rb:
+                self.rb.reset(True)
             self.rb=None
 
             self.canvas.refresh()
             self.dialog.SpinBox_Radius.setValue(0)
+            self.dialog.close()
         
             return
 
@@ -615,12 +622,16 @@ class CircleByCenterRadiusTool(QgsMapTool):
         self.canvas.setCursor(self.cursor)
 
     def deactivate(self):
-        self.rb.reset(True)
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry = None, None, None, None, None, None
+        self.circ_rayon = -1
+        self.setval = True
+        if self.rb:
+            self.rb.reset(True)
         self.rb=None
 
         self.canvas.refresh()
-        self.nbPoints = 0
-        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry = None, None, None, None, None, None
+        self.dialog.SpinBox_Radius.setValue(0)
         self.dialog.close()
 
     def isZoomTool(self):

@@ -37,7 +37,6 @@ from CADDigitize_tools_ellipse import *
 from CADDigitize_tools_arc import *
 from CADDigitize_tools_regularpolygon import *
 from CADDigitize_dialog import Ui_CADDigitizeSettings
-from tools.arc_options import CircularArcOptions
 
 class CADDigitize:
     """QGIS Plugin Implementation."""
