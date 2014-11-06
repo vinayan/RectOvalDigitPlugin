@@ -76,11 +76,38 @@ class CADDigitize:
         # Add toolbar 
         self.menu = QMenu()
         self.menu.setTitle( QCoreApplication.translate( "CADDigitize","&CADDigitize" ) )
-        self.caddigitize_help = QAction( QCoreApplication.translate("CADDigitize", "Help" ), self.iface.mainWindow() )
-        self.caddigitize_settings = QAction( QCoreApplication.translate("CADDigitize", "Settings" ), self.iface.mainWindow() )
-  
+        self.caddigitize_help = QAction( QCoreApplication.translate("Help", "Help" ), self.iface.mainWindow() )
+        self.caddigitize_settings = QAction( QCoreApplication.translate("Settings", "Settings" ), self.iface.mainWindow() )
+        
         self.menu.addActions( [self.caddigitize_help, self.caddigitize_settings] )
-
+        
+        self.circleMenu = self.menu.addMenu(QCoreApplication.translate( "Circle","Circle" ))
+        self.circleBy2PointsMenu = self.circleMenu.addAction(QCoreApplication.translate("Circle by 2 Points", "Circle by 2 Points" ))
+        self.circleBy3PointsMenu = self.circleMenu.addAction(QCoreApplication.translate("Circle by 3 Points", "Circle by 3 Points" ))
+        self.circleByCenterRadiusMenu = self.circleMenu.addAction(QCoreApplication.translate("Circle by Center and Radius", "Circle by Center and Radius" ))
+        self.circleByCenterPointMenu = self.circleMenu.addAction(QCoreApplication.translate("Circle by Center and a Point", "Circle by Center and a Point" ))
+  
+        self.rectMenu = self.menu.addMenu(QCoreApplication.translate( "Rectangle","Rectangle" ))
+        self.rectBy3PointsMenu = self.rectMenu.addAction(QCoreApplication.translate("Rectangle by 3 Points", "Rectangle by 3 Points" ))
+        self.rectByExtentMenu = self.rectMenu.addAction(QCoreApplication.translate("Rectangle by extent", "Rectangle by extent" ))
+        self.rectFromCenterMenu = self.rectMenu.addAction(QCoreApplication.translate("Rectangle from Center", "Rectangle from Center" ))
+        self.squareFromCenterMenu = self.rectMenu.addAction(QCoreApplication.translate("Square from Center", "Square from Center" ))
+        
+        self.ellipseMenu = self.menu.addMenu(QCoreApplication.translate( "Ellipse","Ellipse" ))
+        self.ellipseByCenter2PointsMenu = self.ellipseMenu.addAction(QCoreApplication.translate("Ellipse by center and 2 points", "Ellipse by center and 2 points" ))
+        self.ellipseByFociPointMenu = self.ellipseMenu.addAction(QCoreApplication.translate("Ellipse by Foci and a point", "Ellipse by Foci and a point" ))    
+        self.ellipseByExtentMenu = self.ellipseMenu.addAction(QCoreApplication.translate("Ellipse by extent", "Ellipse by extent" ))
+        self.ellipseFromCenterMenu = self.ellipseMenu.addAction(QCoreApplication.translate("Ellipse from Center", "Ellipse from Center" ))
+        
+        self.arcMenu = self.menu.addMenu(QCoreApplication.translate( "Arc","Arc" ))
+        self.arcByCenter2PointsMenu = self.arcMenu.addAction(QCoreApplication.translate("Arc by center and 2 Points", "Arc by center and 2 Points" ))
+        self.arcBy3PointsMenu = self.arcMenu.addAction(QCoreApplication.translate("Arc by 3 Points", "Arc by 3 Points" ))
+        self.arcByCenterPointAngleMenu = self.arcMenu.addAction(QCoreApplication.translate("Arc by Center, a point and angle", "Arc by Center, a point and angle" ))
+        
+        self.rpolygonMenu = self.menu.addMenu(QCoreApplication.translate( "Regular polygon","Regular polygon" ))
+        self.rpolygonByCenterCornerMenu = self.rpolygonMenu.addAction(QCoreApplication.translate("Regular polygon by center and a corner", "Regular polygon by center and a corner" ))
+        self.rpolygonBy2CornersMenu = self.rpolygonMenu.addAction(QCoreApplication.translate("Regular polygon by 2 corners", "Regular polygon by 2 corners" ))
+                    
         menu_bar = self.iface.mainWindow().menuBar()
         actions = menu_bar.actions()
         lastAction = actions[ len( actions ) - 1 ]
