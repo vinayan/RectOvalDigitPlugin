@@ -30,6 +30,7 @@ LOCALES = af
 SOURCES = \
 	__init__.py \
 	CADDigitize.py \
+	CADDigitize_menu.py \
 	CADDigitize_tools_circle.py \
 	CADDigitize_tools_rect.py \
 	CADDigitize_tools_ellipse.py \
@@ -38,6 +39,7 @@ SOURCES = \
 	ui_getDistance.py \
 	ui_getAngle.py \
 	ui_CADDigitizeSettings.py \
+	ui_NumericalDigitize.py \
 	CADDigitize_dialog.py \
 	tools/__init__.py \
 	tools/math.py \
@@ -51,11 +53,13 @@ PLUGINNAME = CADDigitize
 
 PY_FILES = \
 	CADDigitize.py \
+	CADDigitize_menu.py \
 	CADDigitize_tools_circle.py \
 	CADDigitize_tools_rect.py \
 	CADDigitize_tools_ellipse.py \
 	CADDigitize_tools_regularpolygon.py \
 	CADDigitize_tools_arc.py \
+	ui_NumericalDigitize.py \
 	ui_getDistance.py \
 	ui_CADDigitizeSettings.py \
 	ui_getAngle.py \

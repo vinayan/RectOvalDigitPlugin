@@ -10,7 +10,7 @@
 name=CADDigitize
 qgisMinimumVersion=2.0
 description=CAD like tools for QGis. Fork of Rectangles Ovals Digitizing. Inspired by CadTools, LibreCAD/AutoCAD.
-version=0.1
+version=0.1.1a
 author=Loïc BARTOLETTI
 email=l.bartoletti@free.fr
 
