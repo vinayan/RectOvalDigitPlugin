@@ -24,30 +24,12 @@
 
 
 #Add iso code for any locales you want to support here (space separated)
-LOCALES = af
+LOCALES = CADDigitize_fr CADDigitize_en
 
 # translation
 SOURCES = \
-	__init__.py \
 	CADDigitize.py \
-	CADDigitize_menu.py \
-	CADDigitize_tools_circle.py \
-	CADDigitize_tools_rect.py \
-	CADDigitize_tools_ellipse.py \
-	CADDigitize_tools_regularpolygon.py \
-	CADDigitize_tools_arc.py \
-	ui_getDistance.py \
-	ui_getAngle.py \
-	ui_CADDigitizeSettings.py \
-	ui_NumericalDigitize.py \
-	CADDigitize_dialog.py \
-	tools/__init__.py \
-	tools/math.py \
-	tools/circle.py \
-	tools/ellipse.py \
-	tools/rectangle.py \
-	tools/regularpolygon.py \
-	tools/circulararc.py
+	ui_CADDigitizeSettings.ui 
 
 PLUGINNAME = CADDigitize
 

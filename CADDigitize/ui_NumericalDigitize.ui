@@ -42,7 +42,7 @@
        </sizepolicy>
       </property>
       <property name="inputMethodHints">
-       <set>Qt::ImhNone</set>
+       <set>Qt::ImhDigitsOnly|Qt::ImhFormattedNumbersOnly|Qt::ImhPreferNumbers</set>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>

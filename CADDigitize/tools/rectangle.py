@@ -69,6 +69,9 @@ class Rectangle:
         angle_exist = calcAngleExistant(p1, p2)
     
         side = calc_isCollinear(p1, p2, p3) # check if x_p2 > x_p1 and inverse side
+        if side == 0:
+            return None
+            
         if p1.x() < p2.x():
             side *= -1
         length = QgsDistanceArea().measureLine(p2, p3) * side

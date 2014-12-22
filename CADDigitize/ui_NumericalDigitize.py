@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_NumericalDigitize.ui'
 #
-# Created: Tue Nov 18 05:24:47 2014
+# Created: Sun Nov 23 07:46:53 2014
 #      by: PyQt4 UI code generator 4.11.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,7 +43,7 @@ class Ui_NumericalDigitize(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
         self.tableWidget.setSizePolicy(sizePolicy)
-        self.tableWidget.setInputMethodHints(QtCore.Qt.ImhNone)
+        self.tableWidget.setInputMethodHints(QtCore.Qt.ImhDigitsOnly|QtCore.Qt.ImhFormattedNumbersOnly|QtCore.Qt.ImhPreferNumbers)
         self.tableWidget.setFrameShape(QtGui.QFrame.StyledPanel)
         self.tableWidget.setFrameShadow(QtGui.QFrame.Sunken)
         self.tableWidget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
