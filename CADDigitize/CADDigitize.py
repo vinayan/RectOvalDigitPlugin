@@ -821,6 +821,7 @@ class CADDigitize:
                 cancel = 1
 
         if cancel == 1:
+            f.setAttributes(dlg.feature().attributes())
             layer.addFeature(f)
             layer.endEditCommand()
             
