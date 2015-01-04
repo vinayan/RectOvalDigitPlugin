@@ -86,7 +86,7 @@ compile: $(COMPILED_RESOURCE_FILES)
 	pyrcc4 -o $*_rc.py  $<
 
 %.qm : %.ts
-	lrelease $<
+	lrelease-qt4 $<
 
 test: compile transcompile
 	@echo

@@ -313,7 +313,7 @@ class CADDigitize:
         if layer.geometryType() == 2:
             self.arc_polygonCreation = settings.value("/CADDigitize/arc/polygon",  "pie")
             self.ArcPolygonCombo = QComboBox(self.iface.mainWindow())
-            self.ArcPolygonCombo.addItems(["pie", "chord"])
+            self.ArcPolygonCombo.addItems([QCoreApplication.translate( "CADDigitizeSettings","Pie segment", None, QApplication.UnicodeUTF8), QCoreApplication.translate( "CADDigitizeSettings","Chord", None, QApplication.UnicodeUTF8)])
             self.ArcPolygonComboAction = self.optionsToolBar.addWidget(self.ArcPolygonCombo)
             if self.arc_polygonCreation == "pie":
                 self.ArcPolygonCombo.setCurrentIndex(0)
@@ -324,10 +324,10 @@ class CADDigitize:
 
         self.ArcFeatureSpin = QDoubleSpinBox(self.iface.mainWindow())
         self.ArcAngleDirectionCombo = QComboBox(self.iface.mainWindow())
-        self.ArcAngleDirectionCombo.addItems(["ClockWise", "CounterClockWise"])
+        self.ArcAngleDirectionCombo.addItems([QCoreApplication.translate( "CADDigitizeSettings","ClockWise", None, QApplication.UnicodeUTF8), QCoreApplication.translate( "CADDigitizeSettings","CounterClockWise", None, QApplication.UnicodeUTF8)])
         self.ArcAngleDirectionComboAction = self.optionsToolBar.addWidget(self.ArcAngleDirectionCombo)
         self.ArcFeatureCombo = QComboBox(self.iface.mainWindow())
-        self.ArcFeatureCombo.addItems(["pitch", "angle"])
+        self.ArcFeatureCombo.addItems([QCoreApplication.translate( "CADDigitizeSettings","Pitch", None, QApplication.UnicodeUTF8), QCoreApplication.translate( "CADDigitizeSettings", "Angle", None, QApplication.UnicodeUTF8)])
         self.ArcFeatureComboAction = self.optionsToolBar.addWidget(self.ArcFeatureCombo)
 
 
@@ -338,7 +338,7 @@ class CADDigitize:
             self.ArcFeatureSpin.setDecimals(1)
             self.ArcFeatureSpin.setValue(self.arc_featurePitch)
             self.ArcFeatureSpinAction = self.optionsToolBar.addWidget(self.ArcFeatureSpin)
-            self.ArcFeatureSpin.setToolTip("Pitch")
+            self.ArcFeatureSpin.setToolTip(QCoreApplication.translate( "CADDigitizeSettings","Pitch", None, QApplication.UnicodeUTF8))
             self.ArcFeatureSpinAction.setEnabled(True)
         else:
             self.ArcFeatureCombo.setCurrentIndex(1)
@@ -347,7 +347,7 @@ class CADDigitize:
             self.ArcFeatureSpin.setDecimals(0)
             self.ArcFeatureSpin.setValue(self.arc_featureAngle)
             self.ArcFeatureSpinAction = self.optionsToolBar.addWidget(self.ArcFeatureSpin)
-            self.ArcFeatureSpin.setToolTip("Angle")
+            self.ArcFeatureSpin.setToolTip(QCoreApplication.translate( "CADDigitizeSettings","Angle", None, QApplication.UnicodeUTF8))
             self.ArcFeatureSpinAction.setEnabled(True)
 
 

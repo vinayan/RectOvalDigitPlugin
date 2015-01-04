@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_CADDigitize_ND.ui'
 #
-# Created: Sun Jan  4 20:37:02 2015
+# Created: Sun Jan  4 22:08:23 2015
 #      by: PyQt4 UI code generator 4.11.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -73,7 +73,7 @@ class Ui_CADDigitize_ND(object):
         QtCore.QMetaObject.connectSlotsByName(CADDigitize_ND)
 
     def retranslateUi(self, CADDigitize_ND):
-        CADDigitize_ND.setWindowTitle(_translate("CADDigitize_ND", "Dialog", None))
+        CADDigitize_ND.setWindowTitle(_translate("CADDigitize_ND", "CADDigitize - Numercial Digitize", None))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("CADDigitize_ND", "Function", None))
         item = self.tableWidget.horizontalHeaderItem(1)

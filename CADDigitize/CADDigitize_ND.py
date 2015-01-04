@@ -94,7 +94,8 @@ class CADDigitize_ND(QtGui.QDialog, Ui_CADDigitize_ND):
 
         self.tableWidget.insertRow(self.tableWidget.rowCount())
         combobox = QtGui.QComboBox()
-        combobox.addItems(self.list_functions)
+        for func in self.list_functions:
+            combobox.addItem(QCoreApplication.translate( "CADDigitize", func, None, QApplication.UnicodeUTF8))
         combobox.currentIndexChanged.connect(self.signalMapper.map)
         combobox.row = self.tableWidget.rowCount()-1
         combobox.column = 0

@@ -22,10 +22,10 @@ CADDigitize_functions = [
         # Arc
         QCoreApplication.translate( "CADDigitize","Arc by 3 points", None, QApplication.UnicodeUTF8),
         QCoreApplication.translate( "CADDigitize","Arc by center and 2 points", None, QApplication.UnicodeUTF8),
-        QCoreApplication.translate( "CADDigitize","Arc by center and a point and angle", None, QApplication.UnicodeUTF8),
+        QCoreApplication.translate( "CADDigitize","Arc by center, point and angle", None, QApplication.UnicodeUTF8),
         # Regular polygon
         QCoreApplication.translate( "CADDigitize","Regular polygon by 2 corners", None, QApplication.UnicodeUTF8),
-        QCoreApplication.translate( "CADDigitize","Regular polygon by center and a point", None, QApplication.UnicodeUTF8) ]
+        QCoreApplication.translate( "CADDigitize","Regular polygon by center and point", None, QApplication.UnicodeUTF8) ]
 
 
 CADDigitize_functions_points = [
