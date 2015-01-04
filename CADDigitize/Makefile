@@ -29,20 +29,24 @@ LOCALES = CADDigitize_fr CADDigitize_en
 # translation
 SOURCES = \
 	CADDigitize.py \
+	CADDigitize_ND.py \
+	CADDigitize_functions.py \
+	ui_CADDigitize_ND.ui \
 	ui_CADDigitizeSettings.ui 
 
 PLUGINNAME = CADDigitize
 
 PY_FILES = \
 	CADDigitize.py \
-	CADDigitize_menu.py \
+	CADDigitize_ND.py \
+	CADDigitize_functions.py \
 	CADDigitize_tools_circle.py \
 	CADDigitize_tools_rect.py \
 	CADDigitize_tools_ellipse.py \
 	CADDigitize_tools_regularpolygon.py \
 	CADDigitize_tools_arc.py \
-	ui_NumericalDigitize.py \
 	ui_getDistance.py \
+	ui_CADDigitize_ND.py \
 	ui_CADDigitizeSettings.py \
 	ui_getAngle.py \
 	CADDigitize_dialog.py \
