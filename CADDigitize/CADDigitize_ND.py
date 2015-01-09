@@ -19,8 +19,6 @@ class CADDigitize_ND(QtGui.QDialog, Ui_CADDigitize_ND):
         self.signalMapper = QtCore.QSignalMapper(self)
         self.signalMapper.mapped[QtGui.QWidget].connect(self.on_signalMapper_mapped)
 
-        QtCore.QObject.connect(self.tableWidget, QtCore.SIGNAL("cellChanged(int, int)"), self.cellChange)
-#        self.tableWidget.cellChanged.connect(self.cellChange, int, int)
         # Combobox
         self.add_row()
 
@@ -31,46 +29,29 @@ class CADDigitize_ND(QtGui.QDialog, Ui_CADDigitize_ND):
         self.remove_btn.clicked.connect(self.remove_row)
 
         self.show()
+        
+    def check_state(self, *args, **kwargs):
+        sender = self.sender()
+        validator = sender.validator()
+        state = validator.validate(sender.text(), 0)[0]
+        if state == QtGui.QValidator.Acceptable:
+            color = '#29F600' # green
+        else:            
+            color = '#EE0C00' # red
+        
 
-    def cellChange(self, currentRow, currentColumn):
-        if currentColumn == 0: # function
-            return True
-        elif currentColumn == 4 and self.tableWidget.item(currentRow, currentColumn).flags() & QtCore.Qt.ItemIsEditable: # double and not spinbox for angle
-            if self.is_numeric(self.tableWidget.item(currentRow, currentColumn).text()):
-                return True
-        elif self.mon_validateur(self.tableWidget.item(currentRow, currentColumn).text()) != False:
-            return True
-
-        self.tableWidget.item(currentRow, currentColumn).setText("")
-        return False
-
-    def is_numeric(self, str):
-        try:
-            float(str)
-        except (ValueError, TypeError):
-            return False
-
-        return True
-
-    def mon_validateur(self, str):
-        list_s = str.split(',')
-        if len(list_s) != 2:
-            return False
-
-        if self.is_numeric(list_s[0]) == False or self.is_numeric(list_s[1]) == False:
-            return False
-
-        return True
+        sender.setStyleSheet('QLineEdit { background-color: %s }' % color)
 
     @QtCore.pyqtSlot(QtGui.QDialog)
     def on_signalMapper_mapped(self, combobox):
         for index, i in enumerate(self.list_input[combobox.currentIndex()]):
+            self.tableWidget.removeCellWidget(combobox.row, index+1)
             item = QtGui.QTableWidgetItem()
 
             if i == False:
                 item.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsDragEnabled|QtCore.Qt.ItemIsUserCheckable)
                 item.setBackground(QtGui.QColor(150,150,150))
-                item.setText("None")
+                item.setText("")
                 self.tableWidget.setItem(combobox.row, index+1, item)
             elif i == "angle":
                 SpinBox_Angle = QtGui.QDoubleSpinBox(self.tableWidget)
@@ -78,17 +59,55 @@ class CADDigitize_ND(QtGui.QDialog, Ui_CADDigitize_ND):
                 SpinBox_Angle.setMaximum(360.0)
                 SpinBox_Angle.setProperty("value", 0.00)
                 self.tableWidget.setCellWidget(combobox.row, index+1, SpinBox_Angle)
+            elif i == "double":
+                SpinBox_Double = QtGui.QDoubleSpinBox(self.tableWidget)
+                SpinBox_Double.setValue(0.00)
+                SpinBox_Double.setMinimum(0.00)
+                self.tableWidget.setCellWidget(combobox.row, index+1, SpinBox_Double)
+                
             else:
-                item.setText("")
-                self.tableWidget.setItem(combobox.row, index+1, item)
+                edit = QtGui.QLineEdit(self)
 
+                motif = r"^[-+]?[0-9]+\.?[0-9]*,{1}[-+]?[0-9]+\.?[0-9]*$"  #  exemple: -674097.85,+6813.25
+                regex = QtCore.QRegExp(motif)
+                validator = QtGui.QRegExpValidator(regex, edit)
+                edit.setValidator(validator)
+                edit.textChanged.connect(self.check_state)
+                edit.textChanged.emit(edit.text())
+
+                edit.setText("")
+                self.tableWidget.setCellWidget(combobox.row, index+1, edit)
+
+
+    def can_validate(self):
+        for i in range(0, self.tableWidget.rowCount()):
+            for j in range(1,3):    # Points columns
+                widget = self.tableWidget.cellWidget(i, j)
+                if widget.validator().validate(widget.text(), 0)[0] != QtGui.QValidator.Acceptable:
+                    return False
+        return True
+                    
+            
     def accept(self):
-        for i in range(1, self.tableWidget.columnCount()):
-            l = self.mon_validateur(self.tableWidget.item(0,i).text())
-            if l:
-                print l[0], l[1]
-
-        self.close()
+        if self.can_validate():
+            for i in range(0, self.tableWidget.rowCount()):
+                ptsOpt = []
+                for j in range(1,5):
+                    widget = self.tableWidget.cellWidget(i,j)
+                    if type(widget) == QtGui.QLineEdit:
+                        list_s = widget.text().split(',')
+                        ptsOpt.append( [float(list_s[0]), float(list_s[1])] )
+                    elif type(widget) == QtGui.QDoubleSpinBox:
+                        ptsOpt.append(widget.value())
+                    else:
+                        ptsOpt.append(None)
+            
+                print ptsOpt     
+            self.close()
+                
+        else:
+            msgBox = QtGui.QMessageBox.critical(self, QCoreApplication.translate("CADDigitize", "Error"), QCoreApplication.translate("CADDigitize", "All fields are not valid"))
+        
 
     def add_row(self):
 
