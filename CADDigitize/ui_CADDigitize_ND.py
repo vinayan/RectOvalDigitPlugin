@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_CADDigitize_ND.ui'
 #
-# Created: Sun Jan  4 22:08:23 2015
+# Created: Tue Jan 13 18:29:59 2015
 #      by: PyQt4 UI code generator 4.11.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,6 +26,7 @@ except AttributeError:
 class Ui_CADDigitize_ND(object):
     def setupUi(self, CADDigitize_ND):
         CADDigitize_ND.setObjectName(_fromUtf8("CADDigitize_ND"))
+        CADDigitize_ND.setWindowModality(QtCore.Qt.ApplicationModal)
         CADDigitize_ND.resize(752, 291)
         self.layoutWidget = QtGui.QWidget(CADDigitize_ND)
         self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 731, 271))

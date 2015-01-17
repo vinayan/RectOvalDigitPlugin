@@ -5,11 +5,13 @@ import sys
 from PyQt4 import QtGui, QtCore
 from ui_CADDigitize_ND import Ui_CADDigitize_ND
 from CADDigitize_functions import *
+from qgis.core import *
 
 class CADDigitize_ND(QtGui.QDialog, Ui_CADDigitize_ND):
-    def __init__(self):
+    def __init__(self, layer):
 
-        self.list_functions = CADDigitize_functions
+        self.layer = layer
+        self.list_functions = [f[0] for f in CADDigitize_functions]
         self.list_input = CADDigitize_functions_points
 
         QtGui.QDialog.__init__(self)
@@ -29,16 +31,16 @@ class CADDigitize_ND(QtGui.QDialog, Ui_CADDigitize_ND):
         self.remove_btn.clicked.connect(self.remove_row)
 
         self.show()
-        
+
     def check_state(self, *args, **kwargs):
         sender = self.sender()
         validator = sender.validator()
         state = validator.validate(sender.text(), 0)[0]
         if state == QtGui.QValidator.Acceptable:
             color = '#29F600' # green
-        else:            
+        else:
             color = '#EE0C00' # red
-        
+
 
         sender.setStyleSheet('QLineEdit { background-color: %s }' % color)
 
@@ -49,10 +51,14 @@ class CADDigitize_ND(QtGui.QDialog, Ui_CADDigitize_ND):
             item = QtGui.QTableWidgetItem()
 
             if i == False:
-                item.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsDragEnabled|QtCore.Qt.ItemIsUserCheckable)
-                item.setBackground(QtGui.QColor(150,150,150))
-                item.setText("")
-                self.tableWidget.setItem(combobox.row, index+1, item)
+
+                edit = QtGui.QLineEdit(self)
+                edit.setEnabled(False)
+#                edit.setBackground(QtGui.QColor(150,150,150))
+
+                edit.setText("")
+                self.tableWidget.setCellWidget(combobox.row, index+1, edit)
+
             elif i == "angle":
                 SpinBox_Angle = QtGui.QDoubleSpinBox(self.tableWidget)
                 SpinBox_Angle.setDecimals(2)
@@ -63,8 +69,10 @@ class CADDigitize_ND(QtGui.QDialog, Ui_CADDigitize_ND):
                 SpinBox_Double = QtGui.QDoubleSpinBox(self.tableWidget)
                 SpinBox_Double.setValue(0.00)
                 SpinBox_Double.setMinimum(0.00)
+                SpinBox_Double.setDecimals(8)
+                SpinBox_Double.setMaximum(10000000.00)
                 self.tableWidget.setCellWidget(combobox.row, index+1, SpinBox_Double)
-                
+
             else:
                 edit = QtGui.QLineEdit(self)
 
@@ -83,31 +91,53 @@ class CADDigitize_ND(QtGui.QDialog, Ui_CADDigitize_ND):
         for i in range(0, self.tableWidget.rowCount()):
             for j in range(1,3):    # Points columns
                 widget = self.tableWidget.cellWidget(i, j)
-                if widget.validator().validate(widget.text(), 0)[0] != QtGui.QValidator.Acceptable:
+                if widget.isEnabled() and widget.validator().validate(widget.text(), 0)[0] != QtGui.QValidator.Acceptable:
                     return False
         return True
-                    
-            
+
+
     def accept(self):
         if self.can_validate():
+            task = []
             for i in range(0, self.tableWidget.rowCount()):
                 ptsOpt = []
+                ptsOpt.append(self.tableWidget.cellWidget(i,0).currentIndex())
                 for j in range(1,5):
                     widget = self.tableWidget.cellWidget(i,j)
-                    if type(widget) == QtGui.QLineEdit:
+                    if widget.isEnabled() == False:
+                        pass
+                    elif type(widget) == QtGui.QLineEdit:
                         list_s = widget.text().split(',')
                         ptsOpt.append( [float(list_s[0]), float(list_s[1])] )
                     elif type(widget) == QtGui.QDoubleSpinBox:
                         ptsOpt.append(widget.value())
                     else:
-                        ptsOpt.append(None)
-            
-                print ptsOpt     
+                        pass
+
+                task.append(ptsOpt)
+
+            self.do_task(task)
             self.close()
-                
+
         else:
             msgBox = QtGui.QMessageBox.critical(self, QCoreApplication.translate("CADDigitize", "Error"), QCoreApplication.translate("CADDigitize", "All fields are not valid"))
-        
+
+
+    def do_task(self, tasks):
+
+        #
+        caps = self.layer.dataProvider().capabilities()
+        if not caps:
+            return False
+        for i in tasks:
+            try:
+                geom = CADDigitize_functions[i[0]][1](i[1:])
+                feat = QgsFeature()
+                feat.setGeometry(geom)
+                (res, outFeats) = self.layer.dataProvider().addFeatures([feat])
+                self.layer.updateExtents()
+            except:
+                pass
 
     def add_row(self):
 
@@ -124,7 +154,6 @@ class CADDigitize_ND(QtGui.QDialog, Ui_CADDigitize_ND):
         self.on_signalMapper_mapped(combobox)
         self.signalMapper.setMapping(combobox, combobox)
 
-        # Add
 
     def remove_row(self):
         self.tableWidget.removeRow(self.tableWidget.currentRow())

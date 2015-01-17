@@ -25,6 +25,7 @@ from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
 from qgis.core import *
 from qgis.gui import *
+
 # Initialize Qt resources from file resources.py
 import resources_rc
 import os.path
@@ -664,8 +665,12 @@ class CADDigitize:
         self.optionsToolBar.clear()
         self.settings = Ui_CADDigitizeSettings()
         self.settings.show()
+
     def doNumericalDigitize(self):
-        self.nd = CADDigitize_ND()
+        mc = self.canvas
+        layer = mc.currentLayer()
+
+        self.nd = CADDigitize_ND(layer)
         self.nd.show()
 
     def toggle(self):
