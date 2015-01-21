@@ -16,7 +16,7 @@ from tools.circulararc import *
 from tools.ellipse import *
 from tools.regularpolygon import *
 
-def arc_setting(self):
+def arc_settings():
     arc_method = QSettings().value("/CADDigitize/arc/method",  "pitch")
     if arc_method == "pitch":
         interValue = QSettings().value("/CADDigitize/arc/pitch", 2,type=float)
@@ -26,7 +26,9 @@ def arc_setting(self):
 
     return arc_method, interValue, arc_clock
 
-def arc_polygon(self, arc):
+
+
+def arc_polygon(arc):
     iface = qgis.utils.iface
 
     geom = arc[0]
@@ -53,8 +55,6 @@ def listToPoint(pList):
 P = listToPoint
 
 class ND_functions:
-
-
     @staticmethod
     def f_getCircleBy2Points(list_args):
 
@@ -99,12 +99,13 @@ class ND_functions:
 
     @staticmethod
     def f_getEllipseByCenterAnd2Points(list_args):
+
         pc, p1 = P(list_args[0]), P(list_args[1])
         angle_exist = calcAngleExistant(pc, p1)
         axis_a = QgsDistanceArea().measureLine( pc, p1)
         length = QgsDistanceArea().measureLine(pc, P(list_args[2]) )
 
-        p2 = [ pc[0] + length * cos(radians(90) + angle_exist), pc[1] + length * sin(radians(90) + angle_exist)]
+        p2 = QgsPoint( pc[0] + length * cos(radians(90) + angle_exist), pc[1] + length * sin(radians(90) + angle_exist) )
         axis_b = QgsDistanceArea().measureLine(pc, p2)
 
         return Ellipse.getEllipse(pc, axis_a, axis_b, angle_exist, QSettings().value("/CADDigitize/ellipse/segments",36,type=int) )
@@ -117,7 +118,7 @@ class ND_functions:
         xOffset = abs( p1[0] - pc[0])
         yOffset = abs( p1[1] - pc[1])
 
-        return Ellipse.getEllipse(pc, xOffset, yOffset, QSettings().value("/CADDigitize/ellipse/segments",36,type=int))
+        return Ellipse.getEllipse(pc, xOffset, yOffset, segments=QSettings().value("/CADDigitize/ellipse/segments",36,type=int))
 
     @staticmethod
     def f_getEllipseByExtent(list_args):
@@ -128,7 +129,7 @@ class ND_functions:
         xOffset = (abs( p2[0] - p1[0]))/2
         yOffset = (abs( p2[1] - p1[1]))/2
 
-        return Ellipse.getEllipse(QgsPoint(xc, yc), xOffset, yOffset, QSettings().value("/CADDigitize/ellipse/segments",36,type=int))
+        return Ellipse.getEllipse(QgsPoint(xc, yc), xOffset, yOffset, segments=QSettings().value("/CADDigitize/ellipse/segments",36,type=int))
 
     @staticmethod
     def f_getEllipseFromFoci(list_args):
@@ -138,24 +139,25 @@ class ND_functions:
 
     @staticmethod
     def f_getArcBy3Points(list_args):
-        arc_method, interValue, arc_clock = arc_setting()
+        arc_method, interValue, arc_clock = arc_settings()
         geom = CircularArc.getArcBy3Points(P(list_args[0]), P(list_args[1]), P(list_args[2]),  arc_method,  interValue)
-        print geom.exportToWKT()
-        g = self.arc_polygon(geom)
-        print g.exportToWKT()
-        return g
+        center = CircularArc.getArcCenter(P(list_args[0]), P(list_args[1]), P(list_args[2]))
+        return arc_polygon([geom, center])
 
     @staticmethod
     def f_getArcByCenter2Points(list_args):
-        arc_method, interValue, arc_clock = arc_setting()
-        geom = CircularArcgetArcByCenter2Points(P(list_args[0]), P(list_args[1]), P(list_args[2]), arc_method, interValue, arc_clock)
-        return self.arc_polygon(geom)
+        arc_method, interValue, arc_clock = arc_settings()
+        geom = CircularArc.getArcByCenter2Points(P(list_args[0]), P(list_args[1]), P(list_args[2]), arc_method, interValue, arc_clock)
+        return arc_polygon([geom, P(list_args[0])])
 
     @staticmethod
     def f_getArcByCenterPointAngle(list_args):
-        arc_method, interValue, arc_clock = arc_setting()
-        geom = CircularArc.getArcByCenterPointAngle(P(list_args[0]), P(list_args[1]),  list_args[2], arc_method, interValue, arc_clock)
-        return self.arc_polygon(geom)
+        arc_method, interValue, arc_clock = arc_settings()
+        p1 = P(list_args[0])
+        p2 = P(list_args[1])
+        angle = math.atan2( p2[1] - p1[1], p2[0] - p1[0] )
+        geom = CircularArc.getArcByCenterPointAngle(p1, p2,  radians(list_args[2])+angle, arc_method, interValue, arc_clock)
+        return arc_polygon([geom, P(list_args[0])])
 
 
     @staticmethod

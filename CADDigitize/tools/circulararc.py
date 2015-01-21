@@ -29,7 +29,7 @@ from qgis.core import *
 import math
 
 
-    
+
 #CirculArc from CadTools
 #
 #CadTools provides some tools to perform CAD like functions in QGIS.
@@ -49,23 +49,22 @@ import math
 
 
 class CircularArc:
-    
+
     def getArcBy3Points(ptStart,  ptArc, ptEnd,  method="angle",  interValue=1):
-        
         coords = []
         coords.append(ptStart)
-        
+
         center = CircularArc.getArcCenter(ptStart,  ptArc, ptEnd)
-        
+
         if center == None:
             coords.append(ptEnd)
             g = QgsGeometry.fromPolyline(coords)
             return g
-        
+
         cx = center.x()
         cy = center.y()
-        
-        px = ptArc.x() 
+
+        px = ptArc.x()
         py = ptArc.y()
         r = ( ( cx-px ) * ( cx-px ) + ( cy-py ) * ( cy-py ) ) ** 0.5
 
@@ -89,7 +88,7 @@ class CircularArc:
             sweep = a3 - a1;
 
         # Counter-clockwise
-        elif a1 < a2 and a2 < a3: 
+        elif a1 < a2 and a2 < a3:
             sweep = a3 - a1
 
         # Clockwise, wrap
@@ -105,7 +104,7 @@ class CircularArc:
 
         ptcount = int(math.ceil( math.fabs ( sweep / arcIncr ) ))
 
-        if sweep < 0: 
+        if sweep < 0:
             arcIncr *= -1.0;
 
         angle = a1;
@@ -115,7 +114,7 @@ class CircularArc:
 
             if arcIncr > 0.0 and angle > math.pi:
                 angle -= 2*math.pi
-                
+
             if arcIncr < 0.0 and angle < -1*math.pi:
                 angle -= 2*math.pi
 
@@ -125,7 +124,7 @@ class CircularArc:
             point = QgsPoint(x,  y)
             coords.append(point)
 #            print str(point.toString())
-            
+
             if angle < a2 and (angle +arcIncr) > a2:
                 coords.append(ptArc)
 
@@ -138,18 +137,18 @@ class CircularArc:
 
 
     def getArcCenter(ptStart,  ptArc,  ptEnd):
-        
+
 #        print str(ptStart.toString)
 #        print str(ptArc.toString())
 #        print str(ptEnd.toString())
-        
+
         bx = ptStart.x()
         by = ptStart.y()
         cx = ptArc.x()
         cy = ptArc.y()
         dx = ptEnd.x()
         dy = ptEnd.y()
-        
+
         temp = cx * cx + cy * cy
         bc = (bx * bx + by * by - temp) / 2.0
         cd = (temp - dx * dx - dy * dy) / 2.0
@@ -160,22 +159,22 @@ class CircularArc:
             x = (bc * (cy - dy) - cd * (by - cy)) * det
             y = ((bx - cx) * cd - (cx - dx) * bc) * det
 
-            return QgsPoint(x, y);             
-            
+            return QgsPoint(x, y);
+
         except ZeroDivisionError:
             return None
-            
+
     def getArcByCenter2Points(ptCenter, ptStart, ptEnd, method="angle", interValue=1, clockwise="ClockWise"):
 
         coords = []
         coords.append(ptStart)
-        
+
         center = ptCenter
-        
+
         cx = center.x()
         cy = center.y()
         r =QgsDistanceArea().measureLine(ptStart, ptCenter)
-        
+
 
         ## If the method is "pitch" (=Pfeilhöhe) then
         ## we need to calculate the corresponding
@@ -202,8 +201,8 @@ class CircularArc:
 
 
             ptcount = int(math.ceil( math.fabs ( sweep / arcIncr  )))
-        
-        
+
+
         if clockwise == "CounterClockWise":
             angle = a2 - a1
             if angle < 0:
@@ -211,7 +210,7 @@ class CircularArc:
             ptcount = int(math.ceil( math.fabs ( angle / arcIncr  )))
 
 
-         
+
         angle = a1
 
         for i in range(0,  ptcount-1):
@@ -219,11 +218,11 @@ class CircularArc:
 
             if arcIncr > 0.0 and angle > math.pi:
                 angle -= 2*math.pi
-                
+
             if arcIncr < 0.0 and angle < -1*math.pi:
                 angle -= 2*math.pi
 
-                
+
             x = cx + r * math.cos(angle);
             y = cy + r * math.sin(angle);
 
@@ -236,22 +235,22 @@ class CircularArc:
 
         point = QgsPoint(x,  y)
         coords.append(point)
-        
+
         g = QgsGeometry.fromPolyline(coords)
         return g
-    
+
 
     def getArcByCenterPointAngle(ptCenter, ptStart, inAngle, method="angle", interValue=1, clockwise="ClockWise"):
 
         coords = []
         coords.append(ptStart)
-        
+
         center = ptCenter
-        
+
         cx = center.x()
         cy = center.y()
         r = QgsDistanceArea().measureLine(ptStart, ptCenter)
-        
+
         ## If the method is "pitch" (=Pfeilhöhe) then
         ## we need to calculate the corresponding
         ## angle.
@@ -277,19 +276,19 @@ class CircularArc:
 
 
             ptcount = int(math.ceil( math.fabs ( sweep / arcIncr  )))
-         
+
         angle = a1
 
         for i in range(0,  ptcount-1):
             angle += arcIncr
-    
+
             if arcIncr > 0.0 and angle > math.pi:
                 angle -= 2*math.pi
-                    
+
             if arcIncr < 0.0 and angle < -1*math.pi:
                 angle -= 2*math.pi
 
-                                  
+
             x = cx + r * math.cos(angle);
             y = cy + r * math.sin(angle);
 
@@ -302,12 +301,12 @@ class CircularArc:
 
         point = QgsPoint(x,  y)
         coords.append(point)
-        
+
         g = QgsGeometry.fromPolyline(coords)
         return g
-    
 
-        
+
+
     getArcBy3Points = staticmethod(getArcBy3Points)
     getArcCenter = staticmethod(getArcCenter)
     getArcByCenter2Points = staticmethod(getArcByCenter2Points)
