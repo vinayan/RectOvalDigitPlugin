@@ -86,6 +86,19 @@ class ArcBy3PointsTool(QgsMapTool):
 
             self.canvas.refresh()
             return
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -103,20 +116,23 @@ class ArcBy3PointsTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.x_p1 = pointMap.x()
@@ -133,7 +149,7 @@ class ArcBy3PointsTool(QgsMapTool):
         if self.nbPoints == 3:
             segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
             method = self.settings.value("/CADDigitize/arc/method",  "pitch")
-            
+
             geom = CircularArc.getArcBy3Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), method, segments)
 
             self.nbPoints = 0
@@ -174,7 +190,7 @@ class ArcBy3PointsTool(QgsMapTool):
         self.rb=None
 
         self.canvas.refresh()
-        
+
     def isZoomTool(self):
         return False
 
@@ -237,8 +253,21 @@ class ArcByCenter2PointsTool(QgsMapTool):
 
             self.canvas.refresh()
             return
-            
-            
+
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
+
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
         if self.nbPoints == 0:
@@ -260,20 +289,23 @@ class ArcByCenter2PointsTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.x_p1 = pointMap.x()
@@ -316,7 +348,7 @@ class ArcByCenter2PointsTool(QgsMapTool):
             clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
             method = self.settings.value("/CADDigitize/arc/method",  "pitch")
             geom = CircularArc.getArcByCenter2Points(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(currx, curry), method, segments, clock)
-            
+
             self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(currx, curry)]), None)
             self.rb.setToGeometry(geom, None)
 
@@ -385,27 +417,27 @@ class ArcByCenterPointAngleTool(QgsMapTool):
 
     def setAngleValue(self):
         self.angle = radians(self.dialog.SpinBox_Angle.value())
-        
+
         if self.circ_rayon != None and self.circ_rayon > 0:
-        
-            
+
+
             segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
             clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
             method = self.settings.value("/CADDigitize/arc/method",  "pitch")
-            
+
             if clock == "ClockWise":
                 self.currx = self.x_p1 + cos(self.a1 - self.angle) * self.circ_rayon
                 self.curry = self.y_p1 + sin(self.a1 - self.angle) * self.circ_rayon
                 self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
-            
+
                 geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.a1 - self.angle, method, segments, clock)
             elif clock == "CounterClockWise":
                 self.currx = self.x_p1 + cos(self.angle + self.a1) * self.circ_rayon
                 self.curry = self.y_p1 + sin(self.angle + self.a1) * self.circ_rayon
                 self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
-            
+
                 geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, method, segments, clock)
-            
+
     	    self.rb.setToGeometry(geom, None)
 
     def finishedAngle(self):
@@ -416,13 +448,13 @@ class ArcByCenterPointAngleTool(QgsMapTool):
             self.currx = self.x_p1 + cos(self.a1 - self.angle) * self.circ_rayon
             self.curry = self.y_p1 + sin(self.a1 - self.angle) * self.circ_rayon
             self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
-            
+
             geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.a1 - self.angle, method, segments, clock)
         elif clock == "CounterClockWise":
             self.currx = self.x_p1 + cos(self.angle + self.a1) * self.circ_rayon
             self.curry = self.y_p1 + sin(self.angle + self.a1) * self.circ_rayon
             self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
-            
+
             geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, method, segments, clock)
 
         self.nbPoints = 0
@@ -448,7 +480,7 @@ class ArcByCenterPointAngleTool(QgsMapTool):
     def keyPressEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = True
-            
+
     def keyReleaseEvent(self,  event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
@@ -466,6 +498,19 @@ class ArcByCenterPointAngleTool(QgsMapTool):
 
             self.canvas.refresh()
             return
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -490,20 +535,23 @@ class ArcByCenterPointAngleTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.x_p1 = pointMap.x()
@@ -515,26 +563,26 @@ class ArcByCenterPointAngleTool(QgsMapTool):
             self.a1 = math.atan2( self.y_p2 - self.y_p1, self.x_p2 - self.x_p1 )
             self.angle = radians(self.dialog.SpinBox_Angle.value())
             self.circ_rayon = QgsDistanceArea().measureLine(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2))
-            
+
             segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
             clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
             method = self.settings.value("/CADDigitize/arc/method",  "pitch")
-            
+
             if clock == "ClockWise":
                 self.currx = self.x_p1 + cos(self.a1 - self.angle) * self.circ_rayon
                 self.curry = self.y_p1 + sin(self.a1 - self.angle) * self.circ_rayon
                 self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
-            
+
                 geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.a1 - self.angle, method, segments, clock)
             elif clock == "CounterClockWise":
                 self.currx = self.x_p1 + cos(self.angle + self.a1) * self.circ_rayon
                 self.curry = self.y_p1 + sin(self.angle + self.a1) * self.circ_rayon
                 self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
-            
+
                 geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, method, segments, clock)
-                
+
             self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
-            
+
     	    self.rb.setToGeometry(geom, None)
         else:
             self.x_p3 = pointMap.x()
@@ -547,12 +595,12 @@ class ArcByCenterPointAngleTool(QgsMapTool):
             segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
             clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
             method = self.settings.value("/CADDigitize/arc/method",  "pitch")
-            
+
             if clock == "ClockWise":
-            
+
                 geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.a1 - self.angle, method, segments, clock)
             elif clock == "CounterClockWise":
-            
+
                 geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, method, segments, clock)
 
             self.nbPoints = 0
@@ -566,7 +614,7 @@ class ArcByCenterPointAngleTool(QgsMapTool):
 
 
     def canvasMoveEvent(self,event):
-        
+
         if not self.rb:return
         currpoint = self.toMapCoordinates(event.pos())
         self.currx = currpoint.x()
@@ -576,33 +624,33 @@ class ArcByCenterPointAngleTool(QgsMapTool):
             self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
 
         if self.nbPoints >= 2 and calc_isCollinear(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.currx, self.curry)) != 0:
-        
+
             segments = self.settings.value("/CADDigitize/arc/segments",36,type=int)
             clock = self.settings.value("/CADDigitize/arc/direction",  "ClockWise")
             method = self.settings.value("/CADDigitize/arc/method",  "pitch")
             self.rb_arcs.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.currx, self.curry)]), None)
-            
-            
+
+
             self.a2 = math.atan2( self.curry - self.y_p1, self.currx - self.x_p1 )
             self.angle = self.a2 - self.a1
             if self.angle < 0:
                 self.angle += 2*math.pi
 
 
-                
+
             if clock == "ClockWise":
-                self.angle = 2*math.pi - self.angle            
+                self.angle = 2*math.pi - self.angle
                 geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.a1 - self.angle, method, segments, clock)
 
             elif clock == "CounterClockWise":
-            
+
                 geom = CircularArc.getArcByCenterPointAngle(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), self.angle + self.a1, method, segments, clock)
-            
+
             if self.setval == False:
                 self.dialog.SpinBox_Angle.setValue(degrees(self.angle))
-                
+
             self.rb.setToGeometry(geom, None)
-            
+
     def showSettingsWarning(self):
         pass
 

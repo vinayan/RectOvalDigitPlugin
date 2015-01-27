@@ -92,12 +92,26 @@ class EllipseByCenter2PointsTool(QgsMapTool):
             self.xc, self.yc, self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None, None, None
             self.length = 0
             self.axis_a, self.axis_b = 0,0
-        
+
             self.canvas.refresh()
             return
 
     def calcPoint(x,y):
         return p.x() + self.length * cos(radians(90) + self.angle_exist), self.p.y() + self.length * sin(radians(90) + self.angle_exist)
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
+
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -124,20 +138,23 @@ class EllipseByCenter2PointsTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.xc = pointMap.x()
@@ -181,9 +198,9 @@ class EllipseByCenter2PointsTool(QgsMapTool):
             self.rb_axis_b.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.xc, self.yc), QgsPoint(self.x_p2, self.y_p2)]), None)
 
             segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
-            
+
             geom = Ellipse.getEllipse(QgsPoint(self.xc, self.yc), self.axis_a, self.axis_b, self.angle_exist, segments)
-            
+
             self.rb.setToGeometry(geom, None)
 
     def showSettingsWarning(self):
@@ -205,7 +222,7 @@ class EllipseByCenter2PointsTool(QgsMapTool):
         self.xc, self.yc, self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None, None, None
         self.length = 0
         self.axis_a, self.axis_b = 0,0
-        
+
         self.canvas.refresh()
 
     def isZoomTool(self):
@@ -270,8 +287,22 @@ class EllipseByFociPointTool(QgsMapTool):
             self.rb=None
 
             self.canvas.refresh()
-        
+
             return
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
+
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -289,20 +320,23 @@ class EllipseByFociPointTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.x_p1 = pointMap.x()
@@ -318,12 +352,12 @@ class EllipseByFociPointTool(QgsMapTool):
         self.nbPoints += 1
 
         if self.nbPoints == 3:
-        
+
             segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
             geom = Ellipse.getEllipseFromFoci(QgsPoint(self.x_p1, self.y_p1), QgsPoint(self.x_p2, self.y_p2), QgsPoint(self.x_p3, self.y_p3), segments)
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
-            
+
             self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), geom)
 
         if self.rb:return
@@ -359,7 +393,7 @@ class EllipseByFociPointTool(QgsMapTool):
         self.rb=None
 
         self.canvas.refresh()
-        
+
     def isZoomTool(self):
         return False
 
@@ -401,8 +435,8 @@ class EllipseFromCenterTool(QgsMapTool):
                                       "    ++.....+    ",
                                       "      ++.++     ",
                                       "       +.+      "]))
-                                  
- 
+
+
 
     def keyPressEvent(self,  event):
         if event.key() == Qt.Key_Control:
@@ -420,8 +454,22 @@ class EllipseFromCenterTool(QgsMapTool):
             self.rb=None
 
             self.canvas.refresh()
-        
+
             return
+
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
 
 
     def canvasPressEvent(self,event):
@@ -439,22 +487,25 @@ class EllipseFromCenterTool(QgsMapTool):
 
         x = event.pos().x()
         y = event.pos().y()
-        
+
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.x_p1 = pointMap.x()
@@ -469,18 +520,18 @@ class EllipseFromCenterTool(QgsMapTool):
             xOffset = abs( self.x_p2 - self.x_p1)
             yOffset = abs( self.y_p2 - self.y_p1)
             segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
-            
+
             geom = Ellipse.getEllipse(QgsPoint(self.x_p1, self.y_p1), xOffset, yOffset, segments=segments)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
-        
+
             self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), geom)
 
         if self.rb:return
 
 
-            
+
     def canvasMoveEvent(self,event):
         if not self.rb:return
 
@@ -492,14 +543,14 @@ class EllipseFromCenterTool(QgsMapTool):
         segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
 
         self.rb.setToGeometry(Ellipse.getEllipse(QgsPoint(self.x_p1, self.y_p1), xOffset, yOffset, segments=segments), None)
-  
+
 
     def showSettingsWarning(self):
         pass
-    
+
     def activate(self):
         self.canvas.setCursor(self.cursor)
-        
+
     def deactivate(self):
         self.nbPoints = 0
         self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
@@ -508,17 +559,17 @@ class EllipseFromCenterTool(QgsMapTool):
         self.rb=None
 
         self.canvas.refresh()
-        
+
     def isZoomTool(self):
         return False
-  
+
     def isTransient(self):
         return False
-    
+
     def isEditTool(self):
         return True
-        
- 
+
+
 # Tool class
 class EllipseByExtentTool(QgsMapTool):
     def __init__(self, canvas):
@@ -550,8 +601,8 @@ class EllipseByExtentTool(QgsMapTool):
                                       "    ++.....+    ",
                                       "      ++.++     ",
                                       "       +.+      "]))
-                                  
- 
+
+
 
     def keyPressEvent(self,  event):
         if event.key() == Qt.Key_Control:
@@ -569,8 +620,22 @@ class EllipseByExtentTool(QgsMapTool):
             self.rb=None
 
             self.canvas.refresh()
-        
+
             return
+
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
 
 
     def canvasPressEvent(self,event):
@@ -588,22 +653,25 @@ class EllipseByExtentTool(QgsMapTool):
 
         x = event.pos().x()
         y = event.pos().y()
-        
+
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.x_p1 = pointMap.x()
@@ -616,44 +684,44 @@ class EllipseByExtentTool(QgsMapTool):
 
         if self.nbPoints == 2:
             xc = self.x_p1 + ((self.x_p2 - self.x_p1) / 2)
-            yc = self.y_p1 + ((self.y_p2 - self.y_p1) / 2) 
+            yc = self.y_p1 + ((self.y_p2 - self.y_p1) / 2)
             xOffset = (abs( self.x_p2 - self.x_p1))/2
             yOffset = (abs( self.y_p2 - self.y_p1))/2
             segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
-            
+
             geom = Ellipse.getEllipse(QgsPoint(xc, yc), xOffset, yOffset, segments=segments)
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
-        
+
             self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), geom)
 
         if self.rb:return
 
 
-            
+
     def canvasMoveEvent(self,event):
         if not self.rb:return
         currpoint = self.toMapCoordinates(event.pos())
         currx = currpoint.x()
         curry = currpoint.y()
-            
+
         xc = self.x_p1 + ((currx - self.x_p1) / 2)
-        yc = self.y_p1 + ((curry - self.y_p1) / 2) 
+        yc = self.y_p1 + ((curry - self.y_p1) / 2)
         xOffset = (abs( currx - self.x_p1))/2
         yOffset = (abs( curry - self.y_p1))/2
         segments = self.settings.value("/CADDigitize/ellipse/segments",36,type=int)
-            
-        
+
+
         self.rb.setToGeometry(Ellipse.getEllipse(QgsPoint(xc, yc), xOffset, yOffset, segments=segments), None)
-  
+
 
     def showSettingsWarning(self):
         pass
-    
+
     def activate(self):
         self.canvas.setCursor(self.cursor)
-        
+
     def deactivate(self):
         self.nbPoints = 0
         self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
@@ -665,10 +733,10 @@ class EllipseByExtentTool(QgsMapTool):
 
     def isZoomTool(self):
         return False
-  
+
     def isTransient(self):
         return False
-    
+
     def isEditTool(self):
         return True
 

@@ -83,9 +83,9 @@ class CircleBy2PointsTool(QgsMapTool):
             self.rb = None
             self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
             self.canvas.refresh()
-        
+
             return
-            
+
     def changegeomSRID(self, geom):
         layer = self.canvas.currentLayer()
         renderer = self.canvas.mapRenderer()
@@ -97,9 +97,9 @@ class CircleBy2PointsTool(QgsMapTool):
             retPoint = g.asPoint()
         else:
             retPoint = geom
-            
+
         return retPoint
-        
+
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
         if self.nbPoints == 0:
@@ -107,7 +107,7 @@ class CircleBy2PointsTool(QgsMapTool):
             self.rb = QgsRubberBand(self.canvas, True)
             self.rb.setColor(color)
             self.rb.setWidth(1)
-            
+
 
         else:
             self.rb.reset(True)
@@ -123,12 +123,12 @@ class CircleBy2PointsTool(QgsMapTool):
             snapper = QgsMapCanvasSnapper(self.canvas)
             (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
             if result <> [] and enabled == True:
-                point = self.changegeomSRID(result[0].snappedVertex)                
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
                 print result
                 if result <> []:
-                    point = self.changegeomSRID(result[0].snappedVertex)   
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
@@ -180,7 +180,7 @@ class CircleBy2PointsTool(QgsMapTool):
         self.rb = None
         self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
         self.canvas.refresh()
-        
+
 
     def isZoomTool(self):
         return False
@@ -241,8 +241,23 @@ class CircleBy3PointsTool(QgsMapTool):
             self.rb=None
 
             self.canvas.refresh()
-        
+
             return
+
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
+
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -260,20 +275,23 @@ class CircleBy3PointsTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.x_p1 = pointMap.x()
@@ -293,7 +311,7 @@ class CircleBy3PointsTool(QgsMapTool):
 
             self.nbPoints = 0
             self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.x_p3, self.y_p3 = None, None, None, None, None, None
-    
+
             if geom != None:
                 self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), geom)
 
@@ -391,8 +409,23 @@ class CircleByCenterPointTool(QgsMapTool):
 
             self.canvas.refresh()
 
-        
+
             return
+
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
+
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -410,20 +443,23 @@ class CircleByCenterPointTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.x_p1 = pointMap.x()
@@ -562,8 +598,23 @@ class CircleByCenterRadiusTool(QgsMapTool):
             self.canvas.refresh()
             self.dialog.SpinBox_Radius.setValue(0)
             self.dialog.close()
-        
+
             return
+
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
+
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -582,20 +633,23 @@ class CircleByCenterRadiusTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.x_p1 = pointMap.x()

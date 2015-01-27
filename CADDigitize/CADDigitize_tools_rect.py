@@ -81,11 +81,25 @@ class RectBy3PointsTool(QgsMapTool):
             self.rb=None
 
             self.canvas.refresh()
-        
+
             return
 
     def calcPoint(p):
         return p.x() + self.length * cos(radians(90) + self.angle_exist), self.p.y() + self.length * sin(radians(90) + self.angle_exist)
+
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -103,20 +117,23 @@ class RectBy3PointsTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.x_p1 = pointMap.x()
@@ -145,7 +162,7 @@ class RectBy3PointsTool(QgsMapTool):
 
         if not self.rb:return
         currpoint = self.toMapCoordinates(event.pos())
-        
+
         if self.nbPoints == 1:
             self.rb.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(self.x_p1, self.y_p1), currpoint]), None)
         if self.nbPoints >= 2:
@@ -166,7 +183,7 @@ class RectBy3PointsTool(QgsMapTool):
         self.rb=None
 
         self.canvas.refresh()
-        
+
     def isZoomTool(self):
         return False
 
@@ -226,8 +243,22 @@ class RectByExtentTool(QgsMapTool):
             self.rb=None
 
             self.canvas.refresh()
-        
+
             return
+
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -245,20 +276,23 @@ class RectByExtentTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.x_p1 = pointMap.x()
@@ -302,7 +336,7 @@ class RectByExtentTool(QgsMapTool):
         self.rb=None
 
         self.canvas.refresh()
-        
+
     def isZoomTool(self):
         return False
 
@@ -361,8 +395,22 @@ class RectFromCenterTool(QgsMapTool):
             self.rb=None
 
             self.canvas.refresh()
-        
+
             return
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
+
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -380,20 +428,23 @@ class RectFromCenterTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.xc = pointMap.x()
@@ -407,7 +458,7 @@ class RectFromCenterTool(QgsMapTool):
         if self.nbPoints == 2:
 
             geom = Rectangle.getRectFromCenter(QgsPoint(self.xc, self.yc), QgsPoint(self.x_p2, self.y_p2))
-            
+
             self.nbPoints = 0
             self.xc, self.yc, self.x_p2, self.y_p2 = None, None, None, None
 
@@ -437,7 +488,7 @@ class RectFromCenterTool(QgsMapTool):
         self.rb=None
 
         self.canvas.refresh()
-    
+
     def isZoomTool(self):
         return False
 
@@ -496,8 +547,22 @@ class SquareFromCenterTool(QgsMapTool):
             self.rb=None
 
             self.canvas.refresh()
-        
+
             return
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
+
 
     def canvasPressEvent(self,event):
         layer = self.canvas.currentLayer()
@@ -515,20 +580,23 @@ class SquareFromCenterTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
         if self.mCtrl:
+            (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x,y)
             snapper = QgsMapCanvasSnapper(self.canvas)
-            (retval,result) = snapper.snapToCurrentLayer (startingPoint, QgsSnapper.SnapToVertex)
-            if result <> []:
-                point = result[0].snappedVertex
+            (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+            if result <> [] and enabled == True:
+                point = self.changegeomSRID(result[0].snappedVertex)
             else:
                 (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+                print result
                 if result <> []:
-                    point = result[0].snappedVertex
+                    point = self.changegeomSRID(result[0].snappedVertex)
                 else:
                     point = self.toLayerCoordinates(layer,event.pos())
         else:
             point = self.toLayerCoordinates(layer,event.pos())
         pointMap = self.toMapCoordinates(layer, point)
+
 
         if self.nbPoints == 0:
             self.xc = pointMap.x()
@@ -555,7 +623,7 @@ class SquareFromCenterTool(QgsMapTool):
         if not self.rb:return
         currpoint = self.toMapCoordinates(event.pos())
         geom = Rectangle.getSquareFromCenter(QgsPoint(self.xc, self.yc), currpoint)
-        
+
 	self.rb.setToGeometry(geom, None)
 
     def showSettingsWarning(self):
@@ -572,7 +640,7 @@ class SquareFromCenterTool(QgsMapTool):
         self.rb=None
 
         self.canvas.refresh()
-    
+
     def isZoomTool(self):
         return False
 
