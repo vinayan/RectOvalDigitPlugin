@@ -717,3 +717,267 @@ class CircleByCenterRadiusTool(QgsMapTool):
     def isEditTool(self):
         return True
 
+class CircleBy2TangentsTool(QgsMapTool):
+    def __init__(self, canvas):
+        QgsMapTool.__init__(self,canvas)
+        self.settings = QSettings()
+        self.canvas=canvas
+        self.nbPoints = 0
+        self.rb, self.rb1, self.rb2, self.rb_points = None, None, None, None
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry = None, None, None, None, None, None
+        self.point1, self.point2 = None, None
+        self.p1, self.p2, self.p3, self.p4 = None, None, None, None
+        self.p11, self.p12, self.p21, self.p22 = None, None, None, None
+        self.circ_rayon = -1
+        self.mCtrl = None
+        self.setval = False
+        #our own fancy cursor
+        self.cursor = QCursor(QPixmap(["16 16 3 1",
+                                      "      c None",
+                                      ".     c #FF0000",
+                                      "+     c #1210f3",
+                                      "                ",
+                                      "       +.+      ",
+                                      "      ++.++     ",
+                                      "     +.....+    ",
+                                      "    +.     .+   ",
+                                      "   +.   .   .+  ",
+                                      "  +.    .    .+ ",
+                                      " ++.    .    .++",
+                                      " ... ...+... ...",
+                                      " ++.    .    .++",
+                                      "  +.    .    .+ ",
+                                      "   +.   .   .+  ",
+                                      "   ++.     .+   ",
+                                      "    ++.....+    ",
+                                      "      ++.++     ",
+                                      "       +.+      "]))
+        self.initGui()
+
+    def setRadiusValue(self):
+        self.circ_rayon = self.dialog.SpinBox_Radius.value()
+        if self.circ_rayon != None and self.circ_rayon > 0:
+            self.currx = self.x_p1 + sin(self.circ_rayon)
+            self.curry = self.y_p1 + cos(self.circ_rayon)
+            segments = self.settings.value("/CADDigitize/circle/segments",36,type=int)
+    	    self.rb.setToGeometry(Circle.getCircleByCenterRadius(QgsPoint(self.x_p1, self.y_p1), self.circ_rayon, segments), None)
+
+    def getPossibleCenter(self):
+        of_join = self.settings.value("Qgis/digitizing/offset_join_style",0,type=int)
+        of_quad = self.settings.value("Qgis/digitizing/offset_quad_seg",8,type=int)
+        of_miter = self.settings.value("Qgis/digitizing/offset_miter_limit",5,type=int)
+
+        lo1m = self.rb1.asGeometry().offsetCurve(-self.circ_rayon, of_quad, of_join, of_miter)
+        lo1p = self.rb1.asGeometry().offsetCurve(+self.circ_rayon, of_quad, of_join, of_miter)
+        lo2m = self.rb2.asGeometry().offsetCurve(-self.circ_rayon, of_quad, of_join, of_miter)
+        lo2p = self.rb2.asGeometry().offsetCurve(+self.circ_rayon, of_quad, of_join, of_miter)
+
+        lo1m1, lo1m2 = qgsPolyline_NParray(lo1m)
+        lo2m1, lo2m2 = qgsPolyline_NParray(lo2m)
+        lo1p1, lo1p2 = qgsPolyline_NParray(lo1p)
+        lo2p1, lo2p2 = qgsPolyline_NParray(lo2p)
+
+        self.p1 = npArray_qgsPoint(seg_intersect(lo1m1, lo1m2, lo2m1, lo2m2) )
+        self.p2 = npArray_qgsPoint(seg_intersect(lo1m1, lo1m2, lo2p1, lo2p2) )
+        self.p3 = npArray_qgsPoint(seg_intersect(lo1p1, lo1p2, lo2m1, lo2m2) )
+        self.p4 = npArray_qgsPoint(seg_intersect(lo1p1, lo1p2, lo2p1, lo2p2) )
+
+
+        self.rb_points = QgsRubberBand(self.canvas, QGis.Point)
+        self.rb_points.setColor(QColor(0,0,255))
+        self.rb_points.setWidth(3)
+        self.rb_points.setToGeometry(QgsGeometry.fromMultiPoint([self.p1, self.p2, self.p3, self.p4]), None)
+
+        self.canvas.refresh
+
+    def finishedRadius(self):
+        self.getPossibleCenter()
+        self.setval = True
+
+
+    def initGui(self):
+        self.dialog = Ui_CADDigitizeDialogRadius()
+        self.dialog.SpinBox_Radius.valueChanged.connect(self.setRadiusValue)
+        self.dialog.buttonBox.accepted.connect(self.finishedRadius)
+
+    def keyPressEvent(self,  event):
+        if event.key() == Qt.Key_Control:
+            self.mCtrl = True
+
+    def keyReleaseEvent(self,  event):
+        if event.key() == Qt.Key_Control:
+            self.mCtrl = False
+        if event.key() == Qt.Key_Escape:
+            self.nbPoints = 0
+            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry = None, None, None, None, None, None
+            self.circ_rayon = -1
+            self.point1, self.point2 = None, None
+            self.p1, self.p2, self.p3, self.p4 = None, None, None, None
+            self.p11, self.p12, self.p21, self.p22 = None, None, None, None
+            self.setval = True
+            if self.rb:
+                self.rb.reset(True)
+            if self.rb1:
+                self.rb1.reset(True)
+            if self.rb2:
+                self.rb2.reset(True)
+            if self.rb_points:
+                self.rb_points.reset(True)
+            self.rb, self.rb1, self.rb2, self.rb_points = None, None, None, None
+
+            self.canvas.refresh()
+            self.dialog.SpinBox_Radius.setValue(0)
+            self.dialog.close()
+
+            return
+
+    def changegeomSRID(self, geom):
+        layer = self.canvas.currentLayer()
+        renderer = self.canvas.mapRenderer()
+        layerCRSSrsid = layer.crs().srsid()
+        projectCRSSrsid = renderer.destinationCrs().srsid()
+        if layerCRSSrsid != projectCRSSrsid:
+            g = QgsGeometry.fromPoint(geom)
+            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
+            retPoint = g.asPoint()
+        else:
+            retPoint = geom
+
+        return retPoint
+
+
+    def canvasPressEvent(self,event):
+        layer = self.canvas.currentLayer()
+
+        x = event.pos().x()
+        y = event.pos().y()
+
+        (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
+        startingPoint = QPoint(x,y)
+        snapper = QgsMapCanvasSnapper(self.canvas)
+        (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
+        if result <> []:
+            self.point1 = self.changegeomSRID(result[0].beforeVertex)
+            self.point2 = self.changegeomSRID(result[0].afterVertex)
+
+
+        if self.nbPoints == 0:
+            self.setval = False
+
+            self.p11 = qgsPoint_NParray(self.point1)
+            self.p12 = qgsPoint_NParray(self.point2)
+
+            self.rb1 = QgsRubberBand(self.canvas, True)
+            self.rb1.setColor(QColor(0,0,255))
+            self.rb1.setWidth(3)
+            self.rb1.setToGeometry(QgsGeometry.fromPolyline([self.point1, self.point2]), None)
+
+        if self.nbPoints == 1:
+            self.p21 = qgsPoint_NParray(self.point1)
+            self.p22 = qgsPoint_NParray(self.point2)
+
+            self.rb2 = QgsRubberBand(self.canvas, True)
+            self.rb2.setColor(QColor(0,0,255))
+            self.rb2.setWidth(3)
+            self.rb2.setToGeometry(QgsGeometry.fromPolyline([self.point1, self.point2]), None)
+
+            self.rb = QgsRubberBand(self.canvas, True)
+            self.rb.setColor(QColor(255,0,0))
+            self.rb.setWidth(1)
+
+
+
+            p_inter = seg_intersect(self.p11, self.p12, self.p21, self.p22)
+
+
+            self.x_p1 = p_inter[0]
+            self.y_p1 = p_inter[1]
+
+            self.dialog.show()
+
+        if self.nbPoints == 2:
+            segments = self.settings.value("/CADDigitize/circle/segments",36,type=int)
+            geom = Circle.getCircleByCenterRadius(QgsPoint(self.x_p1, self.y_p1), self.circ_rayon, segments)
+
+            self.nbPoints = 0
+            self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), geom)
+            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry = None, None, None, None, None, None
+            self.circ_rayon = -1
+            self.point1, self.point2 = None, None
+            self.p11, self.p12, self.p21, self.p22 = None, None, None, None
+            self.setval = True
+            self.p1, self.p2, self.p3, self.p4 = None, None, None, None
+            self.rb.reset(True)
+            self.rb1.reset(True)
+            self.rb2.reset(True)
+            self.rb_points.reset(True)
+            self.rb, self.rb1, self.rb2, self.rb_points = None, None, None, None
+
+            self.canvas.refresh()
+            self.dialog.SpinBox_Radius.setValue(0)
+
+            return
+
+        self.nbPoints += 1
+
+        if self.rb:return
+
+    def canvasMoveEvent(self,event):
+        if self.nbPoints >= 2 and self.setval == True:
+            segments = self.settings.value("/CADDigitize/circle/segments",36,type=int)
+            if not self.rb:return
+            currpoint = self.toMapCoordinates(event.pos())
+            self.currx = currpoint.x()
+            self.curry = currpoint.y()
+            list_points = [self.p1, self.p2, self.p3, self.p4]
+
+            distance = [QgsDistanceArea().measureLine(p, QgsPoint(self.currx, self.curry) ) for p in list_points]
+
+            i = distance.index(min(distance))
+            self.x_p1 = list_points[i].x()
+            self.y_p1 = list_points[i].y()
+
+            geom = Circle.getCircleByCenterRadius(QgsPoint(self.x_p1, self.y_p1), self.circ_rayon, segments)
+            self.rb.setToGeometry(geom, None)
+
+            self.canvas.refresh()
+
+
+    def showSettingsWarning(self):
+        pass
+
+    def activate(self):
+        self.canvas.setCursor(self.cursor)
+
+    def deactivate(self):
+        self.nbPoints = 0
+        self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry = None, None, None, None, None, None
+        self.circ_rayon = -1
+        self.point1, self.point2 = None, None
+        self.p11, self.p12, self.p21, self.p22 = None, None, None, None
+        self.p1, self.p2, self.p3, self.p4 = None, None, None, None
+        self.setval = True
+        if self.rb:
+            self.rb.reset(True)
+        if self.rb1:
+            self.rb1.reset(True)
+        if self.rb2:
+            self.rb2.reset(True)
+        if self.rb_points:
+            self.rb_points.reset(True)
+        self.rb, self.rb1, self.rb2, self.rb_points = None, None, None, None
+
+        self.canvas.refresh()
+        self.dialog.SpinBox_Radius.setValue(0)
+        self.dialog.close()
+
+    def isZoomTool(self):
+        return False
+
+    def isTransient(self):
+        return False
+
+    def isEditTool(self):
+        return True
+
+

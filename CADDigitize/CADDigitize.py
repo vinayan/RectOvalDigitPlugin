@@ -123,8 +123,9 @@ class CADDigitize:
         self.circleBy3Points = QAction(QIcon(":/plugins/CADDigitize/icons/circleBy3Points.png"),  QCoreApplication.translate( "CADDigitize","Circle by 3 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
         self.circleByCenterRadius = QAction(QIcon(":/plugins/CADDigitize/icons/circleByCenterRadius.png"),  QCoreApplication.translate( "CADDigitize","Circle by center and radius", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
         self.circleByCenterPoint = QAction(QIcon(":/plugins/CADDigitize/icons/circleByCenterPoint.png"),  QCoreApplication.translate( "CADDigitize","Circle by center and a point", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.circleBy2Tangents = QAction(QIcon(":/plugins/CADDigitize/icons/circleBy2Points.png"),  QCoreApplication.translate( "CADDigitize","Circle by 2 tangents", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
 
-        self.circleToolButton.addActions( [ self.circleBy2Points, self.circleBy3Points, self.circleByCenterRadius, self.circleByCenterPoint ] )
+        self.circleToolButton.addActions( [ self.circleBy2Points, self.circleBy3Points, self.circleByCenterRadius, self.circleByCenterPoint, self.circleBy2Tangents ] )
         self.circleToolButton.setDefaultAction(self.circleBy2Points)
         self.toolBar.addWidget( self.circleToolButton )
 
@@ -137,6 +138,8 @@ class CADDigitize:
         self.circleByCenterRadius.setEnabled(False)
         self.circleByCenterPoint.setCheckable(True)
         self.circleByCenterPoint.setEnabled(False)
+        self.circleBy2Tangents.setCheckable(True)
+        self.circleBy2Tangents.setEnabled(False)
 
         self.toolBar.addSeparator()
 
@@ -245,6 +248,7 @@ class CADDigitize:
         QObject.connect(self.circleBy3Points,  SIGNAL("activated()"), self.circleBy3PointsDigit)
         QObject.connect(self.circleByCenterRadius,  SIGNAL("activated()"),  self.circleByCenterRadiusDigit)
         QObject.connect(self.circleByCenterPoint,  SIGNAL("activated()"),  self.circleByCenterPointDigit)
+        QObject.connect(self.circleBy2Tangents,  SIGNAL("activated()"), self.circleBy2TangentsDigit)
         QObject.connect(self.rectBy3Points,  SIGNAL("activated()"),  self.rectBy3PointsDigit)
         QObject.connect(self.rectByExtent,  SIGNAL("activated()"),  self.rectByExtentDigit)
         QObject.connect(self.rectFromCenter,  SIGNAL("activated()"),  self.rectFromCenterDigit)
@@ -271,6 +275,7 @@ class CADDigitize:
         self.circleBy3Points_tool = CircleBy3PointsTool( self.canvas )
         self.circleByCenterRadius_tool = CircleByCenterRadiusTool( self.canvas )
         self.circleByCenterPoint_tool = CircleByCenterPointTool( self.canvas )
+        self.circleBy2Tangents_tool = CircleBy2TangentsTool( self.canvas )
         self.rectBy3Points_tool = RectBy3PointsTool( self.canvas )
         self.rectByExtent_tool = RectByExtentTool( self.canvas )
         self.rectFromCenter_tool = RectFromCenterTool( self.canvas )
@@ -551,6 +556,13 @@ class CADDigitize:
         self.circleByCenterPoint.setChecked(True)
         QObject.connect(self.circleByCenterPoint_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
+    def circleBy2TangentsDigit(self):
+        self.circleOptions()
+        self.circleToolButton.setDefaultAction(self.circleBy2Tangents)
+        self.canvas.setMapTool(self.circleBy2Tangents_tool)
+        self.circleBy2Tangents.setChecked(True)
+        QObject.connect(self.circleBy2Tangents_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
     def rectBy3PointsDigit(self):
         self.rectOptions()
         self.rectToolButton.setDefaultAction(self.rectBy3Points)
@@ -684,6 +696,7 @@ class CADDigitize:
                 self.circleBy3Points.setEnabled(True)
                 self.circleByCenterRadius.setEnabled(True)
                 self.circleByCenterPoint.setEnabled(True)
+                self.circleBy2Tangents.setEnabled(True)
                 self.rectBy3Points.setEnabled(True)
                 self.rectByExtent.setEnabled(True)
                 self.rectFromCenter.setEnabled(True)
@@ -708,6 +721,7 @@ class CADDigitize:
                 self.circleBy3Points.setEnabled(False)
                 self.circleByCenterRadius.setEnabled(False)
                 self.circleByCenterPoint.setEnabled(False)
+                self.circleBy2Tangents.setEnabled(False)
                 self.rectBy3Points.setEnabled(False)
                 self.rectByExtent.setEnabled(False)
                 self.rectFromCenter.setEnabled(False)
@@ -735,6 +749,7 @@ class CADDigitize:
         self.circleBy3Points.setChecked(False)
         self.circleByCenterRadius.setChecked(False)
         self.circleByCenterPoint.setChecked(False)
+        self.circleBy2Tangents.setChecked(False)
         self.rectBy3Points.setChecked(False)
         self.rectByExtent.setChecked(False)
         self.rectFromCenter.setChecked(False)
@@ -755,6 +770,7 @@ class CADDigitize:
         QObject.disconnect(self.circleBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.circleByCenterRadius_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.circleByCenterPoint_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.disconnect(self.circleBy2Tangents_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.rectBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.rectByExtent_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.rectFromCenter_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
@@ -808,6 +824,8 @@ class CADDigitize:
         else:
             f.setGeometry(geom.convertToType(1, False))
 
+        print f.geometry().type(), geom.type()
+
         # add attribute fields to feature
         fields = layer.pendingFields()
 
@@ -855,6 +873,7 @@ class CADDigitize:
         self.circleToolButton.removeAction(self.circleBy3Points)
         self.circleToolButton.removeAction(self.circleByCenterRadius)
         self.circleToolButton.removeAction(self.circleByCenterPoint)
+        self.circleToolButton.removeAction(self.circleBy2Tangents)
         self.rectToolButton.removeAction(self.rectBy3Points)
         self.rectToolButton.removeAction(self.rectByExtent)
         self.rectToolButton.removeAction(self.rectFromCenter)

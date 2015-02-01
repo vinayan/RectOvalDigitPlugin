@@ -58,7 +58,7 @@ PY_FILES_TOOLS = \
 	tools/ellipse.py \
 	tools/rectangle.py \
 	tools/regularpolygon.py \
-	tools/circulararc.py
+	tools/circulararc.py 
 
 
 EXTRAS = icon.png metadata.txt

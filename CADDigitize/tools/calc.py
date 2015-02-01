@@ -138,4 +138,42 @@ def calc_parallelSegment(p1,  p2, dist):
     return g
 
 
+#https://stackoverflow.com/questions/3252194/numpy-and-line-intersections
+#Stolen directly from http://www.cs.mun.ca/~rod/2500/notes/numpy-arrays/numpy-arrays.html
+#
+# line segment intersection using vectors
+# see Computer Graphics by F.S. Hill
+#
+from numpy import *
+def perp( a ) :
+    b = empty_like(a)
+    b[0] = -a[1]
+    b[1] = a[0]
+    return b
+
+# line segment a given by endpoints a1, a2
+# line segment b given by endpoints b1, b2
+# return
+def seg_intersect(a1,a2, b1,b2) :
+    da = a2-a1
+    db = b2-b1
+    dp = a1-b1
+    dap = perp(da)
+    denom = dot( dap, db)
+    num = dot( dap, dp )
+    # Modification: test if a1b1 // a2b2
+    if denom != 0.0:
+        return (num / denom)*db + b1
+    else:
+        return None
+
+def qgsPolyline_NParray(line):
+    return array( [line.asPolyline()[0][0], line.asPolyline()[0][1]] ), array( [line.asPolyline()[1][0], line.asPolyline()[1][1]] )
+
+def qgsPoint_NParray(point):
+    return array( [point[0], point[1]] )
+
+def npArray_qgsPoint(array):
+    return QgsPoint( array[0], array[1] )
+
 
