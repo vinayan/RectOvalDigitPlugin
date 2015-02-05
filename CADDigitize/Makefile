@@ -31,6 +31,7 @@ SOURCES = \
 	CADDigitize.py \
 	CADDigitize_ND.py \
 	CADDigitize_functions.py \
+	CADDigitize_tools_circle.py \
 	ui_CADDigitize_ND.ui \
 	ui_CADDigitizeSettings.ui 
 
@@ -179,8 +180,10 @@ transup:
 	@echo "------------------------------------------------"
 	@echo "Updating translation files with any new strings."
 	@echo "------------------------------------------------"
-	@chmod +x scripts/update-strings.sh
-	@scripts/update-strings.sh $(LOCALES)
+	@for LOCALE in $(LOCALES) ; do \
+			echo "i18n/"$$LOCALE".ts" ; \
+			pylupdate4 -noobsolete $(SOURCES) -ts i18n/$$LOCALE.ts ; \
+		done
 
 transcompile:
 	@echo

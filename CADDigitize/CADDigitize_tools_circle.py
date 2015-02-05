@@ -29,6 +29,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
+from qgis.utils import iface
 from math import *
 from tools.calc import *
 from tools.circle import *
@@ -799,6 +800,7 @@ class CircleBy2TangentsTool(QgsMapTool):
         self.dialog = Ui_CADDigitizeDialogRadius()
         self.dialog.SpinBox_Radius.valueChanged.connect(self.setRadiusValue)
         self.dialog.buttonBox.accepted.connect(self.finishedRadius)
+        self.dialog.buttonBox.rejected.connect(self.clear)
 
     def keyPressEvent(self,  event):
         if event.key() == Qt.Key_Control:
@@ -808,42 +810,9 @@ class CircleBy2TangentsTool(QgsMapTool):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
         if event.key() == Qt.Key_Escape:
-            self.nbPoints = 0
-            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry = None, None, None, None, None, None
-            self.circ_rayon = -1
-            self.point1, self.point2 = None, None
-            self.p1, self.p2, self.p3, self.p4 = None, None, None, None
-            self.p11, self.p12, self.p21, self.p22 = None, None, None, None
-            self.setval = True
-            if self.rb:
-                self.rb.reset(True)
-            if self.rb1:
-                self.rb1.reset(True)
-            if self.rb2:
-                self.rb2.reset(True)
-            if self.rb_points:
-                self.rb_points.reset(True)
-            self.rb, self.rb1, self.rb2, self.rb_points = None, None, None, None
 
-            self.canvas.refresh()
-            self.dialog.SpinBox_Radius.setValue(0)
-            self.dialog.close()
-
+            self.clear()
             return
-
-    def changegeomSRID(self, geom):
-        layer = self.canvas.currentLayer()
-        renderer = self.canvas.mapRenderer()
-        layerCRSSrsid = layer.crs().srsid()
-        projectCRSSrsid = renderer.destinationCrs().srsid()
-        if layerCRSSrsid != projectCRSSrsid:
-            g = QgsGeometry.fromPoint(geom)
-            g.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
-            retPoint = g.asPoint()
-        else:
-            retPoint = geom
-
-        return retPoint
 
 
     def canvasPressEvent(self,event):
@@ -852,16 +821,28 @@ class CircleBy2TangentsTool(QgsMapTool):
         x = event.pos().x()
         y = event.pos().y()
 
+        flag = False
+
+        if self.nbPoints == 2:
+            flag = True
+
         (layerid, enabled, snapType, tolUnits, tol, avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
         startingPoint = QPoint(x,y)
         snapper = QgsMapCanvasSnapper(self.canvas)
         (retval,result) = snapper.snapToCurrentLayer (startingPoint, snapType, tol)
         if result <> []:
-            self.point1 = self.changegeomSRID(result[0].beforeVertex)
-            self.point2 = self.changegeomSRID(result[0].afterVertex)
+            self.point1 = result[0].beforeVertex
+            self.point2 = result[0].afterVertex
+            flag = True
+        else:
+            (retval,result) = snapper.snapToBackgroundLayers(startingPoint)
+            if result <> []:
+                self.point1 = result[0].beforeVertex
+                self.point2 = result[0].afterVertex
+                flag = True
 
 
-        if self.nbPoints == 0:
+        if self.nbPoints == 0 and flag:
             self.setval = False
 
             self.p11 = qgsPoint_NParray(self.point1)
@@ -872,53 +853,43 @@ class CircleBy2TangentsTool(QgsMapTool):
             self.rb1.setWidth(3)
             self.rb1.setToGeometry(QgsGeometry.fromPolyline([self.point1, self.point2]), None)
 
-        if self.nbPoints == 1:
+        if self.nbPoints == 1 and flag:
             self.p21 = qgsPoint_NParray(self.point1)
             self.p22 = qgsPoint_NParray(self.point2)
 
-            self.rb2 = QgsRubberBand(self.canvas, True)
-            self.rb2.setColor(QColor(0,0,255))
-            self.rb2.setWidth(3)
-            self.rb2.setToGeometry(QgsGeometry.fromPolyline([self.point1, self.point2]), None)
-
-            self.rb = QgsRubberBand(self.canvas, True)
-            self.rb.setColor(QColor(255,0,0))
-            self.rb.setWidth(1)
-
-
-
             p_inter = seg_intersect(self.p11, self.p12, self.p21, self.p22)
 
+            if p_inter == None:
+                iface.messageBar().pushMessage(QCoreApplication.translate( "CADDigitize","Error", None, QApplication.UnicodeUTF8), QCoreApplication.translate( "CADDigitize", "Segments are parallels", None, QApplication.UnicodeUTF8), level=QgsMessageBar.CRITICAL)
+                flag = False
+            else:
+                self.x_p1 = p_inter[0]
+                self.y_p1 = p_inter[1]
 
-            self.x_p1 = p_inter[0]
-            self.y_p1 = p_inter[1]
+                self.rb2 = QgsRubberBand(self.canvas, True)
+                self.rb2.setColor(QColor(0,0,255))
+                self.rb2.setWidth(3)
+                self.rb2.setToGeometry(QgsGeometry.fromPolyline([self.point1, self.point2]), None)
 
-            self.dialog.show()
+                self.rb = QgsRubberBand(self.canvas, True)
+                self.rb.setColor(QColor(255,0,0))
+                self.rb.setWidth(1)
+
+                self.dialog.show()
 
         if self.nbPoints == 2:
             segments = self.settings.value("/CADDigitize/circle/segments",36,type=int)
             geom = Circle.getCircleByCenterRadius(QgsPoint(self.x_p1, self.y_p1), self.circ_rayon, segments)
 
-            self.nbPoints = 0
             self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), geom)
-            self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry = None, None, None, None, None, None
-            self.circ_rayon = -1
-            self.point1, self.point2 = None, None
-            self.p11, self.p12, self.p21, self.p22 = None, None, None, None
-            self.setval = True
-            self.p1, self.p2, self.p3, self.p4 = None, None, None, None
-            self.rb.reset(True)
-            self.rb1.reset(True)
-            self.rb2.reset(True)
-            self.rb_points.reset(True)
-            self.rb, self.rb1, self.rb2, self.rb_points = None, None, None, None
 
-            self.canvas.refresh()
-            self.dialog.SpinBox_Radius.setValue(0)
+
+            self.clear()
 
             return
 
-        self.nbPoints += 1
+        if self.nbPoints < 2 and flag:
+            self.nbPoints += 1
 
         if self.rb:return
 
@@ -943,20 +914,17 @@ class CircleBy2TangentsTool(QgsMapTool):
             self.canvas.refresh()
 
 
-    def showSettingsWarning(self):
-        pass
-
     def activate(self):
         self.canvas.setCursor(self.cursor)
 
-    def deactivate(self):
+    def clear(self):
         self.nbPoints = 0
         self.x_p1, self.y_p1, self.x_p2, self.y_p2, self.currx, self.curry = None, None, None, None, None, None
         self.circ_rayon = -1
         self.point1, self.point2 = None, None
         self.p11, self.p12, self.p21, self.p22 = None, None, None, None
         self.p1, self.p2, self.p3, self.p4 = None, None, None, None
-        self.setval = True
+        self.setval = False
         if self.rb:
             self.rb.reset(True)
         if self.rb1:
@@ -970,6 +938,10 @@ class CircleBy2TangentsTool(QgsMapTool):
         self.canvas.refresh()
         self.dialog.SpinBox_Radius.setValue(0)
         self.dialog.close()
+
+
+    def deactivate(self):
+        self.clear()
 
     def isZoomTool(self):
         return False
