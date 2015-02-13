@@ -37,6 +37,7 @@ from CADDigitize_tools_rect import *
 from CADDigitize_tools_ellipse import *
 from CADDigitize_tools_arc import *
 from CADDigitize_tools_regularpolygon import *
+from CADDigitize_tools_modify import *
 from CADDigitize_ND import CADDigitize_ND
 from CADDigitize_dialog import Ui_CADDigitizeSettings
 
@@ -106,11 +107,13 @@ class CADDigitize:
         self.ellipseToolButton = QToolButton(self.toolBar)
         self.arcToolButton = QToolButton(self.toolBar)
         self.rpolygonToolButton = QToolButton(self.toolBar)
+        self.modifyToolButton = QToolButton(self.toolBar)
         self.circleToolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.rectToolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.ellipseToolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.arcToolButton.setPopupMode(QToolButton.MenuButtonPopup)
         self.rpolygonToolButton.setPopupMode(QToolButton.MenuButtonPopup)
+        self.modifyToolButton.setPopupMode(QToolButton.MenuButtonPopup)
 
 
 
@@ -242,6 +245,32 @@ class CADDigitize:
         self.toolBar.addSeparator()
 
 
+        ###
+        # Modify
+        ###
+
+
+        self.modifyTrimExtend = QAction(QIcon(":/plugins/CADDigitize/icons/modifyTrimExtend.png"),  QCoreApplication.translate( "CADDigitize","Trim/Extend", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.modifyFillet = QAction(QIcon(":/plugins/CADDigitize/icons/modifyFillet.png"),  QCoreApplication.translate( "CADDigitize","Fillet", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.modifyBevel = QAction(QIcon(":/plugins/CADDigitize/icons/modifyBevel.png"),  QCoreApplication.translate( "CADDigitize","Bevel", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.modifyOffset = QAction(QIcon(":/plugins/CADDigitize/icons/modifyOffset.png"),  QCoreApplication.translate( "CADDigitize","Offset", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.modifyRotation = QAction(QIcon(":/plugins/CADDigitize/icons/modifyRotation.png"),  QCoreApplication.translate( "CADDigitize","Rotation", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+
+        self.modifyToolButton.addActions( [ self.modifyTrimExtend, self.modifyFillet, self.modifyBevel, self.modifyOffset, self.modifyRotation] )
+        self.modifyToolButton.setDefaultAction(self.modifyTrimExtend)
+        self.toolBar.addWidget( self.modifyToolButton )
+
+        self.modifyTrimExtend.setCheckable(True)
+        self.modifyTrimExtend.setEnabled(False)
+        self.modifyFillet.setCheckable(True)
+        self.modifyFillet.setEnabled(False)
+        self.modifyBevel.setCheckable(True)
+        self.modifyBevel.setEnabled(False)
+        self.modifyOffset.setCheckable(True)
+        self.modifyOffset.setEnabled(False)
+        self.modifyRotation.setCheckable(True)
+        self.modifyRotation.setEnabled(False)
+
         ### Conect
 
         QObject.connect(self.circleBy2Points,  SIGNAL("activated()"), self.circleBy2PointsDigit)
@@ -264,6 +293,12 @@ class CADDigitize:
         QObject.connect(self.arcByCenterPointAngle,  SIGNAL("activated()"), self.arcByCenterPointAngleDigit)
         QObject.connect(self.rpolygonByCenterPoint,  SIGNAL("activated()"), self.rpolygonByCenterPointDigit)
         QObject.connect(self.rpolygonBy2Corners,  SIGNAL("activated()"), self.rpolygonBy2CornersDigit)
+        QObject.connect(self.modifyTrimExtend,  SIGNAL("activated()"), self.modifyTrimExtendDigit)
+        QObject.connect(self.modifyFillet,  SIGNAL("activated()"), self.modifyFilletDigit)
+        QObject.connect(self.modifyBevel,  SIGNAL("activated()"), self.modifyBevelDigit)
+        QObject.connect(self.modifyOffset,  SIGNAL("activated()"), self.modifyOffsetDigit)
+        QObject.connect(self.modifyRotation,  SIGNAL("activated()"), self.modifyRotationDigit)
+
 
         QObject.connect(self.iface, SIGNAL("currentLayerChanged(QgsMapLayer*)"), self.toggle)
         QObject.connect(self.canvas, SIGNAL("mapToolSet(QgsMapTool*)"), self.deactivate)
@@ -291,6 +326,11 @@ class CADDigitize:
         self.arcByCenterPointAngle_tool = ArcByCenterPointAngleTool( self.canvas )
         self.rpolygonByCenterPoint_tool = RPolygonByCenterPointTool( self.canvas )
         self.rpolygonBy2Corners_tool = RPolygon2CornersTool( self.canvas )
+        self.modifyTrimExtend_tool = ModifyTrimExtendTool( self.canvas )
+        self.modifyFillet_tool = ModifyFilletTool( self.canvas )
+        self.modifyBevel_tool = ModifyBevelTool( self.canvas )
+        self.modifyOffset_tool = ModifyOffsetTool( self.canvas )
+        self.modifyRotation_tool = ModifyRotationTool( self.canvas )
 
 
 #####################################################################################################
@@ -669,6 +709,38 @@ class CADDigitize:
         self.rpolygonBy2Corners.setChecked(True)
         QObject.connect(self.rpolygonBy2Corners_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
+# MODIFY
+    def modifyTrimExtendDigit(self):
+        self.modifyToolButton.setDefaultAction(self.modifyTrimExtend)
+        self.canvas.setMapTool(self.modifyTrimExtend_tool)
+        self.modifyTrimExtend.setChecked(True)
+        QObject.connect(self.modifyTrimExtend_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
+    def modifyFilletDigit(self):
+        self.modifyToolButton.setDefaultAction(self.modifyFillet)
+        self.canvas.setMapTool(self.modifyFillet_tool)
+        self.modifyFillet.setChecked(True)
+        QObject.connect(self.modifyFillet_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
+    def modifyBevelDigit(self):
+        self.modifyToolButton.setDefaultAction(self.modifyBevel)
+        self.canvas.setMapTool(self.modifyBevel_tool)
+        self.modifyBevel.setChecked(True)
+        QObject.connect(self.modifyBevel_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
+    def modifyOffsetDigit(self):
+        self.modifyToolButton.setDefaultAction(self.modifyOffset)
+        self.canvas.setMapTool(self.modifyOffset_tool)
+        self.modifyOffset.setChecked(True)
+        QObject.connect(self.modifyOffset_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
+    def modifyRotationDigit(self):
+        self.modifyToolButton.setDefaultAction(self.modifyRotation)
+        self.canvas.setMapTool(self.modifyRotation_tool)
+        self.modifyRotation.setChecked(True)
+        QObject.connect(self.modifyRotation_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
+
     def doHelp(self):
         help_file = "file:///"+ self.plugin_dir + "/help/index.html"
         QDesktopServices.openUrl(QUrl(help_file))
@@ -712,6 +784,11 @@ class CADDigitize:
                 self.arcByCenterPointAngle.setEnabled(True)
                 self.rpolygonByCenterPoint.setEnabled(True)
                 self.rpolygonBy2Corners.setEnabled(True)
+                self.modifyTrimExtend.setEnabled(True)
+                self.modifyFillet.setEnabled(True)
+                self.modifyBevel.setEnabled(True)
+                self.modifyOffset.setEnabled(True)
+                self.modifyRotation.setEnabled(True)
                 self.caddigitize_nd.setEnabled(True)
 
                 QObject.connect(layer,SIGNAL("editingStopped()"),self.toggle)
@@ -737,6 +814,11 @@ class CADDigitize:
                 self.arcByCenterPointAngle.setEnabled(False)
                 self.rpolygonByCenterPoint.setEnabled(False)
                 self.rpolygonBy2Corners.setEnabled(False)
+                self.modifyTrimExtend.setEnabled(False)
+                self.modifyFillet.setEnabled(False)
+                self.modifyBevel.setEnabled(False)
+                self.modifyOffset.setEnabled(False)
+                self.modifyRotation.setEnabled(False)
                 self.caddigitize_nd.setEnabled(False)
 
                 QObject.connect(layer,SIGNAL("editingStarted()"),self.toggle)
@@ -765,6 +847,11 @@ class CADDigitize:
         self.arcByCenterPointAngle.setChecked(False)
         self.rpolygonByCenterPoint.setChecked(False)
         self.rpolygonBy2Corners.setChecked(False)
+        self.modifyTrimExtend.setChecked(False)
+        self.modifyFillet.setChecked(False)
+        self.modifyBevel.setChecked(False)
+        self.modifyOffset.setChecked(False)
+        self.modifyRotation.setChecked(False)
 
         QObject.disconnect(self.circleBy2Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.circleBy3Points_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
@@ -786,6 +873,11 @@ class CADDigitize:
         QObject.disconnect(self.arcByCenterPointAngle_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.arcFeature)
         QObject.disconnect(self.rpolygonByCenterPoint_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.rpolygonBy2Corners_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.disconnect(self.modifyTrimExtend_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.disconnect(self.modifyFillet_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.disconnect(self.modifyBevel_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.disconnect(self.modifyOffset_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+        QObject.disconnect(self.modifyRotation_tool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
 
 
     def arcFeature(self, arc):
@@ -823,8 +915,6 @@ class CADDigitize:
             f.setGeometry(geom)
         else:
             f.setGeometry(geom.convertToType(1, False))
-
-        print f.geometry().type(), geom.type()
 
         # add attribute fields to feature
         fields = layer.pendingFields()
@@ -889,6 +979,11 @@ class CADDigitize:
         self.arcToolButton.removeAction(self.arcByCenterPointAngle)
         self.rpolygonToolButton.removeAction(self.rpolygonByCenterPoint)
         self.rpolygonToolButton.removeAction(self.rpolygonBy2Corners)
+        self.modifyToolButton.removeAction(self.modifyTrimExtend)
+        self.modifyToolButton.removeAction(self.modifyFillet)
+        self.modifyToolButton.removeAction(self.modifyBevel)
+        self.modifyToolButton.removeAction(self.modifyOffset)
+        self.modifyToolButton.removeAction(self.modifyRotation)
         self.optionsToolBar.clear()
 
         del self.circleToolButton
@@ -896,6 +991,7 @@ class CADDigitize:
         del self.ellipseToolButton
         del self.arcToolButton
         del self.rpolygonToolButton
+        del self.modifyToolButton
         del self.toolBar
         del self.optionsToolBar
         del self.menu

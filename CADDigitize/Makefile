@@ -46,6 +46,7 @@ PY_FILES = \
 	CADDigitize_tools_ellipse.py \
 	CADDigitize_tools_regularpolygon.py \
 	CADDigitize_tools_arc.py \
+	CADDigitize_tools_modify.py \
 	ui_getDistance.py \
 	ui_CADDigitize_ND.py \
 	ui_CADDigitizeSettings.py \

@@ -115,29 +115,6 @@ def calc_milieuLine(p1, p2):
     return QgsPoint((p1.x()+p2.x())/2.0, (p1.y()+p2.y())/2.0)
 
 
-def calc_parallelSegment(p1,  p2, dist):
-# from cadtools (c) Stefan ZIegler
-
-    if dist == 0:
-        points = [p1,  p2]
-        g = QgsGeometry.fromPolyline(points)
-        return g
-
-    dn = QgsDistanceArea().measureLine(p1, p2)
-    x3 = p1.x() + dist*(p1.y()-p2.y()) / dn
-    y3 = p1.y() - dist*(p1.x()-p2.x()) / dn
-    p3 = QgsPoint(x3,  y3)
-
-    x4 = p2.x() + dist*(p1.y()-p2.y()) / dn
-    y4 = p2.y() - dist*(p1.x()-p2.x()) / dn
-    p4 = QgsPoint(x4,  y4)
-
-    points =  [p3,  p4]
-    g = QgsGeometry.fromPolyline(points)
-
-    return g
-
-
 #https://stackoverflow.com/questions/3252194/numpy-and-line-intersections
 #Stolen directly from http://www.cs.mun.ca/~rod/2500/notes/numpy-arrays/numpy-arrays.html
 #
