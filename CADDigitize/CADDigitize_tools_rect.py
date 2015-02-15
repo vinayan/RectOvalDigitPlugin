@@ -29,9 +29,27 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
+from qgis.utils import iface
 from math import *
 from tools.calc import *
 from tools.rectangle import *
+
+class ToolBar:
+    #####################
+    #       Rect        #
+    #####################
+    def __init__(self):
+        self.optionsToolBar = iface.mainWindow().findChild(
+                QToolBar, u"CADDigitize Options")
+        self.clear()
+
+#   No options needed
+#    def rectOptions(self):
+#        self.optionsToolBar.clear()
+
+    def clear(self):
+        self.optionsToolBar.clear()
+
 
 class RectBy3PointsTool(QgsMapTool):
     def __init__(self, canvas):
@@ -174,6 +192,7 @@ class RectBy3PointsTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         self.nbPoints = 0
@@ -181,6 +200,8 @@ class RectBy3PointsTool(QgsMapTool):
         if self.rb:
             self.rb.reset(True)
         self.rb=None
+
+        self.optionsToolbar.clear()
 
         self.canvas.refresh()
 
@@ -326,6 +347,7 @@ class RectByExtentTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         self.nbPoints = 0
@@ -334,6 +356,8 @@ class RectByExtentTool(QgsMapTool):
         if self.rb:
             self.rb.reset(True)
         self.rb=None
+
+        self.optionsToolbar.clear()
 
         self.canvas.refresh()
 
@@ -479,6 +503,7 @@ class RectFromCenterTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         self.nbPoints = 0
@@ -486,6 +511,8 @@ class RectFromCenterTool(QgsMapTool):
         if self.rb:
             self.rb.reset(True)
         self.rb=None
+
+        self.optionsToolbar.clear()
 
         self.canvas.refresh()
 
@@ -631,6 +658,7 @@ class SquareFromCenterTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         self.nbPoints = 0
@@ -638,6 +666,8 @@ class SquareFromCenterTool(QgsMapTool):
         if self.rb:
             self.rb.reset(True)
         self.rb=None
+
+        self.optionsToolbar.clear()
 
         self.canvas.refresh()
 

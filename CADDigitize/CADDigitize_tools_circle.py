@@ -35,6 +35,47 @@ from tools.calc import *
 from tools.circle import *
 from CADDigitize_dialog import Ui_CADDigitizeDialogRadius
 
+class ToolBar:
+    def __init__(self):
+        self.optionsToolBar = iface.mainWindow().findChild(
+                QToolBar, u"CADDigitize Options")
+        self.clear()
+        self.circleOptions()
+
+
+    #####################
+    #      Circle       #
+    #####################
+
+    def segmentsettingsCircle(self):
+        settings = QSettings()
+        settings.setValue("/CADDigitize/circle/segments", self.spinBox.value())
+
+    def circleOptions(self):
+        settings = QSettings()
+        self.optionsToolBar.clear()
+        ###
+        # Options
+        ###
+        # Add spinbox circle
+        self.spinBox = QSpinBox(iface.mainWindow())
+        self.spinBox.setMinimum(3)
+        self.spinBox.setMaximum(3600)
+        segvalue = settings.value("/CADDigitize/circle/segments",36,type=int)
+        if not segvalue:
+            settings.setValue("/CADDigitize/circle/segments", 36)
+        self.spinBox.setValue(segvalue)
+        self.spinBox.setSingleStep(1)
+        self.spinBoxAction = self.optionsToolBar.addWidget(self.spinBox)
+        self.spinBox.setToolTip( QCoreApplication.translate( "CADDigitize","Number of quadrant segments", None, QApplication.UnicodeUTF8))
+        self.spinBoxAction.setEnabled(True)
+
+
+        QObject.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.segmentsettingsCircle)
+
+    def clear(self):
+        self.optionsToolBar.clear()
+
 class CircleBy2PointsTool(QgsMapTool):
     def __init__(self, canvas):
         QgsMapTool.__init__(self,canvas)
@@ -173,6 +214,7 @@ class CircleBy2PointsTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         if self.rb:
@@ -180,8 +222,10 @@ class CircleBy2PointsTool(QgsMapTool):
         self.nbPoints = 0
         self.rb = None
         self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None
-        self.canvas.refresh()
 
+        self.optionsToolbar.clear()
+
+        self.canvas.refresh()
 
     def isZoomTool(self):
         return False
@@ -339,6 +383,7 @@ class CircleBy3PointsTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         self.nbPoints = 0
@@ -346,6 +391,8 @@ class CircleBy3PointsTool(QgsMapTool):
         if self.rb:
             self.rb.reset(True)
         self.rb=None
+
+        self.optionsToolbar.clear()
 
         self.canvas.refresh()
 
@@ -496,6 +543,7 @@ class CircleByCenterPointTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         self.nbPoints = 0
@@ -503,6 +551,8 @@ class CircleByCenterPointTool(QgsMapTool):
         if self.rb:
             self.rb.reset(True)
         self.rb=None
+
+        self.optionsToolbar.clear()
 
         self.canvas.refresh()
 
@@ -695,6 +745,7 @@ class CircleByCenterRadiusTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         self.nbPoints = 0
@@ -704,6 +755,8 @@ class CircleByCenterRadiusTool(QgsMapTool):
         if self.rb:
             self.rb.reset(True)
         self.rb=None
+
+        self.optionsToolbar.clear()
 
         self.canvas.refresh()
         self.dialog.SpinBox_Radius.setValue(0)
@@ -916,6 +969,7 @@ class CircleBy2TangentsTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def clear(self):
         self.nbPoints = 0
@@ -942,6 +996,7 @@ class CircleBy2TangentsTool(QgsMapTool):
 
     def deactivate(self):
         self.clear()
+        self.optionsToolbar.clear()
 
     def isZoomTool(self):
         return False

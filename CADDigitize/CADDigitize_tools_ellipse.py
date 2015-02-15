@@ -29,9 +29,50 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
+from qgis.utils import iface
 from math import *
 from tools.calc import *
 from tools.ellipse import *
+
+class ToolBar:
+    def __init__(self):
+        self.optionsToolBar = iface.mainWindow().findChild(
+                QToolBar, u"CADDigitize Options")
+        self.clear()
+        self.ellipseOptions()
+
+    def clear(self):
+        self.optionsToolBar.clear()
+    #####################
+    #      Ellipse      #
+    #####################
+
+    def segmentsettingsEllipse(self):
+        settings = QSettings()
+        settings.setValue("/CADDigitize/ellipse/segments", self.spinBox.value())
+
+    def ellipseOptions(self):
+        settings = QSettings()
+        self.optionsToolBar.clear()
+        ###
+        # Options
+        ###
+        # Add spinbox circle
+        self.spinBox = QSpinBox(iface.mainWindow())
+        self.spinBox.setMinimum(4)
+        self.spinBox.setMaximum(3600)
+        segvalue = settings.value("/CADDigitize/ellipse/segments",36,type=int)
+        if not segvalue:
+            settings.setValue("/CADDigitize/ellipse/segments", 36)
+        self.spinBox.setValue(segvalue)
+        self.spinBox.setSingleStep(1)
+        self.spinBoxAction = self.optionsToolBar.addWidget(self.spinBox)
+        self.spinBox.setToolTip( QCoreApplication.translate( "CADDigitize","Number of points", None, QApplication.UnicodeUTF8))
+        self.spinBoxAction.setEnabled(True)
+
+
+        QObject.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.segmentsettingsEllipse)
+
 
 
 
@@ -208,6 +249,7 @@ class EllipseByCenter2PointsTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         if self.rb:
@@ -222,6 +264,8 @@ class EllipseByCenter2PointsTool(QgsMapTool):
         self.xc, self.yc, self.x_p1, self.y_p1, self.x_p2, self.y_p2 = None, None, None, None, None, None
         self.length = 0
         self.axis_a, self.axis_b = 0,0
+
+        self.optionsToolbar.clear()
 
         self.canvas.refresh()
 
@@ -381,6 +425,7 @@ class EllipseByFociPointTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         self.nbPoints = 0
@@ -391,6 +436,8 @@ class EllipseByFociPointTool(QgsMapTool):
         if self.rb:
             self.rb.reset(True)
         self.rb=None
+
+        self.optionsToolbar.clear()
 
         self.canvas.refresh()
 
@@ -550,6 +597,7 @@ class EllipseFromCenterTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         self.nbPoints = 0
@@ -558,6 +606,7 @@ class EllipseFromCenterTool(QgsMapTool):
             self.rb.reset(True)
         self.rb=None
 
+        self.optionsToolbar.clear()
         self.canvas.refresh()
 
     def isZoomTool(self):
@@ -721,6 +770,7 @@ class EllipseByExtentTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         self.nbPoints = 0
@@ -729,6 +779,7 @@ class EllipseByExtentTool(QgsMapTool):
             self.rb.reset(True)
         self.rb=None
 
+        self.optionsToolbar.clear()
         self.canvas.refresh()
 
     def isZoomTool(self):

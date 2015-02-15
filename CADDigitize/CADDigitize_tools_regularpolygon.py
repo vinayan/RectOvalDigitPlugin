@@ -29,9 +29,48 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
+from qgis.utils import iface
 from math import *
 from tools.calc import *
 from tools.regularpolygon import *
+
+#####################
+#     RPolygon      #
+#####################
+class ToolBar:
+    def __init__(self):
+        self.optionsToolBar = iface.mainWindow().findChild(
+                QToolBar, u"CADDigitize Options")
+        self.clear()
+        self.rpolygonOptions()
+
+    def segmentsettingsRPolygon(self):
+        settings = QSettings()
+        settings.setValue("/CADDigitize/rpolygon/nbedges", self.spinBox.value())
+
+    def rpolygonOptions(self):
+        settings = QSettings()
+        ###
+        # Options
+        ###
+        # Add spinbox circle
+        self.spinBox = QSpinBox(iface.mainWindow())
+        self.spinBox.setMinimum(3)
+        self.spinBox.setMaximum(9999)
+        segvalue = settings.value("/CADDigitize/rpolygon/nbedges",36,type=int)
+        if not segvalue:
+            settings.setValue("/CADDigitize/rpolygon/nbedges", 36)
+        self.spinBox.setValue(segvalue)
+        self.spinBox.setSingleStep(1)
+        self.spinBoxAction = self.optionsToolBar.addWidget(self.spinBox)
+        self.spinBox.setToolTip( QCoreApplication.translate( "CADDigitize","Number of edges", None, QApplication.UnicodeUTF8))
+        self.spinBoxAction.setEnabled(True)
+
+        QObject.connect(self.spinBox, SIGNAL("valueChanged(int)"), self.segmentsettingsRPolygon)
+
+    def clear(self):
+        self.optionsToolBar.clear()
+
 
 class RPolygonByCenterPointTool(QgsMapTool):
     def __init__(self, canvas):
@@ -168,6 +207,7 @@ class RPolygonByCenterPointTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         self.nbPoints = 0
@@ -175,6 +215,8 @@ class RPolygonByCenterPointTool(QgsMapTool):
         if self.rb:
             self.rb.reset(True)
         self.rb=None
+
+        self.optionsToolbar.clear()
 
         self.canvas.refresh()
 
@@ -323,6 +365,7 @@ class RPolygon2CornersTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar()
 
     def deactivate(self):
         self.nbPoints = 0
@@ -330,6 +373,8 @@ class RPolygon2CornersTool(QgsMapTool):
         if self.rb:
             self.rb.reset(True)
         self.rb=None
+
+        self.optionsToolbar.clear()
 
         self.canvas.refresh()
 

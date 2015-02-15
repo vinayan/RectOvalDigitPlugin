@@ -29,11 +29,141 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
+from qgis.utils import iface
 from math import *
 from tools.calc import *
 from tools.circle import *
 from tools.circulararc import *
 from CADDigitize_dialog import Ui_CADDigitizeDialogAngle
+
+class ToolBar:
+    def __init__(self, canvas):
+        self.canvas = canvas
+        self.optionsToolBar = iface.mainWindow().findChild(
+                QToolBar, u"CADDigitize Options")
+        self.clear()
+        self.arcOptions()
+
+    def clear(self):
+        self.optionsToolBar.clear()
+    #####################
+    #       Arcs        #
+    #####################
+    def arcOptions(self):
+        settings = QSettings()
+        self.optionsToolBar.clear()
+
+
+        self.arc_featurePitch = settings.value("/CADDigitize/arc/pitch", 2,type=float)
+        self.arc_featureAngle = settings.value("/CADDigitize/arc/angle", 1,type=int)
+        self.arc_method = settings.value("/CADDigitize/arc/method",  "pitch")
+        self.arc_angleDirection = settings.value("/CADDigitize/arc/direction",  "ClockWise")
+
+        mc = self.canvas
+        layer = mc.currentLayer()
+        if layer.geometryType() == 2:
+            self.arc_polygonCreation = settings.value("/CADDigitize/arc/polygon",  "pie")
+            self.ArcPolygonCombo = QComboBox(iface.mainWindow())
+            self.ArcPolygonCombo.addItems([QCoreApplication.translate( "CADDigitizeSettings","Pie segment", None, QApplication.UnicodeUTF8), QCoreApplication.translate( "CADDigitizeSettings","Chord", None, QApplication.UnicodeUTF8)])
+            self.ArcPolygonComboAction = self.optionsToolBar.addWidget(self.ArcPolygonCombo)
+            if self.arc_polygonCreation == "pie":
+                self.ArcPolygonCombo.setCurrentIndex(0)
+            else:
+                self.ArcPolygonCombo.setCurrentIndex(1)
+
+            QObject.connect(self.ArcPolygonCombo, SIGNAL("currentIndexChanged(int)"), self.polygonArc)
+
+        self.ArcFeatureSpin = QDoubleSpinBox(iface.mainWindow())
+        self.ArcAngleDirectionCombo = QComboBox(iface.mainWindow())
+        self.ArcAngleDirectionCombo.addItems([QCoreApplication.translate( "CADDigitizeSettings","ClockWise", None, QApplication.UnicodeUTF8), QCoreApplication.translate( "CADDigitizeSettings","CounterClockWise", None, QApplication.UnicodeUTF8)])
+        self.ArcAngleDirectionComboAction = self.optionsToolBar.addWidget(self.ArcAngleDirectionCombo)
+        self.ArcFeatureCombo = QComboBox(iface.mainWindow())
+        self.ArcFeatureCombo.addItems([QCoreApplication.translate( "CADDigitizeSettings","Pitch", None, QApplication.UnicodeUTF8), QCoreApplication.translate( "CADDigitizeSettings", "Angle", None, QApplication.UnicodeUTF8)])
+        self.ArcFeatureComboAction = self.optionsToolBar.addWidget(self.ArcFeatureCombo)
+
+
+        if self.arc_method == "pitch":
+            self.ArcFeatureCombo.setCurrentIndex(0)
+            self.ArcFeatureSpin.setMinimum(1)
+            self.ArcFeatureSpin.setMaximum(1000)
+            self.ArcFeatureSpin.setDecimals(1)
+            self.ArcFeatureSpin.setValue(self.arc_featurePitch)
+            self.ArcFeatureSpinAction = self.optionsToolBar.addWidget(self.ArcFeatureSpin)
+            self.ArcFeatureSpin.setToolTip(QCoreApplication.translate( "CADDigitizeSettings","Pitch", None, QApplication.UnicodeUTF8))
+            self.ArcFeatureSpinAction.setEnabled(True)
+        else:
+            self.ArcFeatureCombo.setCurrentIndex(1)
+            self.ArcFeatureSpin.setMinimum(1)
+            self.ArcFeatureSpin.setMaximum(3600)
+            self.ArcFeatureSpin.setDecimals(0)
+            self.ArcFeatureSpin.setValue(self.arc_featureAngle)
+            self.ArcFeatureSpinAction = self.optionsToolBar.addWidget(self.ArcFeatureSpin)
+            self.ArcFeatureSpin.setToolTip(QCoreApplication.translate( "CADDigitizeSettings","Angle", None, QApplication.UnicodeUTF8))
+            self.ArcFeatureSpinAction.setEnabled(True)
+
+
+        if self.arc_angleDirection == "ClockWise":
+            self.ArcAngleDirectionCombo.setCurrentIndex(0)
+        else:
+            self.ArcAngleDirectionCombo.setCurrentIndex(1)
+
+
+
+
+
+        QObject.connect(self.ArcFeatureSpin, SIGNAL("valueChanged(double)"), self.segmentsettingsArc)
+        QObject.connect(self.ArcFeatureCombo, SIGNAL("currentIndexChanged(int)"), self.featureArc)
+        QObject.connect(self.ArcAngleDirectionCombo, SIGNAL("currentIndexChanged(int)"), self.angleDirectionArc)
+
+
+    def polygonArc(self):
+        settings = QSettings()
+        if self.ArcPolygonCombo.currentText() == "pie":
+            settings.setValue("/CADDigitize/arc/polygon", "pie")
+        else:
+            settings.setValue("/CADDigitize/arc/polygon", "chord")
+
+
+    def angleDirectionArc(self):
+        settings = QSettings()
+        if self.ArcAngleDirectionCombo.currentText() == "ClockWise":
+            settings.setValue("/CADDigitize/arc/direction",  "ClockWise")
+        else:
+            settings.setValue("/CADDigitize/arc/direction",  "CounterClockWise")
+
+    def segmentsettingsArc(self):
+        settings = QSettings()
+        if self.arc_method == "pitch":
+            settings.setValue("/CADDigitize/arc/segments", self.ArcFeatureSpin.value())
+            settings.setValue("/CADDigitize/arc/pitch", self.ArcFeatureSpin.value())
+        else:
+            settings.setValue("/CADDigitize/arc/segments", int(self.ArcFeatureSpin.value()))
+            settings.setValue("/CADDigitize/arc/angle", int(self.ArcFeatureSpin.value()))
+
+    def featureArc(self):
+        settings = QSettings()
+
+        if self.ArcFeatureCombo.currentText() == "pitch":
+            self.ArcFeatureSpin.setMinimum(1)
+            self.ArcFeatureSpin.setMaximum(1000)
+            self.ArcFeatureSpin.setDecimals(1)
+            self.ArcFeatureSpin.setValue(settings.value("/CADDigitize/arc/pitch", 2,type=float))
+            self.ArcFeatureSpinAction = self.optionsToolBar.addWidget(self.ArcFeatureSpin)
+            self.ArcFeatureSpin.setToolTip("Pitch")
+            self.ArcFeatureSpinAction.setEnabled(True)
+            self.arc_method = "pitch"
+            settings.setValue("/CADDigitize/arc/method",  "pitch")
+        else:
+            self.ArcFeatureSpin.setMinimum(1)
+            self.ArcFeatureSpin.setMaximum(3600)
+            self.ArcFeatureSpin.setDecimals(0)
+            self.ArcFeatureSpin.setValue(settings.value("/CADDigitize/arc/angle", 1,type=int))
+            self.ArcFeatureSpinAction = self.optionsToolBar.addWidget(self.ArcFeatureSpin)
+            self.ArcFeatureSpin.setToolTip("Angle")
+            self.ArcFeatureSpinAction.setEnabled(True)
+            self.arc_method = "angle"
+            settings.setValue("/CADDigitize/arc/method",  "angle")
+
 
 
 class ArcBy3PointsTool(QgsMapTool):
@@ -180,6 +310,7 @@ class ArcBy3PointsTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar(self.canvas)
 
     def deactivate(self):
         self.nbPoints = 0
@@ -189,6 +320,7 @@ class ArcBy3PointsTool(QgsMapTool):
             self.rb.reset(True)
         self.rb=None
 
+        self.optionsToolbar.clear()
         self.canvas.refresh()
 
     def isZoomTool(self):
@@ -357,6 +489,7 @@ class ArcByCenter2PointsTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar(self.canvas)
 
     def deactivate(self):
         self.nbPoints = 0
@@ -367,6 +500,7 @@ class ArcByCenter2PointsTool(QgsMapTool):
             self.rb_arcs.reset(True)
         self.rb=None
         self.rb_arcs=None
+        self.optionsToolbar.clear()
 
         self.canvas.refresh()
 
@@ -656,6 +790,7 @@ class ArcByCenterPointAngleTool(QgsMapTool):
 
     def activate(self):
         self.canvas.setCursor(self.cursor)
+        self.optionsToolbar = ToolBar(self.canvas)
 
     def deactivate(self):
         self.dialog.close()
@@ -672,6 +807,7 @@ class ArcByCenterPointAngleTool(QgsMapTool):
         self.rb_arcs=None
 
         self.canvas.refresh()
+        self.optionsToolbar.clear()
 
     def isZoomTool(self):
         return False
