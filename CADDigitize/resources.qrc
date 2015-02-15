@@ -1,24 +1,30 @@
 <RCC>
     <qresource prefix="/plugins/CADDigitize" >
         <file>icon.png</file>
-        <file>icons/circleBy2Points.png</file>
-        <file>icons/circleBy3Points.png</file>
-        <file>icons/circleByCenterPoint.png</file>
-        <file>icons/circleByCenterRadius.png</file>
-        <file>icons/rectBy3Points.png</file>
-        <file>icons/rectByExtent.png</file>
-        <file>icons/rectFromCenter.png</file>
-        <file>icons/squareFromCenter.png</file>
-        <file>icons/ellipseByCenter2Points.png</file>
-        <file>icons/ellipseByCenter3Points.png</file>
-        <file>icons/ellipseBy4Points.png</file>
-        <file>icons/ellipseByFociPoint.png</file>
-        <file>icons/ellipseByExtent.png</file>
-        <file>icons/ellipseFromCenter.png</file>
-        <file>icons/arcByCenter2Points.png</file>
-        <file>icons/arcBy3Points.png</file>
-        <file>icons/arcByCenterPointAngle.png</file>
-        <file>icons/rpolygonBy2Corners.png</file>
-        <file>icons/rpolygonByCenterPoint.png</file>
+        <file>icons/circleBy2Points.svg</file>
+        <file>icons/circleBy3Points.svg</file>
+        <file>icons/circleByCenterPoint.svg</file>
+        <file>icons/circleByCenterRadius.svg</file>
+        <file>icons/circleBy2Tangents.svg</file>
+        <file>icons/rectBy3Points.svg</file>
+        <file>icons/rectByExtent.svg</file>
+        <file>icons/rectFromCenter.svg</file>
+        <file>icons/squareFromCenter.svg</file>
+        <file>icons/ellipseByCenter2Points.svg</file>
+        <file>icons/ellipseByCenter3Points.svg</file>
+        <file>icons/ellipseBy4Points.svg</file>
+        <file>icons/ellipseByFociPoint.svg</file>
+        <file>icons/ellipseByExtent.svg</file>
+        <file>icons/ellipseFromCenter.svg</file>
+        <file>icons/arcByCenter2Points.svg</file>
+        <file>icons/arcBy3Points.svg</file>
+        <file>icons/arcByCenterPointAngle.svg</file>
+        <file>icons/rpolygonBy2Corners.svg</file>
+        <file>icons/rpolygonByCenterPoint.svg</file>
+        <file>icons/modifyTrimExtend.svg</file>
+        <file>icons/modifyFillet.svg</file>
+        <file>icons/modifyBevel.svg</file>
+        <file>icons/modifyOffset.svg</file>
+        <file>icons/modifyRotation.svg</file>
      </qresource>
 </RCC>

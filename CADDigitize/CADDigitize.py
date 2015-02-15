@@ -123,11 +123,11 @@ class CADDigitize:
         ###
 
         # Add actions
-        self.circleBy2Points = QAction(QIcon(":/plugins/CADDigitize/icons/circleBy2Points.png"),  QCoreApplication.translate( "CADDigitize","Circle by 2 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.circleBy3Points = QAction(QIcon(":/plugins/CADDigitize/icons/circleBy3Points.png"),  QCoreApplication.translate( "CADDigitize","Circle by 3 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.circleByCenterRadius = QAction(QIcon(":/plugins/CADDigitize/icons/circleByCenterRadius.png"),  QCoreApplication.translate( "CADDigitize","Circle by center and radius", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.circleByCenterPoint = QAction(QIcon(":/plugins/CADDigitize/icons/circleByCenterPoint.png"),  QCoreApplication.translate( "CADDigitize","Circle by center and a point", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.circleBy2Tangents = QAction(QIcon(":/plugins/CADDigitize/icons/circleBy2Points.png"),  QCoreApplication.translate( "CADDigitize","Circle by 2 tangents", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.circleBy2Points = QAction(QIcon(":/plugins/CADDigitize/icons/circleBy2Points.svg"),  QCoreApplication.translate( "CADDigitize","Circle by 2 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.circleBy3Points = QAction(QIcon(":/plugins/CADDigitize/icons/circleBy3Points.svg"),  QCoreApplication.translate( "CADDigitize","Circle by 3 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.circleByCenterRadius = QAction(QIcon(":/plugins/CADDigitize/icons/circleByCenterRadius.svg"),  QCoreApplication.translate( "CADDigitize","Circle by center and radius", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.circleByCenterPoint = QAction(QIcon(":/plugins/CADDigitize/icons/circleByCenterPoint.svg"),  QCoreApplication.translate( "CADDigitize","Circle by center and a point", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.circleBy2Tangents = QAction(QIcon(":/plugins/CADDigitize/icons/circleBy2Tangents.svg"),  QCoreApplication.translate( "CADDigitize","Circle by 2 tangents", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
 
         self.circleToolButton.addActions( [ self.circleBy2Points, self.circleBy3Points, self.circleByCenterRadius, self.circleByCenterPoint, self.circleBy2Tangents ] )
         self.circleToolButton.setDefaultAction(self.circleBy2Points)
@@ -151,10 +151,10 @@ class CADDigitize:
         # Rectangles
         ###
 
-        self.rectBy3Points = QAction(QIcon(":/plugins/CADDigitize/icons/rectBy3Points.png"), QCoreApplication.translate( "CADDigitize","Rectangle by 3 points", None, QApplication.UnicodeUTF8), self.iface.mainWindow())
-        self.rectByExtent = QAction(QIcon(":/plugins/CADDigitize/icons/rectByExtent.png"), QCoreApplication.translate( "CADDigitize","Rectangle by extent", None, QApplication.UnicodeUTF8), self.iface.mainWindow())
-        self.rectFromCenter = QAction(QIcon(":/plugins/CADDigitize/icons/rectFromCenter.png"), QCoreApplication.translate( "CADDigitize","Rectangle from center", None, QApplication.UnicodeUTF8), self.iface.mainWindow())
-        self.squareFromCenter = QAction(QIcon(":/plugins/CADDigitize/icons/squareFromCenter.png"), QCoreApplication.translate( "CADDigitize","Square from center", None, QApplication.UnicodeUTF8), self.iface.mainWindow())
+        self.rectBy3Points = QAction(QIcon(":/plugins/CADDigitize/icons/rectBy3Points.svg"), QCoreApplication.translate( "CADDigitize","Rectangle by 3 points", None, QApplication.UnicodeUTF8), self.iface.mainWindow())
+        self.rectByExtent = QAction(QIcon(":/plugins/CADDigitize/icons/rectByExtent.svg"), QCoreApplication.translate( "CADDigitize","Rectangle by extent", None, QApplication.UnicodeUTF8), self.iface.mainWindow())
+        self.rectFromCenter = QAction(QIcon(":/plugins/CADDigitize/icons/rectFromCenter.svg"), QCoreApplication.translate( "CADDigitize","Rectangle from center", None, QApplication.UnicodeUTF8), self.iface.mainWindow())
+        self.squareFromCenter = QAction(QIcon(":/plugins/CADDigitize/icons/squareFromCenter.svg"), QCoreApplication.translate( "CADDigitize","Square from center", None, QApplication.UnicodeUTF8), self.iface.mainWindow())
         self.rectToolButton.addActions( [self.rectBy3Points, self.rectByExtent, self.rectFromCenter, self.squareFromCenter] )
         self.rectToolButton.setDefaultAction(self.rectBy3Points)
         self.toolBar.addWidget( self.rectToolButton )
@@ -176,12 +176,12 @@ class CADDigitize:
 
 
         # Add actions
-        self.ellipseByCenter2Points = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseByCenter2Points.png"),  QCoreApplication.translate( "CADDigitize","Ellipse by center and 2 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.ellipseByCenter3Points = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseByCenter3Points.png"),  QCoreApplication.translate( "CADDigitize","Ellipse by center and 3 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.ellipseBy4Points= QAction(QIcon(":/plugins/CADDigitize/icons/ellipseBy4Points.png"),  QCoreApplication.translate( "CADDigitize","Ellipse by 4 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.ellipseByFociPoint = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseByFociPoint.png"),  QCoreApplication.translate( "CADDigitize","Ellipse by foci and a point", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.ellipseFromCenter = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseFromCenter.png"),  QCoreApplication.translate( "CADDigitize","Ellipse from center", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.ellipseByExtent = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseByExtent.png"),  QCoreApplication.translate( "CADDigitize","Ellipse by extent", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.ellipseByCenter2Points = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseByCenter2Points.svg"),  QCoreApplication.translate( "CADDigitize","Ellipse by center and 2 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.ellipseByCenter3Points = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseByCenter3Points.svg"),  QCoreApplication.translate( "CADDigitize","Ellipse by center and 3 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.ellipseBy4Points= QAction(QIcon(":/plugins/CADDigitize/icons/ellipseBy4Points.svg"),  QCoreApplication.translate( "CADDigitize","Ellipse by 4 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.ellipseByFociPoint = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseByFociPoint.svg"),  QCoreApplication.translate( "CADDigitize","Ellipse by foci and a point", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.ellipseFromCenter = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseFromCenter.svg"),  QCoreApplication.translate( "CADDigitize","Ellipse from center", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.ellipseByExtent = QAction(QIcon(":/plugins/CADDigitize/icons/ellipseByExtent.svg"),  QCoreApplication.translate( "CADDigitize","Ellipse by extent", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
 
         self.ellipseToolButton.addActions( [ self.ellipseByCenter2Points, self.ellipseByFociPoint, self.ellipseFromCenter, self.ellipseByExtent ] )
         self.ellipseToolButton.setDefaultAction(self.ellipseByCenter2Points)
@@ -208,9 +208,9 @@ class CADDigitize:
         ###
 
         # Add actions
-        self.arcByCenter2Points = QAction(QIcon(":/plugins/CADDigitize/icons/arcByCenter2Points.png"),  QCoreApplication.translate( "CADDigitize","Arc by center and 2 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.arcBy3Points = QAction(QIcon(":/plugins/CADDigitize/icons/arcBy3Points.png"),  QCoreApplication.translate( "CADDigitize","Arc by 3 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.arcByCenterPointAngle = QAction(QIcon(":/plugins/CADDigitize/icons/arcByCenterPointAngle.png"),  QCoreApplication.translate( "CADDigitize","Arc by center, point and angle", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.arcByCenter2Points = QAction(QIcon(":/plugins/CADDigitize/icons/arcByCenter2Points.svg"),  QCoreApplication.translate( "CADDigitize","Arc by center and 2 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.arcBy3Points = QAction(QIcon(":/plugins/CADDigitize/icons/arcBy3Points.svg"),  QCoreApplication.translate( "CADDigitize","Arc by 3 points", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.arcByCenterPointAngle = QAction(QIcon(":/plugins/CADDigitize/icons/arcByCenterPointAngle.svg"),  QCoreApplication.translate( "CADDigitize","Arc by center, point and angle", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
 
         self.arcToolButton.addActions( [ self.arcByCenter2Points, self.arcBy3Points, self.arcByCenterPointAngle ] )
         self.arcToolButton.setDefaultAction(self.arcByCenter2Points)
@@ -231,8 +231,8 @@ class CADDigitize:
         # Regular Polygon
         ###
 
-        self.rpolygonByCenterPoint = QAction(QIcon(":/plugins/CADDigitize/icons/rpolygonByCenterPoint.png"),  QCoreApplication.translate( "CADDigitize","Regular polygon by center and point", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.rpolygonBy2Corners = QAction(QIcon(":/plugins/CADDigitize/icons/rpolygonBy2Corners.png"),  QCoreApplication.translate( "CADDigitize","Regular polygon by 2 corners", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.rpolygonByCenterPoint = QAction(QIcon(":/plugins/CADDigitize/icons/rpolygonByCenterPoint.svg"),  QCoreApplication.translate( "CADDigitize","Regular polygon by center and point", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.rpolygonBy2Corners = QAction(QIcon(":/plugins/CADDigitize/icons/rpolygonBy2Corners.svg"),  QCoreApplication.translate( "CADDigitize","Regular polygon by 2 corners", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
 
         self.rpolygonToolButton.addActions( [ self.rpolygonByCenterPoint, self.rpolygonBy2Corners ] )
         self.rpolygonToolButton.setDefaultAction(self.rpolygonByCenterPoint)
@@ -251,13 +251,13 @@ class CADDigitize:
         ###
 
 
-        self.modifyTrimExtend = QAction(QIcon(":/plugins/CADDigitize/icons/modifyTrimExtend.png"),  QCoreApplication.translate( "CADDigitize","Trim/Extend", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.modifyFillet = QAction(QIcon(":/plugins/CADDigitize/icons/modifyFillet.png"),  QCoreApplication.translate( "CADDigitize","Fillet", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.modifyBevel = QAction(QIcon(":/plugins/CADDigitize/icons/modifyBevel.png"),  QCoreApplication.translate( "CADDigitize","Bevel", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.modifyOffset = QAction(QIcon(":/plugins/CADDigitize/icons/modifyOffset.png"),  QCoreApplication.translate( "CADDigitize","Offset", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
-        self.modifyRotation = QAction(QIcon(":/plugins/CADDigitize/icons/modifyRotation.png"),  QCoreApplication.translate( "CADDigitize","Rotation", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.modifyTrimExtend = QAction(QIcon(":/plugins/CADDigitize/icons/modifyTrimExtend.svg"),  QCoreApplication.translate( "CADDigitize","Trim/Extend", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.modifyFillet = QAction(QIcon(":/plugins/CADDigitize/icons/modifyFillet.svg"),  QCoreApplication.translate( "CADDigitize","Fillet", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.modifyBevel = QAction(QIcon(":/plugins/CADDigitize/icons/modifyBevel.svg"),  QCoreApplication.translate( "CADDigitize","Bevel", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.modifyOffset = QAction(QIcon(":/plugins/CADDigitize/icons/modifyOffset.svg"),  QCoreApplication.translate( "CADDigitize","Offset", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
+        self.modifyRotation = QAction(QIcon(":/plugins/CADDigitize/icons/modifyRotation.svg"),  QCoreApplication.translate( "CADDigitize","Rotation", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
 
-        self.modifyToolButton.addActions( [ self.modifyTrimExtend, self.modifyFillet, self.modifyBevel, self.modifyOffset, self.modifyRotation] )
+        self.modifyToolButton.addActions( [ self.modifyTrimExtend, self.modifyFillet, self.modifyBevel] )
         self.modifyToolButton.setDefaultAction(self.modifyTrimExtend)
         self.toolBar.addWidget( self.modifyToolButton )
 
