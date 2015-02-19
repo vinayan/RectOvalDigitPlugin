@@ -10,26 +10,26 @@ Circle
 -------------------
 
 +---------------------------------------------------+-------------------------------+
-| .. image:: ../../icons/circleBy2Points.png        | Circle by 2 points            |
+| .. image:: ../../icons/circleBy2Points.svg        | Circle by 2 points            |
 +---------------------------------------------------+-------------------------------+
-| .. image:: ../../icons/circleBy3Points.png        | Circle by 3 points            |
+| .. image:: ../../icons/circleBy3Points.svg        | Circle by 3 points            |
 +---------------------------------------------------+-------------------------------+
-| .. image:: ../../icons/circleByCenterPoint.png    | Circle by center and a point  |
+| .. image:: ../../icons/circleByCenterPoint.svg    | Circle by center and a point  |
 +---------------------------------------------------+-------------------------------+
-| .. image:: ../../icons/circleByCenterRadius.png   | Circle by center and radius   |
+| .. image:: ../../icons/circleByCenterRadius.svg   | Circle by center and radius   |
 +---------------------------------------------------+-------------------------------+
 
 Rectangle / Square
 -------------------
 
 +-------------------------------------------------------+-------------------------------+
-| .. image:: ../../icons/rectBy3Points.png              | Rectangle by 3 points         |
+| .. image:: ../../icons/rectBy3Points.svg              | Rectangle by 3 points         |
 +-------------------------------------------------------+-------------------------------+
-| .. image:: ../../icons/rectByExtent.png               | Rectangle by extent           |
+| .. image:: ../../icons/rectByExtent.svg               | Rectangle by extent           |
 +-------------------------------------------------------+-------------------------------+
-| .. image:: ../../icons/rectFromCenter.png             | Rectangle from center         |
+| .. image:: ../../icons/rectFromCenter.svg             | Rectangle from center         |
 +-------------------------------------------------------+-------------------------------+
-| .. image:: ../../icons/squareFromCenter.png           | Square from center            |
+| .. image:: ../../icons/squareFromCenter.svg           | Square from center            |
 +-------------------------------------------------------+-------------------------------+
 
 
@@ -37,24 +37,24 @@ Ellipse
 -------------------
 
 +---------------------------------------------------+-------------------------------+
-| .. image:: ../../icons/ellipseByCenter2Points.png | Ellipse by center and 2 points|
+| .. image:: ../../icons/ellipseByCenter2Points.svg | Ellipse by center and 2 points|
 +---------------------------------------------------+-------------------------------+
-| .. image:: ../../icons/ellipseByExtent.png        | Ellipse by extent             |
+| .. image:: ../../icons/ellipseByExtent.svg        | Ellipse by extent             |
 +---------------------------------------------------+-------------------------------+
-| .. image:: ../../icons/ellipseByFociPoint.png     | Ellipse by foci and a point   |
+| .. image:: ../../icons/ellipseByFociPoint.svg     | Ellipse by foci and a point   |
 +---------------------------------------------------+-------------------------------+
-| .. image:: ../../icons/ellipseFromCenter.png      | Ellipse from center           |
+| .. image:: ../../icons/ellipseFromCenter.svg      | Ellipse from center           |
 +---------------------------------------------------+-------------------------------+
 
 Circular Arc
 -------------------
 
 +---------------------------------------------------+---------------------------------+
-| .. image:: ../../icons/arcBy3Points.png           | Arc by 3 points                 |
+| .. image:: ../../icons/arcBy3Points.svg           | Arc by 3 points                 |
 +---------------------------------------------------+---------------------------------+
-| .. image:: ../../icons/arcByCenter2Points.png     | Arc by center and 2 points      |
+| .. image:: ../../icons/arcByCenter2Points.svg     | Arc by center and 2 points      |
 +---------------------------------------------------+---------------------------------+
-| .. image:: ../../icons/arcByCenterPointAngle.png  | Arc by center a point and angle |
+| .. image:: ../../icons/arcByCenterPointAngle.svg  | Arc by center a point and angle |
 +---------------------------------------------------+---------------------------------+
 
 
@@ -62,7 +62,7 @@ Regular Polygon
 -------------------
 
 +---------------------------------------------------+---------------------------------------+
-| .. image:: ../../icons/rpolygonBy2Corners.png     | Regular polygon by 2 corners          |
+| .. image:: ../../icons/rpolygonBy2Corners.svg     | Regular polygon by 2 corners          |
 +---------------------------------------------------+---------------------------------------+
-| .. image:: ../../icons/rpolygonByCenterPoint.png  | Regular polygon by center and a point |
+| .. image:: ../../icons/rpolygonByCenterPoint.svg  | Regular polygon by center and a point |
 +---------------------------------------------------+---------------------------------------+

@@ -39,8 +39,6 @@ from CADDigitize_dialog import Ui_CADDigitizeDialogRadius
 # Rayon
 # Oui ou non on supprime l'angle si accolé
 # possibilité prolongation ou non
-
-
 class ModifyFilletTool(QgsMapTool):
     pass
 
@@ -49,38 +47,16 @@ class ModifyFilletTool(QgsMapTool):
 # Découpe 2
 # Oui ou non on supprime l'angle si accolé
 # possibilité prolongation ou non
-
-
 class ModifyBevelTool(QgsMapTool):
     pass
 
 # Parallèle
-
-
 class ModifyOffsetTool(QgsMapTool):
     pass
 
 # Rotation
-
-
 class ModifyRotationTool(QgsMapTool):
     pass
-
-# Ajuster
-# Limit
-# A ajuster
-# Possibilité demander à ajuster les deux
-#
-# on sélectionne d'abord la limite
-# puis la ligne à ajuster
-#
-# Cas où les segments sont dans la même couche :
-#   - Prolongation avec ou sans nouvelle création
-#   - Coupe avec ou sans nouvelle création
-#   - Prolongation ou coupe des deux entités
-# Cas où les segments sont dans des couches différents :
-#   - Prolongation du segment
-#   - Coupe du segment
 
 
 class ModifyTrimExtendTool(QgsMapTool):
@@ -157,12 +133,6 @@ class ModifyTrimExtendTool(QgsMapTool):
         """
         # get intersection of the segments
         p_inter = seg_intersect(self.p11, self.p12, self.p21, self.p22)
-
-        if p_inter == None:
-            iface.messageBar().pushMessage(QCoreApplication.translate("CADDigitize", "Error", None, QApplication.UnicodeUTF8),
-                                           QCoreApplication.translate("CADDigitize", "Segments are parallels", None, QApplication.UnicodeUTF8), level=QgsMessageBar.CRITICAL)
-            return None
-
         # convert numpy array to QgsPoint
         inter = npArray_qgsPoint(p_inter)
         p1 = npArray_qgsPoint(self.p21)
@@ -179,6 +149,16 @@ class ModifyTrimExtendTool(QgsMapTool):
         p3i = QgsDistanceArea().measureLine(p3, inter)
         p4i = QgsDistanceArea().measureLine(p4, inter)
         p3p4 = QgsDistanceArea().measureLine(p3, p4)
+
+
+        # You can get an intersection even if segmets are "quasi" parellel. Fix a tolerance for difference between slopes
+        tolerance = 0.000000001
+        p = math.fabs(calcPente(p1, p2) - calcPente(p3, p4) )
+
+        if p_inter == None or p < tolerance:
+            iface.messageBar().pushMessage(QCoreApplication.translate("CADDigitize", "Error", None, QApplication.UnicodeUTF8),
+                                           QCoreApplication.translate("CADDigitize", "Segments are parallels", None, QApplication.UnicodeUTF8), level=QgsMessageBar.CRITICAL)
+            return None
 
         geom = None  # Return geom if new
 

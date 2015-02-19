@@ -118,7 +118,7 @@ deploy: compile doc transcompile icons
 	# $HOME/$(QGISDIR)/python/plugins
 	mkdir -p $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/$(ICONS)
 	mkdir -p $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/tools
-#	cp -vf $(ICONS)/*.png $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/$(ICONS)/
+	cp -vf $(ICONS)/*.svg $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/$(ICONS)/
 	cp -vf $(PY_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
 	cp -vf $(PY_FILES_TOOLS) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/tools/
 #	cp -vf $(COMPILED_UI_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
