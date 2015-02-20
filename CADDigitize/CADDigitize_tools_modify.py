@@ -33,7 +33,6 @@ from qgis.utils import iface
 from math import *
 from tools.calc import *
 from tools.circle import *
-from CADDigitize_dialog import Ui_CADDigitizeDialogRadius
 
 # Arrondi
 # Rayon
@@ -52,7 +51,228 @@ class ModifyBevelTool(QgsMapTool):
 
 # Parallèle
 class ModifyOffsetTool(QgsMapTool):
-    pass
+    """
+        Offset can be on a segment or a feature.
+
+    """
+
+    def __init__(self, canvas):
+        QgsMapTool.__init__(self, canvas)
+        self.canvas = canvas
+        self.layer = None
+        self.setval = False # flag for setting a value
+        self.rb1, self.rb2 = None, None # Ruberbands rb1: for selected segment/Feature rb2: for the result
+        self.nbPoints = 0
+        self.side = 0
+        self.geom = None # Final geometry
+        # our own fancy cursor
+        self.cursor = QCursor(QPixmap(["16 16 3 1",
+                                       "      c None",
+                                       ".     c #FF0000",
+                                       "+     c #1210f3",
+                                       "                ",
+                                       "       +.+      ",
+                                       "      ++.++     ",
+                                       "     +.....+    ",
+                                       "    +.     .+   ",
+                                       "   +.   .   .+  ",
+                                       "  +.    .    .+ ",
+                                       " ++.    .    .++",
+                                       " ... ...+... ...",
+                                       " ++.    .    .++",
+                                       "  +.    .    .+ ",
+                                       "   +.   .   .+  ",
+                                       "   ++.     .+   ",
+                                       "    ++.....+    ",
+                                       "      ++.++     ",
+                                       "       +.+      "]))
+
+
+    def keyReleaseEvent(self,  event):
+        if event.key() == Qt.Key_Escape:    # if escape, clear all
+            self.clear()
+        return
+
+    def canvasPressEvent(self, event):
+
+
+        x = event.pos().x()
+        y = event.pos().y()
+
+        flag = False
+
+        point1, point2 = None, None # Points for segment
+        feat, layerSnapped = None, None # Feature and layer snapped
+
+        # Well know routine for snap segments.
+        (layerid, enabled, snapType, tolUnits, tol,
+         avoidInt) = QgsProject.instance().snapSettingsForLayer(self.layer.id())
+        startingPoint = QPoint(x, y)
+        snapper = QgsMapCanvasSnapper(self.canvas)
+        (retval, self.result) = snapper.snapToCurrentLayer(
+            startingPoint, snapType, tol)
+        if self.result <> []:
+            if self.segmentChoice.isChecked():
+                point1 = self.result[0].beforeVertex
+                point2 = self.result[0].afterVertex
+            elif self.featureChoice.isChecked():
+                feat = self.result[0].snappedAtGeometry
+                layerSnapped = self.result[0].layer
+            flag = True
+        else:
+            (retval, self.result) = snapper.snapToBackgroundLayers(
+                startingPoint)
+            if self.result <> []:
+                if self.segmentChoice.isChecked():
+                    point1 = self.result[0].beforeVertex
+                    point2 = self.result[0].afterVertex
+                elif self.featureChoice.isChecked():
+                    layerSnapped = self.result[0].layer
+                    feat = self.result[0].snappedAtGeometry
+                flag = True
+
+
+
+        if self.nbPoints == 1:
+            self.nbPoints += 1
+
+        if flag == True:
+            # Options for offset. Using QGis defaults
+            self.of_join = QSettings().value("Qgis/digitizing/offset_join_style",0,type=int)
+            self.of_quad = QSettings().value("Qgis/digitizing/offset_quad_seg",8,type=int)
+            self.of_miter = QSettings().value("Qgis/digitizing/offset_miter_limit",5,type=int)
+            self.nbPoints = 1 # One point is clicked
+
+        if self.nbPoints == 1:
+            # define rb1
+            self.rb1 = QgsRubberBand(self.canvas, True)
+            self.rb1.setColor(QColor(0, 0, 255))
+            self.rb1.setWidth(3)
+
+            # define rb2
+            self.rb2 = QgsRubberBand(self.canvas, True)
+            self.rb2.setColor(QColor(0, 0, 255))
+            self.rb2.setWidth(3)
+
+
+            # create geom. Segment or Feature
+            # TODO: MultiLineString
+            if self.segmentChoice.isChecked():
+                self.geom = QgsGeometry.fromPolyline([point1, point2])
+            elif self.featureChoice.isChecked():
+                self.geom = [l.geometry() for l in layerSnapped.getFeatures(QgsFeatureRequest(feat))][0] # get the geometry of the first iterator
+                # convert to Polyline for offset tools
+                if self.geom.type() == QGis.Polygon:
+                    self.geom = self.geom.convertToType(QGis.Line, False)
+
+            print self.geom.exportToWkt()
+            self.rb1.setToGeometry(self.geom, None)
+
+
+            self.canvas.refresh()
+            return
+
+        if self.nbPoints == 2:
+            # Conversion to
+            if self.layer.geometryType() == QGis.Polygon:
+                self.geom = self.geom.offsetCurve(self.distanceValue.value() * -self.side, self.of_quad, self.of_join, self.of_miter ).convertToType(QGis.Polygon, False)
+            else:
+                self.geom = self.geom.offsetCurve(self.distanceValue.value() * -self.side, self.of_quad, self.of_join, self.of_miter )
+
+            self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), self.geom)
+
+            self.clear()
+
+            return
+
+
+    def canvasMoveEvent(self,event):
+
+        if not self.rb1:return
+        currpoint = self.toMapCoordinates(event.pos())
+        currx = currpoint.x()
+        curry = currpoint.y()
+
+        if self.nbPoints == 1:
+                (distance, nearPoint, ptAfterVertex) = self.geom.closestSegmentWithContext(currpoint)
+                self.side = calc_isCollinear(self.geom.vertexAt(ptAfterVertex-1), self.geom.vertexAt(ptAfterVertex), currpoint)
+                self.rb2.setToGeometry(self.geom.offsetCurve(self.distanceValue.value() * -self.side, self.of_quad, self.of_join, self.of_miter ), None)
+
+    def clear(self):
+        self.setVal = False
+        self.geom = None
+        self.nbPoints = 0
+        self.side = 0
+        if self.rb1:
+            self.rb1.reset(True)
+        if self.rb2:
+            self.rb2.reset(True)
+        self.rb1, self.rb2 = None, None
+
+        self.canvas.refresh()
+
+    def toggle(self):
+        self.layer = self.canvas.currentLayer()
+        if self.layer <> None:
+            if self.layer.isEditable():
+                if self.layer.geometryType() == QGis.Polygon:
+                    self.segmentChoice.setChecked(Qt.Unchecked)
+                    self.featureChoice.setChecked(Qt.Checked)
+                    self.segmentChoice.setEnabled(False)
+                    self.featureChoice.setEnabled(False)
+                elif self.layer.geometryType() == QGis.Line:
+                    self.segmentChoice.setEnabled(True)
+                    self.featureChoice.setEnabled(True)
+
+
+    def activate(self):
+        self.layer = self.canvas.currentLayer()
+        QObject.connect(iface, SIGNAL("currentLayerChanged(QgsMapLayer*)"), self.toggle)
+
+        self.canvas.setCursor(self.cursor)
+        self.optionsToolBar = iface.mainWindow().findChild(
+            QToolBar, u"CADDigitize Options")
+        self.segmentChoice = QRadioButton(QCoreApplication.translate(
+            "CADDigitize", "Segment", None, QApplication.UnicodeUTF8))
+        self.segmentChoice.setChecked(Qt.Checked)
+        self.featureChoice = QRadioButton(QCoreApplication.translate(
+            "CADDigitize", "Feature", None, QApplication.UnicodeUTF8))
+        self.segmentChoiceAction = self.optionsToolBar.addWidget(self.segmentChoice)
+        self.featureChoiceAction = self.optionsToolBar.addWidget(self.featureChoice)
+
+        if self.layer.geometryType() == QGis.Polygon:
+            self.segmentChoice.setChecked(Qt.Unchecked)
+            self.featureChoice.setChecked(Qt.Checked)
+            self.segmentChoice.setEnabled(False)
+            self.featureChoice.setEnabled(False)
+        elif self.layer.geometryType() == QGis.Line:
+            self.segmentChoice.setEnabled(True)
+            self.featureChoice.setEnabled(True)
+
+
+        self.optionsToolBar.addSeparator()
+
+        self.distanceValue = QDoubleSpinBox()
+        self.distanceValue.setMaximum(999999999.0)
+        self.distanceValue.setMinimum(0.0)
+        self.distanceValue.setDecimals(6)
+        self.distanceValueAction = self.optionsToolBar.addWidget(self.distanceValue)
+
+
+    def deactivate(self):
+        self.optionsToolBar.clear()
+        self.clear()
+        QObject.disconnect(iface, SIGNAL("currentLayerChanged(QgsMapLayer*)"), self.toggle)
+
+
+    def isZoomTool(self):
+        return False
+
+    def isTransient(self):
+        return False
+
+    def isEditTool(self):
+        return True
 
 # Rotation
 class ModifyRotationTool(QgsMapTool):
@@ -134,13 +354,22 @@ class ModifyTrimExtendTool(QgsMapTool):
         # get intersection of the segments
         p_inter = seg_intersect(self.p11, self.p12, self.p21, self.p22)
         # convert numpy array to QgsPoint
-        inter = npArray_qgsPoint(p_inter)
         p1 = npArray_qgsPoint(self.p21)
         p2 = npArray_qgsPoint(self.p22)
 
         p3 = npArray_qgsPoint(self.p11)
         p4 = npArray_qgsPoint(self.p12)
+        # You can get an intersection even if segmets are "quasi" parellel. Fix a tolerance for difference between slopes
+        p = math.fabs(calcPente(p1, p2) - calcPente(p3, p4) )
+        print DEFAULT_SEGMENT_EPSILON
+        if p_inter == None or p < DEFAULT_SEGMENT_EPSILON:
+            iface.messageBar().pushMessage(QCoreApplication.translate("CADDigitize", "Error", None, QApplication.UnicodeUTF8),
+                                           QCoreApplication.translate("CADDigitize", "Segments are parallels", None, QApplication.UnicodeUTF8), level=QgsMessageBar.CRITICAL)
+            return None
 
+
+
+        inter = npArray_qgsPoint(p_inter)
         # Calc distances between points
         p1i = QgsDistanceArea().measureLine(p1, inter)
         p2i = QgsDistanceArea().measureLine(p2, inter)
@@ -149,16 +378,6 @@ class ModifyTrimExtendTool(QgsMapTool):
         p3i = QgsDistanceArea().measureLine(p3, inter)
         p4i = QgsDistanceArea().measureLine(p4, inter)
         p3p4 = QgsDistanceArea().measureLine(p3, p4)
-
-
-        # You can get an intersection even if segmets are "quasi" parellel. Fix a tolerance for difference between slopes
-        tolerance = 0.000000001
-        p = math.fabs(calcPente(p1, p2) - calcPente(p3, p4) )
-
-        if p_inter == None or p < tolerance:
-            iface.messageBar().pushMessage(QCoreApplication.translate("CADDigitize", "Error", None, QApplication.UnicodeUTF8),
-                                           QCoreApplication.translate("CADDigitize", "Segments are parallels", None, QApplication.UnicodeUTF8), level=QgsMessageBar.CRITICAL)
-            return None
 
         geom = None  # Return geom if new
 

@@ -97,7 +97,7 @@ def calcAngleExistant(p1, p2):
 
 # Tool class
 # Test if point pCherche is on left/on/right of the line [p0p1]
-# 1 lef
+# 1 left
 # 0 collinear
 # -1 right
 def calc_isCollinear(p0, p1, pCherche):

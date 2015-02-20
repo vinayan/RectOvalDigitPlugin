@@ -257,7 +257,7 @@ class CADDigitize:
         self.modifyOffset = QAction(QIcon(":/plugins/CADDigitize/icons/modifyOffset.svg"),  QCoreApplication.translate( "CADDigitize","Offset", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
         self.modifyRotation = QAction(QIcon(":/plugins/CADDigitize/icons/modifyRotation.svg"),  QCoreApplication.translate( "CADDigitize","Rotation", None, QApplication.UnicodeUTF8),  self.iface.mainWindow())
 
-        self.modifyToolButton.addActions( [ self.modifyTrimExtend, self.modifyFillet, self.modifyBevel] )
+        self.modifyToolButton.addActions( [ self.modifyTrimExtend, self.modifyFillet, self.modifyBevel, self.modifyOffset] )
         self.modifyToolButton.setDefaultAction(self.modifyTrimExtend)
         self.toolBar.addWidget( self.modifyToolButton )
 
@@ -516,7 +516,7 @@ class CADDigitize:
         layer = mc.currentLayer()
         #Decide whether the plugin button/menu is enabled or disabled
         if layer <> None:
-            if (layer.isEditable() and (layer.geometryType() == 2 or layer.geometryType() == 1)):
+            if (layer.isEditable() and (layer.geometryType() == QGis.Polygon or layer.geometryType() == QGis.Line)):
                 self.circleBy2Points.setEnabled(True)
                 self.circleBy3Points.setEnabled(True)
                 self.circleByCenterRadius.setEnabled(True)
@@ -576,7 +576,6 @@ class CADDigitize:
 
                 QObject.connect(layer,SIGNAL("editingStarted()"),self.toggle)
                 QObject.disconnect(layer,SIGNAL("editingStopped()"),self.toggle)
-
 
 
     def deactivate(self):
