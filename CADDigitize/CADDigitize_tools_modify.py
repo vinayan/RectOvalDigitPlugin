@@ -104,32 +104,33 @@ class ModifyOffsetTool(QgsMapTool):
         point1, point2 = None, None # Points for segment
         feat, layerSnapped = None, None # Feature and layer snapped
 
-        # Well know routine for snap segments.
-        (layerid, enabled, snapType, tolUnits, tol,
-         avoidInt) = QgsProject.instance().snapSettingsForLayer(self.layer.id())
-        startingPoint = QPoint(x, y)
-        snapper = QgsMapCanvasSnapper(self.canvas)
-        (retval, self.result) = snapper.snapToCurrentLayer(
-            startingPoint, snapType, tol)
-        if self.result <> []:
-            if self.segmentChoice.isChecked():
-                point1 = self.result[0].beforeVertex
-                point2 = self.result[0].afterVertex
-            elif self.featureChoice.isChecked():
-                feat = self.result[0].snappedAtGeometry
-                layerSnapped = self.result[0].layer
-            flag = True
-        else:
-            (retval, self.result) = snapper.snapToBackgroundLayers(
-                startingPoint)
+        if self.nbPoints == 0:
+            # Well know routine for snap segments.
+            (layerid, enabled, snapType, tolUnits, tol,
+             avoidInt) = QgsProject.instance().snapSettingsForLayer(self.layer.id())
+            startingPoint = QPoint(x, y)
+            snapper = QgsMapCanvasSnapper(self.canvas)
+            (retval, self.result) = snapper.snapToCurrentLayer(
+                startingPoint, snapType, tol)
             if self.result <> []:
+                layerSnapped = self.result[0].layer
                 if self.segmentChoice.isChecked():
                     point1 = self.result[0].beforeVertex
                     point2 = self.result[0].afterVertex
                 elif self.featureChoice.isChecked():
-                    layerSnapped = self.result[0].layer
                     feat = self.result[0].snappedAtGeometry
                 flag = True
+            else:
+                (retval, self.result) = snapper.snapToBackgroundLayers(
+                    startingPoint)
+                if self.result <> []:
+                    layerSnapped = self.result[0].layer
+                    if self.segmentChoice.isChecked():
+                        point1 = self.result[0].beforeVertex
+                        point2 = self.result[0].afterVertex
+                    elif self.featureChoice.isChecked():
+                        feat = self.result[0].snappedAtGeometry
+                    flag = True
 
 
 
@@ -144,6 +145,9 @@ class ModifyOffsetTool(QgsMapTool):
             self.nbPoints = 1 # One point is clicked
 
         if self.nbPoints == 1:
+            # Can't change segment or feature
+            self.featureChoice.setEnabled(False)
+            self.segmentChoice.setEnabled(False)
             # define rb1
             self.rb1 = QgsRubberBand(self.canvas, True)
             self.rb1.setColor(QColor(0, 0, 255))
@@ -162,10 +166,13 @@ class ModifyOffsetTool(QgsMapTool):
             elif self.featureChoice.isChecked():
                 self.geom = [l.geometry() for l in layerSnapped.getFeatures(QgsFeatureRequest(feat))][0] # get the geometry of the first iterator
                 # convert to Polyline for offset tools
-                if self.geom.type() == QGis.Polygon:
-                    self.geom = self.geom.convertToType(QGis.Line, False)
+                self.geom = self.geom.convertToType(QGis.Line, False)
+                # Proj conversion. No need for segment because it takes already the coordinates of map projection
+                projectSRSID = self.canvas.mapRenderer().destinationCrs().srsid()
+                layerSnappedSRSID = layerSnapped.crs().srsid()
+                self.geom.transform(QgsCoordinateTransform(layerSnappedSRSID,projectSRSID))
 
-            print self.geom.exportToWkt()
+
             self.rb1.setToGeometry(self.geom, None)
 
 
@@ -173,11 +180,10 @@ class ModifyOffsetTool(QgsMapTool):
             return
 
         if self.nbPoints == 2:
+            self.geom = self.geom.offsetCurve(self.distanceValue.value() * -self.side, self.of_quad, self.of_join, self.of_miter )
             # Conversion to
             if self.layer.geometryType() == QGis.Polygon:
                 self.geom = self.geom.offsetCurve(self.distanceValue.value() * -self.side, self.of_quad, self.of_join, self.of_miter ).convertToType(QGis.Polygon, False)
-            else:
-                self.geom = self.geom.offsetCurve(self.distanceValue.value() * -self.side, self.of_quad, self.of_join, self.of_miter )
 
             self.emit(SIGNAL("rbFinished(PyQt_PyObject)"), self.geom)
 
@@ -209,6 +215,8 @@ class ModifyOffsetTool(QgsMapTool):
             self.rb2.reset(True)
         self.rb1, self.rb2 = None, None
 
+        self.featureChoice.setEnabled(True)
+        self.segmentChoice.setEnabled(True)
         self.canvas.refresh()
 
     def toggle(self):
@@ -256,6 +264,7 @@ class ModifyOffsetTool(QgsMapTool):
         self.distanceValue.setMaximum(999999999.0)
         self.distanceValue.setMinimum(0.0)
         self.distanceValue.setDecimals(6)
+        self.distanceValue.setValue(1500)
         self.distanceValueAction = self.optionsToolBar.addWidget(self.distanceValue)
 
 
