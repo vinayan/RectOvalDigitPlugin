@@ -4,17 +4,17 @@
 <context>
     <name>CADDigitize</name>
     <message>
-        <location filename="CADDigitize.py" line="80"/>
+        <location filename="CADDigitize.py" line="81"/>
         <source>&amp;CADDigitize</source>
         <translation>&amp;CADDigitize</translation>
     </message>
     <message>
-        <location filename="CADDigitize.py" line="81"/>
+        <location filename="CADDigitize.py" line="82"/>
         <source>Help</source>
         <translation>Aide</translation>
     </message>
     <message>
-        <location filename="CADDigitize.py" line="82"/>
+        <location filename="CADDigitize.py" line="83"/>
         <source>Settings</source>
         <translation>Préférences</translation>
     </message>
@@ -64,12 +64,12 @@
         <translation>Ellipse avec le centre et 2 points</translation>
     </message>
     <message>
-        <location filename="CADDigitize.py" line="176"/>
+        <location filename="CADDigitize.py" line="180"/>
         <source>Ellipse by center and 3 points</source>
         <translation>Ellipse avec le centre et 3 points</translation>
     </message>
     <message>
-        <location filename="CADDigitize.py" line="177"/>
+        <location filename="CADDigitize.py" line="181"/>
         <source>Ellipse by 4 points</source>
         <translation>Ellipse par 4 points</translation>
     </message>
@@ -114,32 +114,22 @@
         <translation>Polygone régulier par deux coins</translation>
     </message>
     <message>
-        <location filename="CADDigitize.py" line="448"/>
-        <source>Number of edges</source>
-        <translation>Nombre de sommets</translation>
-    </message>
-    <message>
-        <location filename="CADDigitize.py" line="478"/>
+        <location filename="CADDigitize_tools_circle.py" line="70"/>
         <source>Number of quadrant segments</source>
         <translation>Nombre de segments de quadrant</translation>
     </message>
     <message>
-        <location filename="CADDigitize.py" line="508"/>
-        <source>Number of points</source>
-        <translation>Nombre de points</translation>
-    </message>
-    <message>
-        <location filename="CADDigitize.py" line="83"/>
+        <location filename="CADDigitize.py" line="84"/>
         <source>Numerical Digitize</source>
         <translation>Édition numérique</translation>
     </message>
     <message>
-        <location filename="CADDigitize.py" line="126"/>
+        <location filename="CADDigitize.py" line="130"/>
         <source>Circle by 2 tangents</source>
         <translation>Cercle par 2 tangentes</translation>
     </message>
     <message>
-        <location filename="CADDigitize_tools_circle.py" line="863"/>
+        <location filename="CADDigitize_tools_modify.py" line="595"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
@@ -149,9 +139,69 @@
         <translation>Tous les champs ne sont pas valides</translation>
     </message>
     <message>
-        <location filename="CADDigitize_tools_circle.py" line="863"/>
+        <location filename="CADDigitize_tools_modify.py" line="382"/>
         <source>Segments are parallels</source>
         <translation>Les segments sont parallèles</translation>
+    </message>
+    <message>
+        <location filename="CADDigitize.py" line="254"/>
+        <source>Trim/Extend</source>
+        <translation>Étirer/Ajuster</translation>
+    </message>
+    <message>
+        <location filename="CADDigitize.py" line="255"/>
+        <source>Fillet</source>
+        <translation>Arrondi</translation>
+    </message>
+    <message>
+        <location filename="CADDigitize.py" line="256"/>
+        <source>Bevel</source>
+        <translation>Chanfrein</translation>
+    </message>
+    <message>
+        <location filename="CADDigitize.py" line="257"/>
+        <source>Offset</source>
+        <translation>Décalage/Parallèle</translation>
+    </message>
+    <message>
+        <location filename="CADDigitize.py" line="258"/>
+        <source>Rotation</source>
+        <translation>Rotation</translation>
+    </message>
+    <message>
+        <location filename="CADDigitize_tools_modify.py" line="169"/>
+        <source>The feature can&apos;t be multipart</source>
+        <translation>L&apos;entité ne peut pas être multipartie</translation>
+    </message>
+    <message>
+        <location filename="CADDigitize_tools_modify.py" line="249"/>
+        <source>Segment</source>
+        <translation>Segment</translation>
+    </message>
+    <message>
+        <location filename="CADDigitize_tools_modify.py" line="252"/>
+        <source>Feature</source>
+        <translation>Entité</translation>
+    </message>
+    <message>
+        <location filename="CADDigitize_tools_modify.py" line="595"/>
+        <source>Check at least one of the options New or Modify</source>
+        <translation>Cochez au moins une option entre Nouveau et Modifier</translation>
+    </message>
+    <message>
+        <location filename="CADDigitize_tools_modify.py" line="620"/>
+        <source>New</source>
+        <translation>Nouveau</translation>
+    </message>
+    <message>
+        <location filename="CADDigitize_tools_modify.py" line="622"/>
+        <source>Modify</source>
+        <translation>Modifier</translation>
+    </message>
+    <message>
+        <location filename="CADDigitize_tools_modify.py" line="624"/>
+        <source>Two</source>
+        <translation>Deux</translation>
     </message>
 </context>
 <context>

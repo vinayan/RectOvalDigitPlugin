@@ -666,7 +666,7 @@ class CADDigitize:
         if layer.geometryType() == 2:
             f.setGeometry(geom)
         else:
-            f.setGeometry(geom.convertToType(1, False))
+            f.setGeometry(geom.convertToType(1, geom.isMultipart()))
 
         # add attribute fields to feature
         fields = layer.pendingFields()

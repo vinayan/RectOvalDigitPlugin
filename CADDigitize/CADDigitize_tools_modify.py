@@ -60,7 +60,7 @@ class ModifyOffsetTool(QgsMapTool):
         QgsMapTool.__init__(self, canvas)
         self.canvas = canvas
         self.layer = None
-        self.setval = False # flag for setting a value
+        self.distance = 0 # distance of offset
         self.rb1, self.rb2 = None, None # Ruberbands rb1: for selected segment/Feature rb2: for the result
         self.nbPoints = 0
         self.side = 0
@@ -160,11 +160,16 @@ class ModifyOffsetTool(QgsMapTool):
 
 
             # create geom. Segment or Feature
-            # TODO: MultiLineString
             if self.segmentChoice.isChecked():
                 self.geom = QgsGeometry.fromPolyline([point1, point2])
             elif self.featureChoice.isChecked():
                 self.geom = [l.geometry() for l in layerSnapped.getFeatures(QgsFeatureRequest(feat))][0] # get the geometry of the first iterator
+                # No Multipart
+                if self.geom.isMultipart():
+                    iface.messageBar().pushMessage(QCoreApplication.translate("CADDigitize", "Error", None, QApplication.UnicodeUTF8), QCoreApplication.translate(
+                        "CADDigitize", "The feature can't be multipart", None, QApplication.UnicodeUTF8), level=QgsMessageBar.CRITICAL)
+                    self.clear()
+                    return
                 # convert to Polyline for offset tools
                 self.geom = self.geom.convertToType(QGis.Line, False)
                 # Proj conversion. No need for segment because it takes already the coordinates of map projection
@@ -200,12 +205,12 @@ class ModifyOffsetTool(QgsMapTool):
         curry = currpoint.y()
 
         if self.nbPoints == 1:
-                (distance, nearPoint, ptAfterVertex) = self.geom.closestSegmentWithContext(currpoint)
-                self.side = calc_isCollinear(self.geom.vertexAt(ptAfterVertex-1), self.geom.vertexAt(ptAfterVertex), currpoint)
-                self.rb2.setToGeometry(self.geom.offsetCurve(self.distanceValue.value() * -self.side, self.of_quad, self.of_join, self.of_miter ), None)
+            (distance, nearPoint, ptAfterVertex) = self.geom.closestSegmentWithContext(currpoint)
+            self.side = calc_isCollinear(self.geom.vertexAt(ptAfterVertex-1), self.geom.vertexAt(ptAfterVertex), currpoint)
+            self.rb2.setToGeometry(self.geom.offsetCurve(self.distanceValue.value() * -self.side, self.of_quad, self.of_join, self.of_miter ), None)
 
     def clear(self):
-        self.setVal = False
+        self.distance = 0
         self.geom = None
         self.nbPoints = 0
         self.side = 0
@@ -215,8 +220,9 @@ class ModifyOffsetTool(QgsMapTool):
             self.rb2.reset(True)
         self.rb1, self.rb2 = None, None
 
-        self.featureChoice.setEnabled(True)
-        self.segmentChoice.setEnabled(True)
+        if self.layer.geometryType() == QGis.Line:
+            self.featureChoice.setEnabled(True)
+            self.segmentChoice.setEnabled(True)
         self.canvas.refresh()
 
     def toggle(self):
@@ -260,13 +266,21 @@ class ModifyOffsetTool(QgsMapTool):
 
         self.optionsToolBar.addSeparator()
 
+        self.distance = QSettings().value("/CADDigitize/modify/offset", 10.0,type=float)
         self.distanceValue = QDoubleSpinBox()
         self.distanceValue.setMaximum(999999999.0)
         self.distanceValue.setMinimum(0.0)
         self.distanceValue.setDecimals(6)
-        self.distanceValue.setValue(1500)
+        self.distanceValue.setValue(self.distance)
+        self.distanceValue.valueChanged.connect(self.valueChanged)
         self.distanceValueAction = self.optionsToolBar.addWidget(self.distanceValue)
 
+
+    def valueChanged(self):
+        self.distance = self.distanceValue.value()
+        QSettings().setValue("/CADDigitize/modify/offset", self.distance)
+        if self.nbPoints == 1:
+            self.rb2.setToGeometry(self.geom.offsetCurve(self.distanceValue.value() * -self.side, self.of_quad, self.of_join, self.of_miter ), None)
 
     def deactivate(self):
         self.optionsToolBar.clear()

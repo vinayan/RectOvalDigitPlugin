@@ -32,6 +32,7 @@ SOURCES = \
 	CADDigitize_ND.py \
 	CADDigitize_functions.py \
 	CADDigitize_tools_circle.py \
+	CADDigitize_tools_modify.py \
 	ui_CADDigitize_ND.ui \
 	ui_CADDigitizeSettings.ui 
 
