@@ -678,8 +678,6 @@ class CADDigitize:
 
         disable_attributes = settings.value( "/qgis/digitizing/disable_enter_attribute_values_dialog", False, type=bool)
 
-        print disable_attributes
-
         dlg = None
 
         if disable_attributes:
@@ -693,7 +691,6 @@ class CADDigitize:
                 layer.destroyEditCommand()
                 cancel = 1
 
-        print cancel
         if cancel == 1:
             if dlg:
                 f.setAttributes(dlg.feature().attributes())
