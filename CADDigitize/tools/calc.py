@@ -94,6 +94,26 @@ def calcAngleExistant(p1, p2):
 
     return angle_CAB
 
+def pointProjected(point, length, angle):
+    """
+    Return a point projected on angle with the length
+
+    :param point: Base point
+    :param length: Distance of the new point relative to param point
+    :param angle: Angle of the point (degres)
+    :param angle_exist: Angle of the point (degres)
+    :type point: QgsPoint
+    :type length: float
+    :type angle: float
+    :return: Return the point
+    :rtype: QgsPoint
+    """
+
+    p = QgsPoint()
+    p.setX(point.x() + length * cos(radians(angle)) )
+    p.setY(point.y() + length * sin(radians(angle)) )
+
+    return p
 
 # Tool class
 # Test if point pCherche is on left/on/right of the line [p0p1]
