@@ -706,9 +706,9 @@ class ModifyTrimExtendTool(QgsMapTool):
             "      ++.++     ",
             "       +.+      "]))
 
-        def keyReleaseEvent(self,  event):
-            if event.key() == Qt.Key_Escape:    # if escape, clear all
-                self.clear()
+    def keyReleaseEvent(self,  event):
+        if event.key() == Qt.Key_Escape:    # if escape, clear all
+            self.clear()
         return
 
     def trimextend(self):
@@ -816,6 +816,7 @@ class ModifyTrimExtendTool(QgsMapTool):
                 # Second segment
                 # Trim: inter is on p1p2. Case 1
                 if p1i <= p1p2 and p2i <= p1p2 and inter2 == 0:
+                    print "seg1 case1"
                     # we have click near p1
                     if QgsDistanceArea().measureLine(p1, self.result2.snappedVertex) <= p1i:
                         self.result2.layer.moveVertex(
@@ -825,15 +826,32 @@ class ModifyTrimExtendTool(QgsMapTool):
                                 inter.x(), inter.y(), self.result2.snappedAtGeometry, self.result2.beforeVertexNr)
 
                 elif p1i >= p2i:  # case 2
-                    self.result2.layer.moveVertex(
-                            inter.x(), inter.y(), self.result2.snappedAtGeometry, self.result2.afterVertexNr)
+                    print "seg1 case2"
+                    # we have click near p1
+                    if QgsDistanceArea().measureLine(p1, self.result2.snappedVertex) <= p1i:
+                        self.result2.layer.moveVertex(
+                                inter.x(), inter.y(), self.result2.snappedAtGeometry, self.result2.afterVertexNr)
+                    else:
+                        self.result2.layer.moveVertex(
+                                inter.x(), inter.y(), self.result2.snappedAtGeometry, self.result2.beforeVertexNr)
                 else:  # case 3
-                    self.result2.layer.moveVertex(
-                            inter.x(), inter.y(), self.result2.snappedAtGeometry, self.result2.beforeVertexNr)
+                    print "seg1 case3"
+                    if p1i <= p1p2 and p2i <= p1p2:
+                        if QgsDistanceArea().measureLine(p1, self.result2.snappedVertex) <= p1i:
+                            self.result2.layer.moveVertex(
+                                inter.x(), inter.y(), self.result2.snappedAtGeometry, self.result2.afterVertexNr)
+                        else:
+                            self.result2.layer.moveVertex(
+                                inter.x(), inter.y(), self.result2.snappedAtGeometry, self.result2.beforeVertexNr)
+                    else:
+                        self.result2.layer.moveVertex(
+                                inter.x(), inter.y(), self.result2.snappedAtGeometry, self.result2.beforeVertexNr)
+
 
                     # First segment
                 # Trim: inter is on p3p4. Case1
                 if p3i <= p3p4 and p4i <= p3p4 and inter1 == 0:
+                    print "seg2 case1"
                     # We have click near p3
                     if QgsDistanceArea().measureLine(p3, self.result1.snappedVertex) <= p3i:
                         self.result1.layer.moveVertex(
@@ -843,12 +861,26 @@ class ModifyTrimExtendTool(QgsMapTool):
                                 inter.x(), inter.y(), self.result1.snappedAtGeometry, self.result1.beforeVertexNr)
 
                 elif p3i >= p4i:  # Case 2
-                    self.result1.layer.moveVertex(
-                            inter.x(), inter.y(), self.result1.snappedAtGeometry, self.result1.afterVertexNr)
+                    print "seg2 case2"
+                    # We have click near p3
+                    if QgsDistanceArea().measureLine(p3, self.result1.snappedVertex) <= p3i:
+                        self.result1.layer.moveVertex(
+                                inter.x(), inter.y(), self.result1.snappedAtGeometry, self.result1.afterVertexNr)
+                    else:
+                        self.result1.layer.moveVertex(
+                                inter.x(), inter.y(), self.result1.snappedAtGeometry, self.result1.beforeVertexNr)
                 else:  # Case 3
-                    self.result1.layer.moveVertex(
-                            inter.x(), inter.y(), self.result1.snappedAtGeometry, self.result1.beforeVertexNr)
-
+                    print "seg2 case3"
+                    if p3i <= p3p4 and p4i <= p3p4:
+                        if QgsDistanceArea().measureLine(p3, self.result1.snappedVertex) <= p3i:
+                            self.result1.layer.moveVertex(
+                                inter.x(), inter.y(), self.result1.snappedAtGeometry, self.result1.afterVertexNr)
+                        else:
+                            self.result1.layer.moveVertex(
+                                inter.x(), inter.y(), self.result1.snappedAtGeometry, self.result1.beforeVertexNr)
+                    else:
+                        self.result1.layer.moveVertex(
+                                inter.x(), inter.y(), self.result1.snappedAtGeometry, self.result1.beforeVertexNr)
         else:
             if self.newFeature.isChecked():
                 # Trim: inter is on p1p2. Case 1
