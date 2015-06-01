@@ -317,8 +317,8 @@ class ModifyBevelTool(QgsMapTool):
             else:
                 # For create a new feature with polyon you need to add the geom
                 # of the first segment
-                if layer.geometryType() == 2 and self.newFeature.isChecked():
-                    self.twoFeature.setCheckState(Qt.Checked)
+                #if layer.geometryType() == 2 and self.newFeature.isChecked():
+                #    self.twoFeature.setCheckState(Qt.Checked)
 
                 geom = self.trimextend()
 
@@ -447,42 +447,60 @@ class ModifyOffsetTool(QgsMapTool):
         return
 
     def canvasPressEvent(self, event):
-
+        layer = self.canvas.currentLayer()
 
         x = event.pos().x()
         y = event.pos().y()
 
         flag = False
 
-        point1, point2 = None, None # Points for segment
+        self.point1, self.point2 = None, None # Points for segment
         feat, layerSnapped = None, None # Feature and layer snapped
 
         if self.nbPoints == 0:
             # Well know routine for snap segments.
             (layerid, enabled, snapType, tolUnits, tol,
-                    avoidInt) = QgsProject.instance().snapSettingsForLayer(self.layer.id())
+                    avoidInt) = QgsProject.instance().snapSettingsForLayer(layer.id())
             startingPoint = QPoint(x, y)
             snapper = QgsMapCanvasSnapper(self.canvas)
             (retval, self.result) = snapper.snapToCurrentLayer(
                     startingPoint, snapType, tol)
             if self.result <> []:
-                layerSnapped = self.result[0].layer
-                if self.segmentChoice.isChecked():
-                    point1 = self.result[0].beforeVertex
-                    point2 = self.result[0].afterVertex
-                elif self.featureChoice.isChecked():
-                    feat = self.result[0].snappedAtGeometry
+                # Check Number position of vertexes
+                # If snappedVertexNr = -1 so we clicked on the segment
+                # Else, we need to fix some stuff because of tolerance
+                # If we clicked before the segment [pSnapped before p1 p2]
+                # If the feature is only with p1 and p2 VertexNr are normally 0 and 1 if beforeVertexNr and afterVertexNr aren't found we put point to SnappedVertex
+                # Else on linestring with more than 2 points, we have to check if afterVertexNr is > snappedVertexNr
+                if self.result[0].snappedVertexNr == -1: # Snapped on the feature
+                    self.point1 = self.result[0].beforeVertex
+                    self.point2 = self.result[0].afterVertex
+                else:
+                    if self.result[0].beforeVertexNr == -1:
+                        self.point1 = self.result[0].snappedVertex
+                    else:
+                        self.point1 = self.result[0].beforeVertex
+                    if self.result[0].afterVertexNr == -1 or (self.result[0].afterVertexNr > self.result[0].snappedVertexNr and self.result[0].beforeVertexNr != -1):
+                        self.point2 = self.result[0].snappedVertex
+                    else:
+                        self.point2 = self.result[0].afterVertex
                 flag = True
             else:
                 (retval, self.result) = snapper.snapToBackgroundLayers(
                         startingPoint)
                 if self.result <> []:
-                    layerSnapped = self.result[0].layer
-                    if self.segmentChoice.isChecked():
-                        point1 = self.result[0].beforeVertex
-                        point2 = self.result[0].afterVertex
-                    elif self.featureChoice.isChecked():
-                        feat = self.result[0].snappedAtGeometry
+                    if self.result[0].snappedVertexNr == -1: # Snapped on the feature
+                        self.point1 = self.result[0].beforeVertex
+                        self.point2 = self.result[0].afterVertex
+                    else:
+                        if self.result[0].beforeVertexNr == -1:
+                            self.point1 = self.result[0].snappedVertex
+                        else:
+                            self.point1 = self.result[0].beforeVertex
+                        if self.result[0].afterVertexNr == -1 or (self.result[0].afterVertexNr > self.result[0].snappedVertexNr and self.result[0].beforeVertexNr != -1):
+                            self.point2 = self.result[0].snappedVertex
+                        else:
+                            self.point2 = self.result[0].afterVertex
                     flag = True
 
 
@@ -514,7 +532,7 @@ class ModifyOffsetTool(QgsMapTool):
 
             # create geom. Segment or Feature
             if self.segmentChoice.isChecked():
-                self.geom = QgsGeometry.fromPolyline([point1, point2])
+                self.geom = QgsGeometry.fromPolyline([self.point1, self.point2])
             elif self.featureChoice.isChecked():
                 self.geom = [l.geometry() for l in layerSnapped.getFeatures(QgsFeatureRequest(feat))][0] # get the geometry of the first iterator
                 # No Multipart
