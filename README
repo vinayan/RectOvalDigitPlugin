@@ -1,3 +1,3 @@
-Rectangles Ovals Digitizing Plugin
+CADDigitize (A QGis plugin forked from Rectangles Ovals Digitizing Plugin)
 
-Creates Rectangles, Ovals, Ellipses and Squares.
+Creates Rectangles, Circles, Ellipses and Squares like LibreCAD/AutoCAD
