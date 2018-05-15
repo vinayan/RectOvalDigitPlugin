@@ -186,7 +186,7 @@ class RectOvalDigit:
 	
         
     def toggle(self):
-        print "toggle"
+        #print "toggle"
         mc = self.canvas
         layer = mc.currentLayer()
         #Decide whether the plugin button/menu is enabled or disabled
@@ -209,7 +209,6 @@ class RectOvalDigit:
                         pass
 
                 if (layer.isEditable() and (layer.geometryType() == QGis.Polygon)):
-                    print "RectOvalDigitPlugin: Poly und editierbar"
                     self.rectbyextent.setEnabled(True)
                     self.rectfromcenter.setEnabled(True)
                     self.squarefromcenter.setEnabled(True)
@@ -220,7 +219,6 @@ class RectOvalDigit:
                     self.spinBoxAction.setEnabled(True)
                 
                 elif(not layer.isEditable() and layer.geometryType() == 2):
-                    print "RectOvalDigitPlugin: Poly aber nicht editierbar"
                     self.rectbyextent.setEnabled(False)
                     self.rectfromcenter.setEnabled(False)
                     self.squarefromcenter.setEnabled(False)
@@ -231,7 +229,6 @@ class RectOvalDigit:
                     self.spinBoxAction.setEnabled(False)
                     
                 else:
-                    print "RectOvalDigitPlugin: kein Polygonlayer"
                     self.rectbyextent.setEnabled(False)
                     self.rectfromcenter.setEnabled(False)
                     self.squarefromcenter.setEnabled(False)
