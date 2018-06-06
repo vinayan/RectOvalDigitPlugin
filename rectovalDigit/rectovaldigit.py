@@ -4,7 +4,7 @@
 # Rectangles Ovals Digitizing
 # Copyright (C) 2011 - 2012 Pavol Kapusta
 # pavol.kapusta@gmail.com
-# 
+# bug fix in version 1.1.3 added by Thomas Baumann rdbath.regiodata@gmail.com
 # Code adopted/adapted from:
 #
 # 'SelectPlus Menu Plugin', Copyright (C) Barry Rowlingson
