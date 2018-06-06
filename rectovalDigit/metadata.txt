@@ -5,7 +5,7 @@ qgisMinimumVersion=2.0
 description=Helps to create Rectangles,Circles and ovals
 category=Vector
 version=version 1.1.3
-author=Pavol Kapusta
+author=Pavol Kapusta, bug fix in version 1.1.3 added by Thomas Baumann rdbath.regiodata@gmail.com
 email=pavol.kapusta@gmail.com
 about=THIS PLUGIN IS NO LONGER ACTIVELY MAINTAINED. PLEASE USE CADDIGITIZE INSTEAD: https://plugins.qgis.org/plugins/CADDigitize/
 ; end of mandatory metadata
