@@ -96,6 +96,8 @@ class RectOvalDigit:
 
         # Add rotate
         self.rotaterectoval =  QAction(QIcon(":/plugins/rectovalDigit/icons/rotate.png"),  "Rotate rectangle or oval",  self.iface.mainWindow())
+        self.rotaterectoval.setObjectName("Rotate rectangle or oval")
+
         self.rotaterectoval.setEnabled(False)
         self.rotaterectoval.setCheckable(True)
         self.toolBar.addAction(self.rotaterectoval)
