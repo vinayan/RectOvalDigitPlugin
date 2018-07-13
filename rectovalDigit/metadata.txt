@@ -4,7 +4,7 @@ name=Rectangles Ovals Digitizing
 qgisMinimumVersion=2.0
 description=Helps to create Rectangles,Circles and ovals
 category=Vector
-version=version 1.1.3
+version=version 1.1.4
 author=Pavol Kapusta, bug fix in version 1.1.3 added by Thomas Baumann rdbath.regiodata@gmail.com
 email=pavol.kapusta@gmail.com
 about=THIS PLUGIN IS NO LONGER ACTIVELY MAINTAINED. PLEASE USE CADDIGITIZE INSTEAD: https://plugins.qgis.org/plugins/CADDigitize/
@@ -26,6 +26,7 @@ changelog=
     1.1.1: added metadata.txt to work with 2.0 version
     1.1.2: sip API and other API updates for 2.0
     1.1.3: fixed bug https://github.com/vinayan/RectOvalDigitPlugin/issues/6 
+    1.1.4: merged pull requests from rdbath and mclucky
 
 ; tags are in comma separated value format, spaces are allowed
 tags=digitizing,vector
