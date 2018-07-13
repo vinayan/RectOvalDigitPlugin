@@ -4,7 +4,7 @@
 # Rectangles Ovals Digitizing
 # Copyright (C) 2011 - 2012 Pavol Kapusta
 # pavol.kapusta@gmail.com
-#
+# bug fix in version 1.1.3 added by Thomas Baumann rdbath.regiodata@gmail.com
 # Code adopted/adapted from:
 #
 # 'SelectPlus Menu Plugin', Copyright (C) Barry Rowlingson
@@ -126,7 +126,8 @@ class RectOvalDigit:
         QObject.connect(self.rotaterectoval,  SIGNAL("activated()"),  self.rotatedigit)
         QObject.connect(self.spinBox,  SIGNAL("valueChanged(int)"),  self.segmentsettings)
 
-        QObject.connect(self.iface, SIGNAL("currentLayerChanged(QgsMapLayer*)"), self.toggle)
+        self.iface.legendInterface().currentLayerChanged.connect(self.toggle)
+
         QObject.connect(self.canvas, SIGNAL("mapToolSet(QgsMapTool*)"), self.deactivate)
 
         # Get the tools
@@ -193,34 +194,62 @@ class RectOvalDigit:
 		settings.setValue("/RectOvalDigit/segments", self.spinBox.value())
 
 
+
+
+
+
     def toggle(self):
+        #print "toggle"
         mc = self.canvas
         layer = mc.currentLayer()
         #Decide whether the plugin button/menu is enabled or disabled
-        if layer <> None:
-            if (layer.isEditable() and layer.geometryType() == 2):
-                self.rectbyextent.setEnabled(True)
-                self.rectfromcenter.setEnabled(True)
-                self.squarefromcenter.setEnabled(True)
-                self.circlefromcenter.setEnabled(True)
-                self.ovalbyextent.setEnabled(True)
-                self.ovalfromcenter.setEnabled(True)
-                self.rotaterectoval.setEnabled(True)
-                self.spinBoxAction.setEnabled(True)
-                QObject.connect(layer,SIGNAL("editingStopped()"),self.toggle)
-                QObject.disconnect(layer,SIGNAL("editingStarted()"),self.toggle)
-            else:
-                self.rectbyextent.setEnabled(False)
-                self.rectfromcenter.setEnabled(False)
-                self.squarefromcenter.setEnabled(False)
-                self.circlefromcenter.setEnabled(False)
-                self.ovalbyextent.setEnabled(False)
-                self.ovalfromcenter.setEnabled(False)
-                self.rotaterectoval.setEnabled(False)
-                self.spinBoxAction.setEnabled(False)
-                QObject.connect(layer,SIGNAL("editingStarted()"),self.toggle)
-                QObject.disconnect(layer,SIGNAL("editingStopped()"),self.toggle)
+        if layer is not None:
+            if layer.type() == QgsMapLayer.VectorLayer:
+                try:
+                    layer.editingStarted.disconnect(self.toggle)
+                except:
+                    pass
+                try:
+                    layer.editingStopped.disconnect(self.toggle)
+                except:
+                    pass
 
+                if layer.geometryType() == 2:
+                    try:
+                        layer.editingStarted.connect(self.toggle, Qt.UniqueConnection)
+                        layer.editingStopped.connect(self.toggle, Qt.UniqueConnection)
+                    except TypeError:
+                        pass
+
+                if (layer.isEditable() and (layer.geometryType() == QGis.Polygon)):
+                    self.rectbyextent.setEnabled(True)
+                    self.rectfromcenter.setEnabled(True)
+                    self.squarefromcenter.setEnabled(True)
+                    self.circlefromcenter.setEnabled(True)
+                    self.ovalbyextent.setEnabled(True)
+                    self.ovalfromcenter.setEnabled(True)
+                    self.rotaterectoval.setEnabled(True)
+                    self.spinBoxAction.setEnabled(True)
+
+                elif(not layer.isEditable() and layer.geometryType() == 2):
+                    self.rectbyextent.setEnabled(False)
+                    self.rectfromcenter.setEnabled(False)
+                    self.squarefromcenter.setEnabled(False)
+                    self.circlefromcenter.setEnabled(False)
+                    self.ovalbyextent.setEnabled(False)
+                    self.ovalfromcenter.setEnabled(False)
+                    self.rotaterectoval.setEnabled(False)
+                    self.spinBoxAction.setEnabled(False)
+
+                else:
+                    self.rectbyextent.setEnabled(False)
+                    self.rectfromcenter.setEnabled(False)
+                    self.squarefromcenter.setEnabled(False)
+                    self.circlefromcenter.setEnabled(False)
+                    self.ovalbyextent.setEnabled(False)
+                    self.ovalfromcenter.setEnabled(False)
+                    self.rotaterectoval.setEnabled(False)
+                    self.spinBoxAction.setEnabled(False)
 
     def deactivate(self):
         self.rectbyextent.setChecked(False)
