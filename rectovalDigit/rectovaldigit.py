@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #-----------------------------------------------------------
-# 
+#
 # Rectangles Ovals Digitizing
 # Copyright (C) 2011 - 2012 Pavol Kapusta
 # pavol.kapusta@gmail.com
@@ -12,23 +12,23 @@
 # 'Numerical Vertex Edit Plugin' and 'traceDigitize' plugin, Copyright (C) Cédric Möri
 #
 #-----------------------------------------------------------
-# 
+#
 # licensed under the terms of GNU GPL 2
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-# 
+#
 #---------------------------------------------------------------------
 
 
@@ -58,14 +58,25 @@ class RectOvalDigit:
         # Add button
         self.toolBar = self.iface.addToolBar("Rectangles, ovals digitizing tools")
         self.toolBar.setObjectName("RectOvalDigit")
-        # Add actions
+        # Add actions and set ObjectName (so that other plugins can call the tools by a name)
         self.rectbyextent = QAction(QIcon(":/plugins/rectovalDigit/icons/rectbyextent.png"),  "Rectangle by extent",  self.iface.mainWindow())
+        self.rectbyextent.setObjectName("Rectangle by extent")
+
         self.rectfromcenter = QAction(QIcon(":/plugins/rectovalDigit/icons/rectfromcenter.png"),  "Rectangle from center",  self.iface.mainWindow())
+        self.rectfromcenter.setObjectName("Rectangle from center")
+
         self.squarefromcenter = QAction(QIcon(":/plugins/rectovalDigit/icons/squarefromcenter.png"),  "Square from center",  self.iface.mainWindow())
+        self.squarefromcenter.setObjectName("Square from center")
+
         self.circlefromcenter = QAction(QIcon(":/plugins/rectovalDigit/icons/circlefromcenter.png"),  "Circle from center",  self.iface.mainWindow())
+        self.circlefromcenter.setObjectName("Circle from center")
+
         self.ovalbyextent = QAction(QIcon(":/plugins/rectovalDigit/icons/ovalbyextent.png"),  "Ellipse by extent",  self.iface.mainWindow())
+        self.ovalbyextent.setObjectName("Ellipse by extent")
+
         self.ovalfromcenter = QAction(QIcon(":/plugins/rectovalDigit/icons/ovalfromcenter.png"),  "Ellipse from center",  self.iface.mainWindow())
-        
+        self.ovalfromcenter.setObjectName("Ellipse from center")
+
         self.toolBar.addActions( [ self.rectbyextent, self.rectfromcenter, self.squarefromcenter, self.circlefromcenter, self.ovalbyextent, self.ovalfromcenter ] )
 
         self.rectbyextent.setCheckable(True)
@@ -82,16 +93,18 @@ class RectOvalDigit:
         self.ovalfromcenter.setEnabled(False)
 
         self.toolBar.addSeparator()
-        
-        # Add rotate 
+
+        # Add rotate
         self.rotaterectoval =  QAction(QIcon(":/plugins/rectovalDigit/icons/rotate.png"),  "Rotate rectangle or oval",  self.iface.mainWindow())
+        self.rotaterectoval.setObjectName("Rotate rectangle or oval")
+
         self.rotaterectoval.setEnabled(False)
         self.rotaterectoval.setCheckable(True)
         self.toolBar.addAction(self.rotaterectoval)
         self.toolBar.addSeparator()
-               
+
         # Add spinbox
-        self.spinBox = QSpinBox(self.iface.mainWindow())        
+        self.spinBox = QSpinBox(self.iface.mainWindow())
         self.spinBox.setMinimum(3)
         self.spinBox.setMaximum(72)
         segvalue = settings.value("/RectOvalDigit/segments",36,type=int)
@@ -102,7 +115,7 @@ class RectOvalDigit:
         self.spinBoxAction = self.toolBar.addWidget(self.spinBox)
         self.spinBox.setToolTip("Number of segments for ovals")
         self.spinBoxAction.setEnabled(False)
-        
+
         # Connect to signals for button behaviour
         QObject.connect(self.rectbyextent,  SIGNAL("activated()"),  self.rectbyextentdigit)
         QObject.connect(self.rectfromcenter,  SIGNAL("activated()"),  self.rectfromcenterdigit)
@@ -112,11 +125,11 @@ class RectOvalDigit:
         QObject.connect(self.ovalfromcenter,  SIGNAL("activated()"),  self.ovalfromcenterdigit)
         QObject.connect(self.rotaterectoval,  SIGNAL("activated()"),  self.rotatedigit)
         QObject.connect(self.spinBox,  SIGNAL("valueChanged(int)"),  self.segmentsettings)
-        
+
         self.iface.legendInterface().currentLayerChanged.connect(self.toggle)
-        
+
         QObject.connect(self.canvas, SIGNAL("mapToolSet(QgsMapTool*)"), self.deactivate)
-    
+
         # Get the tools
         self.rectbyextenttool = RectByExtentTool( self.canvas )
         self.rectfromcentertool = RectFromCenterTool( self.canvas )
@@ -125,66 +138,66 @@ class RectOvalDigit:
         self.ovalbyextenttool = OvalByExtentTool( self.canvas )
         self.ovalfromcentertool = OvalFromCenterTool( self.canvas )
         self.rotatetool = RotateTool( self.canvas )
-    
-    def rectbyextentdigit(self):          
+
+    def rectbyextentdigit(self):
         self.canvas.setMapTool(self.rectbyextenttool)
         self.rectbyextent.setChecked(True)
-        QObject.connect(self.rectbyextenttool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)      
-    
+        QObject.connect(self.rectbyextenttool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
     def rectfromcenterdigit(self):
         self.canvas.setMapTool(self.rectfromcentertool)
         self.rectfromcenter.setChecked(True)
-        QObject.connect(self.rectfromcentertool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature) 
-        
+        QObject.connect(self.rectfromcentertool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
     def squarefromcenterdigit(self):
         self.canvas.setMapTool(self.squarefromcentertool)
         self.squarefromcenter.setChecked(True)
-        QObject.connect(self.squarefromcentertool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature) 
-        
+        QObject.connect(self.squarefromcentertool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
     def circlefromcenterdigit(self):
         self.canvas.setMapTool(self.circlefromcentertool)
         self.circlefromcenter.setChecked(True)
-        QObject.connect(self.circlefromcentertool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature) 
-        
+        QObject.connect(self.circlefromcentertool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
     def ovalbyextentdigit(self):
         self.canvas.setMapTool(self.ovalbyextenttool)
         self.ovalbyextent.setChecked(True)
-        QObject.connect(self.ovalbyextenttool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature) 
-        
+        QObject.connect(self.ovalbyextenttool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
     def ovalfromcenterdigit(self):
         self.canvas.setMapTool(self.ovalfromcentertool)
         self.ovalfromcenter.setChecked(True)
-        QObject.connect(self.ovalfromcentertool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature) 
-        
-   
+        QObject.connect(self.ovalfromcentertool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
+
+
     def rotatedigit(self):
         mc = self.canvas
-        layer = mc.currentLayer() 
+        layer = mc.currentLayer()
         if layer.selectedFeatureCount() != 1:
             QMessageBox.information(None,  "Selection information",  "Please select exactly one rectangle or oval.")
             self.rotaterectoval.setChecked(False)
         else:
             self.canvas.setMapTool(self.rotatetool)
             self.rotaterectoval.setChecked(True)
-            QObject.connect(layer,SIGNAL("selectionChanged()"),self.selectionchanged)  
+            QObject.connect(layer,SIGNAL("selectionChanged()"),self.selectionchanged)
             QObject.connect(self.rotatetool, SIGNAL("rbFinished(PyQt_PyObject)"), self.changegeom)
-            			  
-	
+
+
     def selectionchanged(self):
         mc = self.canvas
-        layer = mc.currentLayer() 
+        layer = mc.currentLayer()
         if layer.selectedFeatureCount() != 1:
             self.rotaterectoval.setChecked(False)
-    
+
     def segmentsettings(self):
 		settings = QSettings()
 		settings.setValue("/RectOvalDigit/segments", self.spinBox.value())
-    
-            
 
 
-	
-        
+
+
+
+
     def toggle(self):
         #print "toggle"
         mc = self.canvas
@@ -200,7 +213,7 @@ class RectOvalDigit:
                     layer.editingStopped.disconnect(self.toggle)
                 except:
                     pass
-                
+
                 if layer.geometryType() == 2:
                     try:
                         layer.editingStarted.connect(self.toggle, Qt.UniqueConnection)
@@ -217,7 +230,7 @@ class RectOvalDigit:
                     self.ovalfromcenter.setEnabled(True)
                     self.rotaterectoval.setEnabled(True)
                     self.spinBoxAction.setEnabled(True)
-                
+
                 elif(not layer.isEditable() and layer.geometryType() == 2):
                     self.rectbyextent.setEnabled(False)
                     self.rectfromcenter.setEnabled(False)
@@ -227,7 +240,7 @@ class RectOvalDigit:
                     self.ovalfromcenter.setEnabled(False)
                     self.rotaterectoval.setEnabled(False)
                     self.spinBoxAction.setEnabled(False)
-                    
+
                 else:
                     self.rectbyextent.setEnabled(False)
                     self.rectfromcenter.setEnabled(False)
@@ -237,7 +250,7 @@ class RectOvalDigit:
                     self.ovalfromcenter.setEnabled(False)
                     self.rotaterectoval.setEnabled(False)
                     self.spinBoxAction.setEnabled(False)
-            
+
     def deactivate(self):
         self.rectbyextent.setChecked(False)
         self.rectfromcenter.setChecked(False)
@@ -253,7 +266,7 @@ class RectOvalDigit:
         QObject.disconnect(self.ovalbyextenttool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.ovalfromcentertool, SIGNAL("rbFinished(PyQt_PyObject)"), self.createFeature)
         QObject.disconnect(self.rotatetool, SIGNAL("rbFinished(PyQt_PyObject)"), self.changegeom)
-        
+
 
     def createFeature(self, geom):
         settings = QSettings()
@@ -264,14 +277,14 @@ class RectOvalDigit:
         projectCRSSrsid = renderer.destinationCrs().srsid()
         provider = layer.dataProvider()
         f = QgsFeature()
-        
-        
+
+
         #On the Fly reprojection.
         if layerCRSSrsid != projectCRSSrsid:
             geom.transform(QgsCoordinateTransform(projectCRSSrsid, layerCRSSrsid))
-                                    
+
         f.setGeometry(geom)
-        
+
         # add attribute fields to feature
         fields = layer.pendingFields()
 
@@ -283,8 +296,8 @@ class RectOvalDigit:
 
         if not (settings.value("/qgis/digitizing/disable_enter_attribute_values_dialog")):
             self.iface.openFeatureForm( layer, f, False)
-        
-        layer.beginEditCommand("Feature added")       
+
+        layer.beginEditCommand("Feature added")
         layer.addFeature(f)
         layer.endEditCommand()
 
@@ -302,7 +315,7 @@ class RectOvalDigit:
         layer.beginEditCommand("Feature rotated")
         layer.changeGeometry( fid, geom )
         layer.endEditCommand()
-        
+
     def unload(self):
 		self.toolBar.removeAction(self.rectbyextent)
 		self.toolBar.removeAction(self.rectfromcenter)
@@ -313,5 +326,3 @@ class RectOvalDigit:
 		self.toolBar.removeAction(self.rotaterectoval)
 		self.toolBar.removeAction(self.spinBoxAction)
 		del self.toolBar
-   
- 
